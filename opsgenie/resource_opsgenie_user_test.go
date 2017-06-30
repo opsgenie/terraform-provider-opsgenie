@@ -2,6 +2,8 @@ package opsgenie
 
 import (
 	"fmt"
+	"log"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -9,6 +11,44 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/opsgenie/opsgenie-go-sdk/user"
 )
+
+func init() {
+	resource.AddTestSweepers("opsgenie_user", &resource.Sweeper{
+		Name: "opsgenie_user",
+		F:    testSweepUser,
+	})
+
+}
+
+func testSweepUser(region string) error {
+	meta, err := sharedConfigForRegion(region)
+	if err != nil {
+		return err
+	}
+
+	client := meta.(*OpsGenieClient).users
+
+	resp, err := client.List(user.ListUsersRequest{})
+	if err != nil {
+		return err
+	}
+
+	for _, u := range resp.Users {
+		if strings.HasPrefix(u.Username, "acctest-") {
+			log.Printf("Destroying user %s", u.Username)
+
+			deleteRequest := user.DeleteUserRequest{
+				Id: u.Id,
+			}
+
+			if _, err := client.Delete(deleteRequest); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
 
 func TestAccOpsGenieUserUsername_validation(t *testing.T) {
 	cases := []struct {

@@ -2,6 +2,8 @@ package opsgenie
 
 import (
 	"fmt"
+	"log"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -9,6 +11,44 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/opsgenie/opsgenie-go-sdk/team"
 )
+
+func init() {
+	resource.AddTestSweepers("opsgenie_team", &resource.Sweeper{
+		Name: "opsgenie_team",
+		F:    testSweepTeam,
+	})
+
+}
+
+func testSweepTeam(region string) error {
+	meta, err := sharedConfigForRegion(region)
+	if err != nil {
+		return err
+	}
+
+	client := meta.(*OpsGenieClient).teams
+
+	resp, err := client.List(team.ListTeamsRequest{})
+	if err != nil {
+		return err
+	}
+
+	for _, t := range resp.Teams {
+		if strings.HasPrefix(t.Name, "acctest") {
+			log.Printf("Destroying team %s", t.Name)
+
+			deleteRequest := team.DeleteTeamRequest{
+				Id: t.Id,
+			}
+
+			if _, err := client.Delete(deleteRequest); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
 
 func TestAccOpsGenieTeamName_validation(t *testing.T) {
 	cases := []struct {
