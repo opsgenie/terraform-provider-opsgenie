@@ -3,8 +3,6 @@ package opsgenie
 import (
 	"testing"
 
-	"fmt"
-
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 )
@@ -12,8 +10,8 @@ import (
 func TestAccOpsGenieUser_importBasic(t *testing.T) {
 	resourceName := "opsgenie_user.test"
 
-	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieUser_basic, ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieUser_basic(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -36,8 +34,8 @@ func TestAccOpsGenieUser_importBasic(t *testing.T) {
 func TestAccOpsGenieUser_importComplete(t *testing.T) {
 	resourceName := "opsgenie_user.test"
 
-	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieUser_complete, ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieUser_complete(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

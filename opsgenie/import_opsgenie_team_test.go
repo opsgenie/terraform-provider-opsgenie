@@ -3,8 +3,6 @@ package opsgenie
 import (
 	"testing"
 
-	"fmt"
-
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 )
@@ -12,8 +10,8 @@ import (
 func TestAccOpsGenieTeam_importBasic(t *testing.T) {
 	resourceName := "opsgenie_team.test"
 
-	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_basic, ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_basic(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -36,8 +34,8 @@ func TestAccOpsGenieTeam_importBasic(t *testing.T) {
 func TestAccOpsGenieTeam_importWithEmptyDescription(t *testing.T) {
 	resourceName := "opsgenie_team.test"
 
-	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_withEmptyDescription, ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_withEmptyDescription(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -60,8 +58,8 @@ func TestAccOpsGenieTeam_importWithEmptyDescription(t *testing.T) {
 func TestAccOpsGenieTeam_importWithUser(t *testing.T) {
 	resourceName := "opsgenie_team.test"
 
-	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_withUser, ri, ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_withUser(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -84,8 +82,8 @@ func TestAccOpsGenieTeam_importWithUser(t *testing.T) {
 func TestAccOpsGenieTeam_importWithUserComplete(t *testing.T) {
 	resourceName := "opsgenie_team.test"
 
-	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_withUserComplete, ri, ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_withUserComplete(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
