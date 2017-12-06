@@ -128,7 +128,7 @@ func TestAccOpsGenieTeamRole_validation(t *testing.T) {
 
 func TestAccOpsGenieTeam_basic(t *testing.T) {
 	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_basic, ri)
+	config := testAccOpsGenieTeam_basic(ri)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -147,7 +147,7 @@ func TestAccOpsGenieTeam_basic(t *testing.T) {
 
 func TestAccOpsGenieTeam_withEmptyDescription(t *testing.T) {
 	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_withEmptyDescription, ri)
+	config := testAccOpsGenieTeam_withEmptyDescription(ri)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -166,7 +166,7 @@ func TestAccOpsGenieTeam_withEmptyDescription(t *testing.T) {
 
 func TestAccOpsGenieTeam_withUser(t *testing.T) {
 	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_withUser, ri, ri)
+	config := testAccOpsGenieTeam_withUser(ri)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -185,7 +185,7 @@ func TestAccOpsGenieTeam_withUser(t *testing.T) {
 
 func TestAccOpsGenieTeam_withUserComplete(t *testing.T) {
 	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_withUserComplete, ri, ri)
+	config := testAccOpsGenieTeam_withUserComplete(ri)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -204,7 +204,7 @@ func TestAccOpsGenieTeam_withUserComplete(t *testing.T) {
 
 func TestAccOpsGenieTeam_withMultipleUsers(t *testing.T) {
 	ri := acctest.RandInt()
-	config := fmt.Sprintf(testAccOpsGenieTeam_withMultipleUsers, ri, ri, ri)
+	config := testAccOpsGenieTeam_withMultipleUsers(ri)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -268,20 +268,25 @@ func testCheckOpsGenieTeamExists(name string) resource.TestCheckFunc {
 	}
 }
 
-var testAccOpsGenieTeam_basic = `
+func testAccOpsGenieTeam_basic(rInt int) string {
+	return fmt.Sprintf(`
 resource "opsgenie_team" "test" {
   name = "acctest%d"
 }
-`
+`, rInt)
+}
 
-var testAccOpsGenieTeam_withEmptyDescription = `
+func testAccOpsGenieTeam_withEmptyDescription (rInt int) string {
+	return fmt.Sprintf(`
 resource "opsgenie_team" "test" {
   name        = "acctest%d"
   description = ""
 }
-`
+`, rInt)
+}
 
-var testAccOpsGenieTeam_withUser = `
+func testAccOpsGenieTeam_withUser(rInt int) string {
+	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
   username  = "acctest-%d@example.tld"
   full_name = "Acceptance Test User"
@@ -294,9 +299,11 @@ resource "opsgenie_team" "test" {
     username = "${opsgenie_user.test.username}"
   }
 }
-`
+`, rInt, rInt)
+}
 
-var testAccOpsGenieTeam_withUserComplete = `
+func testAccOpsGenieTeam_withUserComplete(rInt int) string {
+	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
   username  = "acctest-%d@example.tld"
   full_name = "Acceptance Test User"
@@ -310,10 +317,11 @@ resource "opsgenie_team" "test" {
     username = "${opsgenie_user.test.username}"
     role     = "user"
   }
+}`, rInt, rInt)
 }
-`
 
-var testAccOpsGenieTeam_withMultipleUsers = `
+func testAccOpsGenieTeam_withMultipleUsers(rInt int) string {
+	return fmt.Sprintf(`
 resource "opsgenie_user" "first" {
   username  = "acctest-1-%d@example.tld"
   full_name = "First Acceptance Test User"
@@ -335,4 +343,5 @@ resource "opsgenie_team" "test" {
     username = "${opsgenie_user.second.username}"
   }
 }
-`
+`, rInt, rInt, rInt)
+}
