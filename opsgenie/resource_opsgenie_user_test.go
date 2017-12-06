@@ -143,8 +143,8 @@ func TestAccOpsGenieUserRole_validation(t *testing.T) {
 }
 
 func TestAccOpsGenieUser_basic(t *testing.T) {
-	ri := acctest.RandInt()
-	config := testAccOpsGenieUser_basic(ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieUser_basic(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -162,8 +162,8 @@ func TestAccOpsGenieUser_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieUser_complete(t *testing.T) {
-	ri := acctest.RandInt()
-	config := testAccOpsGenieUser_complete(ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieUser_complete(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -227,24 +227,24 @@ func testCheckOpsGenieUserExists(name string) resource.TestCheckFunc {
 	}
 }
 
-func testAccOpsGenieUser_basic(rInt int) string {
+func testAccOpsGenieUser_basic(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "acctest-%d@example.tld"
+  username  = "terraform-acctest+%s@hashicorp.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
-`, rInt)
+`, rString)
 }
 
-func testAccOpsGenieUser_complete(rInt int) string {
+func testAccOpsGenieUser_complete(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "acctest-%d@example.tld"
+  username  = "terraform-acctest+%s@hashicorp.com"
   full_name = "Acceptance Test User"
   role      = "User"
   locale    = "en_GB"
   timezone  = "Etc/GMT"
 }
-`, rInt)
+`, rString)
 }

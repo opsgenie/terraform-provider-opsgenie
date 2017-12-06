@@ -127,8 +127,8 @@ func TestAccOpsGenieTeamRole_validation(t *testing.T) {
 }
 
 func TestAccOpsGenieTeam_basic(t *testing.T) {
-	ri := acctest.RandInt()
-	config := testAccOpsGenieTeam_basic(ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_basic(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -146,8 +146,8 @@ func TestAccOpsGenieTeam_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieTeam_withEmptyDescription(t *testing.T) {
-	ri := acctest.RandInt()
-	config := testAccOpsGenieTeam_withEmptyDescription(ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_withEmptyDescription(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -165,8 +165,8 @@ func TestAccOpsGenieTeam_withEmptyDescription(t *testing.T) {
 }
 
 func TestAccOpsGenieTeam_withUser(t *testing.T) {
-	ri := acctest.RandInt()
-	config := testAccOpsGenieTeam_withUser(ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_withUser(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -184,8 +184,8 @@ func TestAccOpsGenieTeam_withUser(t *testing.T) {
 }
 
 func TestAccOpsGenieTeam_withUserComplete(t *testing.T) {
-	ri := acctest.RandInt()
-	config := testAccOpsGenieTeam_withUserComplete(ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_withUserComplete(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -203,8 +203,8 @@ func TestAccOpsGenieTeam_withUserComplete(t *testing.T) {
 }
 
 func TestAccOpsGenieTeam_withMultipleUsers(t *testing.T) {
-	ri := acctest.RandInt()
-	config := testAccOpsGenieTeam_withMultipleUsers(ri)
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieTeam_withMultipleUsers(rs)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -268,73 +268,73 @@ func testCheckOpsGenieTeamExists(name string) resource.TestCheckFunc {
 	}
 }
 
-func testAccOpsGenieTeam_basic(rInt int) string {
+func testAccOpsGenieTeam_basic(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_team" "test" {
-  name = "acctest%d"
+  name = "acctest%s"
 }
-`, rInt)
+`, rString)
 }
 
-func testAccOpsGenieTeam_withEmptyDescription (rInt int) string {
+func testAccOpsGenieTeam_withEmptyDescription(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_team" "test" {
-  name        = "acctest%d"
+  name        = "acctest%s"
   description = ""
 }
-`, rInt)
+`, rString)
 }
 
-func testAccOpsGenieTeam_withUser(rInt int) string {
+func testAccOpsGenieTeam_withUser(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "acctest-%d@example.tld"
+  username  = "terraform-acctest+%s@hashicorp.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
 
 resource "opsgenie_team" "test" {
-  name  = "acctest%d"
+  name  = "acctests%s"
   member {
     username = "${opsgenie_user.test.username}"
   }
 }
-`, rInt, rInt)
+`, rString, rString)
 }
 
-func testAccOpsGenieTeam_withUserComplete(rInt int) string {
+func testAccOpsGenieTeam_withUserComplete(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "acctest-%d@example.tld"
+  username  = "terraform-acctest+%s@hashicorp.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
 
 resource "opsgenie_team" "test" {
-  name        = "acctest%d"
+  name        = "acctest%s"
   description = "Some exmaple description"
   member {
     username = "${opsgenie_user.test.username}"
     role     = "user"
   }
-}`, rInt, rInt)
+}`, rString, rString)
 }
 
-func testAccOpsGenieTeam_withMultipleUsers(rInt int) string {
+func testAccOpsGenieTeam_withMultipleUsers(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "first" {
-  username  = "acctest-1-%d@example.tld"
+  username  = "terraform-acctest+%s1@hashicorp.com"
   full_name = "First Acceptance Test User"
   role      = "User"
 }
 resource "opsgenie_user" "second" {
-  username  = "acctest-2-%d@example.tld"
+  username  = "terraform-acctest+%s2@hashicorp.com"
   full_name = "Second Acceptance Test User"
   role      = "User"
 }
 
 resource "opsgenie_team" "test" {
-  name        = "acctest%d"
+  name        = "acctest%s"
   description = "Some exmaple description"
   member {
     username = "${opsgenie_user.first.username}"
@@ -343,5 +343,5 @@ resource "opsgenie_team" "test" {
     username = "${opsgenie_user.second.username}"
   }
 }
-`, rInt, rInt, rInt)
+`, rString, rString, rString)
 }
