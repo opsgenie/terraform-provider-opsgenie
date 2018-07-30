@@ -10,13 +10,13 @@ type CreateUserResponse struct {
 // Update user response structure
 type UpdateUserResponse struct {
 	Status string `json:"status"`
-        Code int `json:"code"`
+  Code int `json:"code"`
 }
 
 // Delete user response structure
 type DeleteUserResponse struct {
 	Status string `json:"status"`
-        Code int `json:"code"`
+	Code int `json:"code"`
 }
 
 // Participant
@@ -30,6 +30,7 @@ type GetUserResponse struct {
 	Id string `json:"id,omitempty"`
 	Username string `json:"username,omitempty"`
 	Fullname string `json:"fullname,omitempty"`
+	SkypeUsername string `json:"skypeUsername,omitempty"`
 	Timezone string `json:"timezone,omitempty"`
 	Locale string `json:"locale,omitempty"`
 	State string `json:"state,omitempty"`

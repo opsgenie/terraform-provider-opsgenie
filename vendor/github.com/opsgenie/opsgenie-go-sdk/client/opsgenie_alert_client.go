@@ -47,17 +47,17 @@ const (
 	escalateToNextAlertURL	= "/v1/json/alert/escalateToNext"
 )
 
-// OpsGenieAlertClient is the data type to make Alert API requests.
+// Deprecated: Please use OpsGenieAlertV2Client
 type OpsGenieAlertClient struct {
 	OpsGenieClient
 }
 
-// SetOpsGenieClient sets the embedded OpsGenieClient type of the OpsGenieAlertClient.
+// Deprecated: SetOpsGenieClient sets the embedded OpsGenieClient type of the OpsGenieAlertClient.
 func (cli *OpsGenieAlertClient) SetOpsGenieClient(ogCli OpsGenieClient) {
 	cli.OpsGenieClient = ogCli
 }
 
-// Create method creates an alert at OpsGenie.
+// Deprecated: Create method creates an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) Create(req alerts.CreateAlertRequest) (*alerts.CreateAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(createAlertURL, req))
@@ -77,7 +77,7 @@ func (cli *OpsGenieAlertClient) Create(req alerts.CreateAlertRequest) (*alerts.C
 	return &createAlertResp, nil
 }
 
-// Count method counts alerts at OpsGenie.
+// Deprecated: Count method counts alerts at OpsGenie.
 func (cli *OpsGenieAlertClient) Count(req alerts.CountAlertRequest) (*alerts.CountAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildGetRequest(countAlertURL, req))
@@ -98,7 +98,7 @@ func (cli *OpsGenieAlertClient) Count(req alerts.CountAlertRequest) (*alerts.Cou
 }
 
 
-// Close method closes an alert at OpsGenie.
+// Deprecated: Close method closes an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) Close(req alerts.CloseAlertRequest) (*alerts.CloseAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(closeAlertURL, req))
@@ -118,7 +118,7 @@ func (cli *OpsGenieAlertClient) Close(req alerts.CloseAlertRequest) (*alerts.Clo
 	return &closeAlertResp, nil
 }
 
-// Delete method deletes an alert at OpsGenie.
+// Deprecated: Delete method deletes an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) Delete(req alerts.DeleteAlertRequest) (*alerts.DeleteAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildDeleteRequest(deleteAlertURL, req))
@@ -138,7 +138,7 @@ func (cli *OpsGenieAlertClient) Delete(req alerts.DeleteAlertRequest) (*alerts.D
 	return &deleteAlertResp, nil
 }
 
-// Get method retrieves specified alert details from OpsGenie.
+// Deprecated: Get method retrieves specified alert details from OpsGenie.
 func (cli *OpsGenieAlertClient) Get(req alerts.GetAlertRequest) (*alerts.GetAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildGetRequest(getAlertURL, req))
@@ -155,10 +155,11 @@ func (cli *OpsGenieAlertClient) Get(req alerts.GetAlertRequest) (*alerts.GetAler
 		logging.Logger().Warn(message)
 		return nil, errors.New(message)
 	}
+
 	return &getAlertResp, nil
 }
 
-// List method retrieves alerts from OpsGenie.
+// Deprecated: List method retrieves alerts from OpsGenie.
 func (cli *OpsGenieAlertClient) List(req alerts.ListAlertsRequest) (*alerts.ListAlertsResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildGetRequest(listAlertsURL, req))
@@ -178,7 +179,7 @@ func (cli *OpsGenieAlertClient) List(req alerts.ListAlertsRequest) (*alerts.List
 	return &listAlertsResp, nil
 }
 
-// ListNotes method retrieves notes of an alert from OpsGenie.
+// Deprecated: ListNotes method retrieves notes of an alert from OpsGenie.
 func (cli *OpsGenieAlertClient) ListNotes(req alerts.ListAlertNotesRequest) (*alerts.ListAlertNotesResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildGetRequest(listAlertNotesURL, req))
@@ -198,7 +199,7 @@ func (cli *OpsGenieAlertClient) ListNotes(req alerts.ListAlertNotesRequest) (*al
 	return &listAlertNotesResp, nil
 }
 
-// ListLogs method retrieves activity logs of an alert from OpsGenie.
+// Deprecated: ListLogs method retrieves activity logs of an alert from OpsGenie.
 func (cli *OpsGenieAlertClient) ListLogs(req alerts.ListAlertLogsRequest) (*alerts.ListAlertLogsResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildGetRequest(listAlertLogsURL, req))
@@ -218,7 +219,7 @@ func (cli *OpsGenieAlertClient) ListLogs(req alerts.ListAlertLogsRequest) (*aler
 	return &listAlertLogsResp, nil
 }
 
-// ListRecipients method retrieves recipients of an alert from OpsGenie.
+// Deprecated: ListRecipients method retrieves recipients of an alert from OpsGenie.
 func (cli *OpsGenieAlertClient) ListRecipients(req alerts.ListAlertRecipientsRequest) (*alerts.ListAlertRecipientsResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildGetRequest(listAlertRecipientsURL, req))
@@ -238,7 +239,7 @@ func (cli *OpsGenieAlertClient) ListRecipients(req alerts.ListAlertRecipientsReq
 	return &listAlertRecipientsResp, nil
 }
 
-// Acknowledge method acknowledges an alert at OpsGenie.
+// Deprecated: Acknowledge method acknowledges an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) Acknowledge(req alerts.AcknowledgeAlertRequest) (*alerts.AcknowledgeAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(acknowledgeAlertURL, req))
@@ -258,7 +259,7 @@ func (cli *OpsGenieAlertClient) Acknowledge(req alerts.AcknowledgeAlertRequest) 
 	return &acknowledgeAlertResp, nil
 }
 
-// Renotify re-notifies recipients at OpsGenie.
+// Deprecated: Renotify re-notifies recipients at OpsGenie.
 func (cli *OpsGenieAlertClient) Renotify(req alerts.RenotifyAlertRequest) (*alerts.RenotifyAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(renotifyAlertURL, req))
@@ -278,7 +279,7 @@ func (cli *OpsGenieAlertClient) Renotify(req alerts.RenotifyAlertRequest) (*aler
 	return &renotifyAlertResp, nil
 }
 
-// TakeOwnership method takes the ownership of an alert at OpsGenie.
+// Deprecated: TakeOwnership method takes the ownership of an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) TakeOwnership(req alerts.TakeOwnershipAlertRequest) (*alerts.TakeOwnershipAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(takeOwnershipAlertURL, req))
@@ -298,7 +299,7 @@ func (cli *OpsGenieAlertClient) TakeOwnership(req alerts.TakeOwnershipAlertReque
 	return &takeOwnershipResp, nil
 }
 
-// AssignOwner method assigns the specified user as the owner of the alert at OpsGenie.
+// Deprecated: AssignOwner method assigns the specified user as the owner of the alert at OpsGenie.
 func (cli *OpsGenieAlertClient) AssignOwner(req alerts.AssignOwnerAlertRequest) (*alerts.AssignOwnerAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(assignOwnershipAlertURL, req))
@@ -318,7 +319,7 @@ func (cli *OpsGenieAlertClient) AssignOwner(req alerts.AssignOwnerAlertRequest) 
 	return &assignOwnerAlertResp, nil
 }
 
-// AddTeam method adds a team to an alert at OpsGenie.
+// Deprecated: AddTeam method adds a team to an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) AddTeam(req alerts.AddTeamAlertRequest) (*alerts.AddTeamAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(addTeamAlertURL, req))
@@ -338,7 +339,7 @@ func (cli *OpsGenieAlertClient) AddTeam(req alerts.AddTeamAlertRequest) (*alerts
 	return &addTeamAlertResp, nil
 }
 
-// AddRecipient method adds recipient to an alert at OpsGenie.
+// Deprecated: AddRecipient method adds recipient to an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) AddRecipient(req alerts.AddRecipientAlertRequest) (*alerts.AddRecipientAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(addRecipientAlertURL, req))
@@ -358,7 +359,7 @@ func (cli *OpsGenieAlertClient) AddRecipient(req alerts.AddRecipientAlertRequest
 	return &addRecipientAlertResp, nil
 }
 
-// AddNote method adds a note to an alert at OpsGenie.
+// Deprecated: AddNote method adds a note to an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) AddNote(req alerts.AddNoteAlertRequest) (*alerts.AddNoteAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(addNoteAlertURL, req))
@@ -378,7 +379,7 @@ func (cli *OpsGenieAlertClient) AddNote(req alerts.AddNoteAlertRequest) (*alerts
 	return &addNoteAlertResp, nil
 }
 
-// AddTags method adds tags to an alert at OpsGenie.
+// Deprecated: AddTags method adds tags to an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) AddTags(req alerts.AddTagsAlertRequest) (*alerts.AddTagsAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(addTagsAlertURL, req))
@@ -398,7 +399,7 @@ func (cli *OpsGenieAlertClient) AddTags(req alerts.AddTagsAlertRequest) (*alerts
 	return &addTagsAlertResp, nil
 }
 
-// ExecuteAction method executes a custom action on an alert at OpsGenie.
+// Deprecated: ExecuteAction method executes a custom action on an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) ExecuteAction(req alerts.ExecuteActionAlertRequest) (*alerts.ExecuteActionAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(executeActionAlertURL, req))
@@ -418,7 +419,7 @@ func (cli *OpsGenieAlertClient) ExecuteAction(req alerts.ExecuteActionAlertReque
 	return &executeActionAlertResp, nil
 }
 
-// UnAcknowledge method unacknowledges an alert at OpsGenie.
+// Deprecated: UnAcknowledge method unacknowledges an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) UnAcknowledge(req alerts.UnAcknowledgeAlertRequest) (*alerts.UnAcknowledgeAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(unacknowledgeAlertURL, req))
@@ -438,7 +439,7 @@ func (cli *OpsGenieAlertClient) UnAcknowledge(req alerts.UnAcknowledgeAlertReque
 	return &unacknowledgeAlertResp, nil
 }
 
-// Snooze method snoozes an alert at OpsGenie.
+// Deprecated: Snooze method snoozes an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) Snooze(req alerts.SnoozeAlertRequest) (*alerts.SnoozeAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(snoozeAlertURL, req))
@@ -458,7 +459,7 @@ func (cli *OpsGenieAlertClient) Snooze(req alerts.SnoozeAlertRequest) (*alerts.S
 	return &snoozeAlertResp, nil
 }
 
-// RemoveTags method removes tags from an alert at OpsGenie.
+// Deprecated: RemoveTags method removes tags from an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) RemoveTags(req alerts.RemoveTagsAlertRequest) (*alerts.RemoveTagsAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildDeleteRequest(removeTagsAlertURL, req))
@@ -478,7 +479,7 @@ func (cli *OpsGenieAlertClient) RemoveTags(req alerts.RemoveTagsAlertRequest) (*
 	return &removeTagsAlertResp, nil
 }
 
-// AddDetails method adds details to an alert at OpsGenie.
+// Deprecated: AddDetails method adds details to an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) AddDetails(req alerts.AddDetailsAlertRequest) (*alerts.AddDetailsAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(addDetailsAlertURL, req))
@@ -498,7 +499,7 @@ func (cli *OpsGenieAlertClient) AddDetails(req alerts.AddDetailsAlertRequest) (*
 	return &addDetailsAlertResp, nil
 }
 
-// RemoveDetails method removes details from an alert at OpsGenie.
+// Deprecated: RemoveDetails method removes details from an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) RemoveDetails(req alerts.RemoveDetailsAlertRequest) (*alerts.RemoveDetailsAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildDeleteRequest(removeDetailsAlertURL, req))
@@ -518,7 +519,7 @@ func (cli *OpsGenieAlertClient) RemoveDetails(req alerts.RemoveDetailsAlertReque
 	return &removeDetailsAlertResp, nil
 }
 
-// UnAcknowledge method unacknowledges an alert at OpsGenie.
+// Deprecated: UnAcknowledge method unacknowledges an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) EscalateToNext(req alerts.EscalateToNextAlertRequest) (*alerts.EscalateToNextAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	resp, err := cli.sendRequest(cli.buildPostRequest(escalateToNextAlertURL, req))
@@ -538,7 +539,7 @@ func (cli *OpsGenieAlertClient) EscalateToNext(req alerts.EscalateToNextAlertReq
 	return &escalateToNextAlertResp, nil
 }
 
-// AttachFile method attaches a file to an alert at OpsGenie.
+// Deprecated: AttachFile method attaches a file to an alert at OpsGenie.
 func (cli *OpsGenieAlertClient) AttachFile(req alerts.AttachFileAlertRequest) (*alerts.AttachFileAlertResponse, error) {
 	req.APIKey = cli.apiKey
 	var b bytes.Buffer

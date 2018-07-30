@@ -4,12 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/opsgenie/opsgenie-go-sdk/schedule"
 	"github.com/opsgenie/opsgenie-go-sdk/logging"
+	"github.com/opsgenie/opsgenie-go-sdk/schedule"
 )
 
 const (
-	scheduleURL          = "/v1/json/schedule"
+	scheduleURL         = "/v1/json/schedule"
+	timelineScheduleURL = "/v1/json/schedule/timeline"
 )
 
 // OpsGenieScheduleClient is the data type to make Schedule API requests.
@@ -98,7 +99,6 @@ func (cli *OpsGenieScheduleClient) Get(req schedule.GetScheduleRequest) (*schedu
 		logging.Logger().Warn(message)
 		return nil, errors.New(message)
 	}
-	fmt.Printf("%+v", getScheduleResp)
 	return &getScheduleResp, nil
 }
 
@@ -119,6 +119,48 @@ func (cli *OpsGenieScheduleClient) List(req schedule.ListSchedulesRequest) (*sch
 		logging.Logger().Warn(message)
 		return nil, errors.New(message)
 	}
-	
+
 	return &listSchedulesResp, nil
+}
+
+// GetTimeline method retrieves Timeline schedules from OpsGenie.
+func (cli *OpsGenieScheduleClient) GetTimeline(req schedule.GetTimelineScheduleRequest) (*schedule.GetTimelineScheduleResponse, error) {
+	req.APIKey = cli.apiKey
+	resp, err := cli.sendRequest(cli.buildGetRequest(timelineScheduleURL, req))
+
+	if resp == nil {
+		return nil, errors.New(err.Error())
+	}
+
+	defer resp.Body.Close()
+
+	var timelineSchedulesResp schedule.GetTimelineScheduleResponse
+
+	if err = resp.Body.FromJsonTo(&timelineSchedulesResp); err != nil {
+		message := "Server response can not be parsed, " + err.Error()
+		logging.Logger().Warn(message)
+		return nil, errors.New(message)
+	}
+	return &timelineSchedulesResp, nil
+}
+
+// WhoIsOnCall method retrieves current oncall participants of a specific schedule from OpsGenie
+func (cli *OpsGenieScheduleClient) WhoIsOnCall(req schedule.WhoIsOnCallRequest) (*schedule.WhoIsOnCallResponse, error) {
+	req.APIKey = cli.apiKey
+	resp, err := cli.sendRequest(cli.buildGetRequest(scheduleURL+"/whoIsOnCall", req))
+	if resp == nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var getWhoIsOnCallResp schedule.WhoIsOnCallResponse
+
+	if err = resp.Body.FromJsonTo(&getWhoIsOnCallResp); err != nil {
+		fmt.Println("Error parsing json")
+		message := "Server response can not be parsed, " + err.Error()
+		logging.Logger().Warn(message)
+		return nil, errors.New(message)
+	}
+
+	return &getWhoIsOnCallResp, nil
 }

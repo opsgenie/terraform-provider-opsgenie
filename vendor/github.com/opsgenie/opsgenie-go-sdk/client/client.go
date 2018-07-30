@@ -38,10 +38,16 @@ import (
 	"fmt"
 	"runtime"
 	"time"
+	"os"
+	"mime/multipart"
+	"bytes"
+	"io"
 
 	"github.com/franela/goreq"
 	goquery "github.com/google/go-querystring/query"
 	"github.com/opsgenie/opsgenie-go-sdk/logging"
+	"github.com/opsgenie/opsgenie-go-sdk/alertsv2"
+	"path/filepath"
 )
 
 // endpointURL is the base URL of OpsGenie Web API.
@@ -52,6 +58,9 @@ const (
 	defaultRequestTimeout    time.Duration = 60 * time.Second
 	defaultMaxRetryAttempts  int           = 5
 	timeSleepBetweenRequests time.Duration = 500 * time.Millisecond
+	fileParamName string = "file"
+	userParamName string = "user"
+	indexFileParamName string = "indexFile"
 )
 
 // RequestHeaderUserAgent contains User-Agent values tool/version (OS;GO_Version;language).
@@ -137,6 +146,7 @@ func (cli *OpsGenieClient) makeHTTPTransportSettings() {
 }
 
 // Alert instantiates a new OpsGenieAlertClient.
+// Deprecated: Please use AlertV2() method
 func (cli *OpsGenieClient) Alert() (*OpsGenieAlertClient, error) {
 	cli.makeHTTPTransportSettings()
 
@@ -148,6 +158,34 @@ func (cli *OpsGenieClient) Alert() (*OpsGenieAlertClient, error) {
 	}
 
 	return alertClient, nil
+}
+
+// AlertV2 instantiates a new OpsGenieAlertV2Client.
+func (cli *OpsGenieClient) AlertV2() (*OpsGenieAlertV2Client, error) {
+	cli.makeHTTPTransportSettings()
+
+	alertClient := new(OpsGenieAlertV2Client)
+	alertClient.SetOpsGenieClient(*cli)
+
+	if cli.opsGenieAPIURL == "" {
+		alertClient.SetOpsGenieAPIUrl(endpointURL)
+	}
+
+	return alertClient, nil
+}
+
+// Alert instantiates a new OpsGenieContactClient.
+func (cli *OpsGenieClient) Contact() (*OpsGenieContactClient, error) {
+	cli.makeHTTPTransportSettings()
+
+	contactClient := new(OpsGenieContactClient)
+	contactClient.SetOpsGenieClient(*cli)
+
+	if cli.opsGenieAPIURL == "" {
+		contactClient.SetOpsGenieAPIUrl(endpointURL)
+	}
+
+	return contactClient, nil
 }
 
 // Heartbeat instantiates a new OpsGenieHeartbeatClient.
@@ -234,7 +272,22 @@ func (cli *OpsGenieClient) Schedule() (*OpsGenieScheduleClient, error) {
 	return scheduleClient, nil
 }
 
+// ScheduleOverride instantiates a new OpsGenieScheduleOverrideClient.
+func (cli *OpsGenieClient) ScheduleOverride() (*OpsGenieScheduleOverrideClient, error) {
+	cli.makeHTTPTransportSettings()
+
+	scheduleOverrideClient := new(OpsGenieScheduleOverrideClient)
+	scheduleOverrideClient.SetOpsGenieClient(*cli)
+
+	if cli.opsGenieAPIURL == "" {
+		scheduleOverrideClient.SetOpsGenieAPIUrl(endpointURL)
+	}
+
+	return scheduleOverrideClient, nil
+}
+
 // User instantiates a new OpsGenieUserClient.
+// Deprecated: Please use UserV2() method
 func (cli *OpsGenieClient) User() (*OpsGenieUserClient, error) {
 	cli.makeHTTPTransportSettings()
 
@@ -246,6 +299,76 @@ func (cli *OpsGenieClient) User() (*OpsGenieUserClient, error) {
 	}
 
 	return userClient, nil
+}
+
+// UserV2 instantiates a new OpsGenieUserV2Client.
+func (cli *OpsGenieClient) UserV2() (*OpsGenieUserV2Client, error) {
+	cli.makeHTTPTransportSettings()
+
+	userClient := new(OpsGenieUserV2Client)
+	userClient.SetOpsGenieClient(*cli)
+
+	if cli.opsGenieAPIURL == "" {
+		userClient.SetOpsGenieAPIUrl(endpointURL)
+	}
+
+	return userClient, nil
+}
+
+// NotificationV2 instantiates a new OpsGenieNotificationV2Client
+func (cli *OpsGenieClient) NotificationV2() (*OpsGenieNotificationV2Client, error) {
+	cli.makeHTTPTransportSettings()
+
+	notificationClient := new(OpsGenieNotificationV2Client)
+	notificationClient.SetOpsGenieClient(*cli)
+
+	if cli.opsGenieAPIURL == "" {
+		notificationClient.SetOpsGenieAPIUrl(endpointURL)
+	}
+
+	return notificationClient, nil
+}
+
+// ScheduleV2 instantiates a new OpsGenieScheduleV2Client
+func (cli *OpsGenieClient) ScheduleV2() (*OpsGenieScheduleV2Client, error) {
+	cli.makeHTTPTransportSettings()
+
+	scheduleClient := new(OpsGenieScheduleV2Client)
+	scheduleClient.SetOpsGenieClient(*cli)
+
+	if cli.opsGenieAPIURL == "" {
+		scheduleClient.SetOpsGenieAPIUrl(endpointURL)
+	}
+
+	return scheduleClient, nil
+}
+
+// ScheduleOverrideV2 instantiates a new OpsGenieScheduleOverrideV2Client
+func (cli *OpsGenieClient) ScheduleOverrideV2() (*OpsGenieScheduleOverrideV2Client, error) {
+	cli.makeHTTPTransportSettings()
+
+	scheduleOverrideClient := new(OpsGenieScheduleOverrideV2Client)
+	scheduleOverrideClient.SetOpsGenieClient(*cli)
+
+	if cli.opsGenieAPIURL == "" {
+		scheduleOverrideClient.SetOpsGenieAPIUrl(endpointURL)
+	}
+
+	return scheduleOverrideClient, nil
+}
+
+// ScheduleRotationV2 instantiates a new OpsGenieScheduleRotationV2Client
+func (cli *OpsGenieClient) ScheduleRotationV2() (*OpsGenieScheduleRotationV2Client, error) {
+	cli.makeHTTPTransportSettings()
+
+	scheduleRotationClient := new(OpsGenieScheduleRotationV2Client)
+	scheduleRotationClient.SetOpsGenieClient(*cli)
+
+	if cli.opsGenieAPIURL == "" {
+		scheduleRotationClient.SetOpsGenieAPIUrl(endpointURL)
+	}
+
+	return scheduleRotationClient, nil
 }
 
 // buildCommonRequestProps is an internal method to set common properties of requests that will send to OpsGenie.
@@ -275,9 +398,10 @@ func (cli *OpsGenieClient) buildGetRequest(uri string, request interface{}) gore
 		v, _ := goquery.Values(request)
 		req.Uri = uri + "?" + v.Encode()
 	} else {
-		req.Uri = uri 
+		req.Uri = uri
 	}
-	logging.Logger().Info("Executing OpsGenie request to ["+uri+"] with parameters: ")
+
+	logging.Logger().Info("Executing OpsGenie request to [" + uri + "] with parameters: ")
 	return req
 }
 
@@ -294,10 +418,116 @@ func (cli *OpsGenieClient) buildPostRequest(uri string, request interface{}) gor
 	return req
 }
 
+func (cli *OpsGenieClient) buildCreateAttachmentRequest(uri string, request alertsv2.AddAlertAttachmentRequest) (*goreq.Request, error) {
+	req := cli.buildCommonRequestProps()
+
+	file, err := os.Open(request.AttachmentFilePath)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(fileParamName, filepath.Base(request.AttachmentFilePath))
+
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = io.Copy(part, file)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if request.User != "" {
+		_ = writer.WriteField(userParamName, request.User)
+	}
+
+	if request.IndexFile != "" {
+		_ = writer.WriteField(indexFileParamName, request.IndexFile)
+	}
+
+	err = writer.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	req.Method = "POST"
+	req.Uri = cli.OpsGenieAPIUrl() + uri
+	req.Body = body
+	req.ContentType = writer.FormDataContentType()
+
+	j, _ := json.Marshal(request)
+	logging.Logger().Info("Executing OpsGenie request to ["+req.Uri+"] with content parameters: ", string(j))
+
+	return &req, nil
+}
+
+func (cli *OpsGenieClient) buildCreateAttachmentRequestWithBytes(uri string, request alertsv2.AddAlertAttachmentRequest) (*goreq.Request, error) {
+	req := cli.buildCommonRequestProps()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(fileParamName, request.AttachmentFileName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	byteReader := bytes.NewReader(request.AttachmentFileContent)
+	_, err = io.Copy(part, byteReader)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if request.User != "" {
+		_ = writer.WriteField(userParamName, request.User)
+	}
+
+	if request.IndexFile != "" {
+		_ = writer.WriteField(indexFileParamName, request.IndexFile)
+	}
+
+	err = writer.Close()
+
+	if err != nil {
+		return nil, err
+	}
+
+	req.Method = "POST"
+	req.Uri = cli.OpsGenieAPIUrl() + uri
+	req.Body = body
+	req.ContentType = writer.FormDataContentType()
+
+	j, _ := json.Marshal(request)
+	logging.Logger().Info("Executing OpsGenie request to ["+req.Uri+"] with content parameters: ", string(j))
+
+	return &req, nil
+}
+
+func (cli *OpsGenieClient) buildPatchRequest(uri string, request interface{}) goreq.Request {
+	req := cli.buildPostRequest(uri, request)
+	req.Method = "PATCH"
+	return req
+}
+
 // buildDeleteRequest is an internal method to prepare a "DELETE" request that will send to OpsGenie.
 func (cli *OpsGenieClient) buildDeleteRequest(uri string, request interface{}) goreq.Request {
 	req := cli.buildGetRequest(uri, request)
 	req.Method = "DELETE"
+	return req
+}
+
+// buildPutRequest is an internal method to prepare a "DELETE" request that will send to OpsGenie.
+func (cli *OpsGenieClient) buildPutRequest(uri string, request interface{}) goreq.Request {
+	req := cli.buildPostRequest(uri, request)
+	req.Method = "PUT"
 	return req
 }
 
@@ -358,7 +588,7 @@ func errorMessage(httpStatusCode int, responseBody string) error {
 // TODO version information must be read from a MANIFEST file
 func init() {
 	userAgentParam.sdkName = "opsgenie-go-sdk"
-	userAgentParam.version = "1.0.0"
+	userAgentParam.version = "1.5.0"
 	userAgentParam.os = runtime.GOOS
 	userAgentParam.goVersion = runtime.Version()
 	userAgentParam.timezone = time.Local.String()

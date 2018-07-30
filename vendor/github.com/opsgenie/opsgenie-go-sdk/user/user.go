@@ -14,6 +14,7 @@ type CreateUserRequest struct {
 	Fullname string `json:"fullname,omitempty"`
 	Role string `json:"role,omitempty"`
 	Locale string `json:"locale,omitempty"`
+	SkypeUsername string `json:"skypeUsername,omitempty"`
 	Timezone string `json:"timezone,omitempty"`
 }
 
@@ -24,6 +25,7 @@ type UpdateUserRequest struct {
 	Fullname string `json:"fullname,omitempty"`
 	Role string `json:"role,omitempty"`
 	Locale string `json:"locale,omitempty"`
+	SkypeUsername string `json:"skypeUsername,omitempty"`
 	Timezone string `json:"timezone,omitempty"`
 }
 
