@@ -1,31 +1,12 @@
-*.dll
+# Binaries for programs and plugins
 *.exe
-.DS_Store
-example.tf
-terraform.tfplan
-terraform.tfstate
-bin/
-modules-dev/
-/pkg/
-website/.vagrant
-website/.bundle
-website/build
-website/node_modules
-.vagrant/
-*.backup
-./*.tfstate
-.terraform/
-*.log
-*.bak
-*~
-.*.swp
-.idea
-*.iml
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
 *.test
-*.iml
 
-website/vendor
-
-# Test exclusions
-!command/test-fixtures/**/*.tfstate
-!command/test-fixtures/**/.terraform/
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
