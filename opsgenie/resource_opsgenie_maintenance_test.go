@@ -87,7 +87,7 @@ func testCheckOpsGenieMaintenanceDestroy(s *terraform.State) error {
 		req := maintenance.GetRequest{
 			Id: Id,
 		}
-		_,err:=client.Get(context.Background(),&req)
+		_, err := client.Get(context.Background(), &req)
 		if err != nil {
 			x := err.(*ogClient.ApiError)
 			if x.StatusCode != 404 {
@@ -152,7 +152,7 @@ resource "opsgenie_maintenance" "test" {
   time {
     type = "schedule"
     start_date = "2019-06-20T17:45:00Z"
-    end_date  = "2019-06-%dT17:50:00Z"
+    end_date  = "2019-%02d-%02dT17:50:00Z"
   }
   rules {
     state = "enabled"
@@ -162,5 +162,5 @@ resource "opsgenie_maintenance" "test" {
     }
   }
 }
-`, rString, time.Now().Day())
+`, rString, time.Now().Month(), time.Now().Day())
 }
