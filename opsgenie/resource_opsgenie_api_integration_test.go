@@ -210,5 +210,11 @@ resource "opsgenie_api_integration" "test" {
   suppress_notifications = true
   owner_team_id = "${opsgenie_team.test.id}"
 }
+resource "opsgenie_api_integration" "test2" {
+	name          = "genieintegration-prometheus"
+	type          = "Prometheus"
+	owner_team_id = "${opsgenie_team.test.id}"
+	enabled       = true
+}
 `, rString)
 }

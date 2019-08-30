@@ -32,6 +32,11 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+			"type": {
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Optional: true,
+			},
 			"ignore_responders_from_payload": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -75,11 +80,16 @@ func resourceOpsgenieApiIntegrationCreate(d *schema.ResourceData, meta interface
 	ignoreRespondersFromPayload := d.Get("ignore_responders_from_payload").(bool)
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	ownerTeam := d.Get("owner_team_id").(string)
+	integrationType := d.Get("type").(string)
 	enabled := d.Get("enabled").(bool)
+
+	if integrationType == "" {
+		integrationType = ApiIntegrationType
+	}
 
 	createRequest := &integration.APIBasedIntegrationRequest{
 		Name:                        name,
-		Type:                        ApiIntegrationType,
+		Type:                        integrationType,
 		AllowWriteAccess:            allowWriteAccess,
 		IgnoreRespondersFromPayload: ignoreRespondersFromPayload,
 		SuppressNotifications:       suppressNotifications,
@@ -130,6 +140,7 @@ func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}
 	d.Set("name", result.Data["name"])
 	d.Set("id", result.Data["id"])
 	d.Set("responders", result.Data["responders"])
+	d.Set("type", result.Data["type"])
 	d.Set("ignore_responders_from_payload", result.Data["ignoreRespondersFromPayload"])
 	d.Set("suppress_notifications", result.Data["suppressNotifications"])
 
@@ -142,14 +153,19 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		return err
 	}
 	name := d.Get("name").(string)
+	integrationType := d.Get("type").(string)
 	ignoreRespondersFromPayload := d.Get("ignore_responders_from_payload").(bool)
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	enabled := d.Get("enabled").(bool)
 
+	if integrationType == "" {
+		integrationType = ApiIntegrationType
+	}
+
 	updateRequest := &integration.UpdateIntegrationRequest{
 		Id:                          d.Id(),
 		Name:                        name,
-		Type:                        ApiIntegrationType,
+		Type:                        integrationType,
 		IgnoreRespondersFromPayload: ignoreRespondersFromPayload,
 		SuppressNotifications:       suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
