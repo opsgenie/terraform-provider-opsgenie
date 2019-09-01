@@ -205,6 +205,7 @@ github.com/mitchellh/reflectwalk
 github.com/oklog/run
 # github.com/opsgenie/opsgenie-go-sdk-v2 v0.0.0-20190617123138-939659b7ae7a
 github.com/opsgenie/opsgenie-go-sdk-v2/client
+github.com/opsgenie/opsgenie-go-sdk-v2/contact
 github.com/opsgenie/opsgenie-go-sdk-v2/escalation
 github.com/opsgenie/opsgenie-go-sdk-v2/integration
 github.com/opsgenie/opsgenie-go-sdk-v2/maintenance
