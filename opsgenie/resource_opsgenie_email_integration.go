@@ -2,10 +2,10 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 	"log"
 
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
 func resourceOpsgenieEmailIntegration() *schema.Resource {
@@ -45,9 +45,9 @@ func resourceOpsgenieEmailIntegration() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ValidateFunc:validateResponderType,
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validateResponderType,
 						},
 						"id": {
 							Type:     schema.TypeString,

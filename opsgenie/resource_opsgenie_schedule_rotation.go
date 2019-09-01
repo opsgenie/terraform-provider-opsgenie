@@ -3,11 +3,12 @@ package opsgenie
 import (
 	"context"
 	"fmt"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )

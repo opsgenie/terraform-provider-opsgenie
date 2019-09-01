@@ -41,9 +41,9 @@ func resourceOpsGenieTeam() *schema.Resource {
 						},
 
 						"role": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							Default:      "user",
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "user",
 						},
 					},
 				},

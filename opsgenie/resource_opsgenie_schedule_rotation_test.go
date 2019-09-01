@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 	"log"
 	"strings"
 	"testing"
+
+	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
@@ -33,6 +34,7 @@ func testSweepScheduleRotations(region string) error {
 	if err != nil {
 		return err
 	}
+
 	resp, err := client.ListRotations(context.Background(), &schedule.ListRotationsRequest{})
 	if err != nil {
 		return err
@@ -43,7 +45,7 @@ func testSweepScheduleRotations(region string) error {
 			log.Printf("Destroying schedule rotation %s", u.Name)
 
 			deleteRequest := schedule.DeleteRotationRequest{
-				RotationId:              u.Id,
+				RotationId: u.Id,
 			}
 
 			if _, err := client.DeleteRotation(context.Background(), &deleteRequest); err != nil {

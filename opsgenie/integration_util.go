@@ -2,10 +2,11 @@ package opsgenie
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 	"regexp"
 	"strings"
+
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
 func expandOpsgenieIntegrationResponders(d *schema.ResourceData) []integration.Responder {

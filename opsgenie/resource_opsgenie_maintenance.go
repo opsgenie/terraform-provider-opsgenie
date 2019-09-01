@@ -2,9 +2,10 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/maintenance"
 	"log"
 	"time"
+
+	"github.com/opsgenie/opsgenie-go-sdk-v2/maintenance"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -33,14 +34,14 @@ func resourceOpsgenieMaintenance() *schema.Resource {
 							Required: true,
 						},
 						"start_date": {
-							Type:     schema.TypeString,
-							Optional: true,
+							Type:         schema.TypeString,
+							Optional:     true,
 							ValidateFunc: validateDate,
 						},
 						"end_date": {
-							Type:     schema.TypeString,
-							Optional: true,
-							ValidateFunc:validateDate,
+							Type:         schema.TypeString,
+							Optional:     true,
+							ValidateFunc: validateDate,
 						},
 					},
 				},

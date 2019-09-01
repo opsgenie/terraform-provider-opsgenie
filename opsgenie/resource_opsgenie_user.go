@@ -2,8 +2,9 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 	"log"
+
+	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 
 	"fmt"
 

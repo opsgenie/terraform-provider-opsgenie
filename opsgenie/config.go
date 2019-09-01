@@ -1,9 +1,10 @@
 package opsgenie
 
 import (
+	"log"
+
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
-	"log"
 )
 
 type OpsgenieClient struct {
@@ -20,7 +21,7 @@ func (c *Config) Client() (*OpsgenieClient, error) {
 		ApiKey:         c.ApiKey,
 		RetryCount:     10,
 		OpsGenieAPIURL: client.ApiUrl(c.ApiUrl),
-		Backoff: retryablehttp.DefaultBackoff,
+		Backoff:        retryablehttp.DefaultBackoff,
 	}
 	ogCli, err := client.NewOpsGenieClient(config)
 	if err != nil {

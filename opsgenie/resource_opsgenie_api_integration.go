@@ -2,10 +2,11 @@ package opsgenie
 
 import (
 	"context"
+	"log"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"log"
 )
 
 func resourceOpsgenieApiIntegration() *schema.Resource {

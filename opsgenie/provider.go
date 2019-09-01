@@ -1,9 +1,10 @@
 package opsgenie
 
 import (
+	"log"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
-	"log"
 )
 
 func Provider() terraform.ResourceProvider {
@@ -24,6 +25,7 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			"opsgenie_team":              resourceOpsGenieTeam(),
 			"opsgenie_user":              resourceOpsGenieUser(),
+			"opsgenie_user_contact":      resourceOpsGenieUserContact(),
 			"opsgenie_escalation":        resourceOpsgenieEscalation(),
 			"opsgenie_api_integration":   resourceOpsgenieApiIntegration(),
 			"opsgenie_email_integration": resourceOpsgenieEmailIntegration(),

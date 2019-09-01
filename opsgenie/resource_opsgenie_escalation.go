@@ -3,9 +3,10 @@ package opsgenie
 import (
 	"context"
 	"fmt"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"log"
 	"strings"
+
+	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/escalation"
@@ -299,8 +300,8 @@ func validateOpsgenieEscalationRulesCondition(v interface{}, k string) (ws []str
 func validateEscalationParticipantType(v interface{}, k string) (ws []string, errors []error) {
 	value := strings.ToLower(v.(string))
 	families := map[string]bool{
-		"user":    true,
-		"team":   true,
+		"user":     true,
+		"team":     true,
 		"schedule": true,
 	}
 

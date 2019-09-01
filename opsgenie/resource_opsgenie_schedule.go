@@ -2,9 +2,10 @@ package opsgenie
 
 import (
 	"context"
+	"log"
+
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
-	"log"
 
 	"fmt"
 
@@ -183,4 +184,3 @@ func validateOpsgenieScheduleDescription(v interface{}, k string) (ws []string, 
 
 	return
 }
-

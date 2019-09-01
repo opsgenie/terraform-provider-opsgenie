@@ -107,7 +107,7 @@ func testCheckOpsGenieUserDestroy(s *terraform.State) error {
 		if err != nil {
 			x := err.(*ogClient.ApiError)
 			if x.StatusCode != 404 {
-				return errors.New(fmt.Sprintf("Schedule rotation still exists : %s", x.Error()))
+				return errors.New(fmt.Sprintf("User still exists : %s", x.Error()))
 			}
 		}
 	}
