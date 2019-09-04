@@ -1,4 +1,19 @@
-## 0.1.1 (Unreleased)
+## 0.2.1 (Unreleased)
+
+## 0.2.0 (September 4, 2019)
+
+IMPROVEMENTS:
+
+* All resources updated using Opsgenie Go SDK v2
+* User API
+* Team API
+* **New Resource:** User Contact API
+* **New Resource:** Integration API (API and Email based)
+* **New Resource:** Escalation API
+* **New Resource:** Schedule API
+* **New Resource:** Schedule Rotation API
+* **New Resource:** Maintenance API
+
 ## 0.1.0 (June 21, 2017)
 
 NOTES:
