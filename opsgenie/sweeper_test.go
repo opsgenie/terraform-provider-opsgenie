@@ -12,7 +12,7 @@ func TestMain(m *testing.M) {
 	resource.TestMain(m)
 }
 
-func sharedConfigForRegion(region string) (interface{}, error) {
+func sharedConfigForRegion() (interface{}, error) {
 	if os.Getenv("OPSGENIE_API_KEY") == "" {
 		return nil, fmt.Errorf("OPSGENIE_API_KEY must be set")
 	}

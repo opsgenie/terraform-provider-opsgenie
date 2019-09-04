@@ -1,15 +1,14 @@
 package opsgenie
 
 import (
+	"context"
 	"log"
 
 	"fmt"
-	"strings"
-
 	"regexp"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/opsgenie/opsgenie-go-sdk/team"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
 )
 
 func resourceOpsGenieTeam() *schema.Resource {
@@ -36,16 +35,15 @@ func resourceOpsGenieTeam() *schema.Resource {
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"username": {
+						"id": {
 							Type:     schema.TypeString,
 							Required: true,
 						},
 
 						"role": {
-							Type:         schema.TypeString,
-							Optional:     true,
-							Default:      "user",
-							ValidateFunc: validateOpsGenieTeamRole,
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "user",
 						},
 					},
 				},
@@ -55,12 +53,14 @@ func resourceOpsGenieTeam() *schema.Resource {
 }
 
 func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*OpsGenieClient).teams
-
+	client, err := team.NewClient(meta.(*OpsgenieClient).client.Config)
+	if err != nil {
+		return err
+	}
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
 
-	createRequest := team.CreateTeamRequest{
+	createRequest := &team.CreateTeamRequest{
 		Name:        name,
 		Description: description,
 		Members:     expandOpsGenieTeamMembers(d),
@@ -68,21 +68,17 @@ func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error 
 
 	log.Printf("[INFO] Creating OpsGenie team '%s'", name)
 
-	createResponse, err := client.Create(createRequest)
+	_, err = client.Create(context.Background(), createRequest)
 	if err != nil {
 		return err
 	}
 
-	err = checkOpsGenieResponse(createResponse.Code, createResponse.Status)
-	if err != nil {
-		return err
+	getRequest := &team.GetTeamRequest{
+		IdentifierType:  team.Name,
+		IdentifierValue: name,
 	}
 
-	getRequest := team.GetTeamRequest{
-		Name: name,
-	}
-
-	getResponse, err := client.Get(getRequest)
+	getResponse, err := client.Get(context.Background(), getRequest)
 	if err != nil {
 		return err
 	}
@@ -93,33 +89,17 @@ func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourceOpsGenieTeamRead(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*OpsGenieClient).teams
-
-	listRequest := team.ListTeamsRequest{}
-	listResponse, err := client.List(listRequest)
+	client, err := team.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
 	}
 
-	var found *team.GetTeamResponse
-	for _, team := range listResponse.Teams {
-		if team.Id == d.Id() {
-			found = &team
-			break
-		}
+	getRequest := &team.GetTeamRequest{
+		IdentifierType:  team.Id,
+		IdentifierValue: d.Id(),
 	}
 
-	if found == nil {
-		d.SetId("")
-		log.Printf("[INFO] Team %q not found. Removing from state", d.Get("name").(string))
-		return nil
-	}
-
-	getRequest := team.GetTeamRequest{
-		Id: d.Id(),
-	}
-
-	getResponse, err := client.Get(getRequest)
+	getResponse, err := client.Get(context.Background(), getRequest)
 	if err != nil {
 		return err
 	}
@@ -132,11 +112,14 @@ func resourceOpsGenieTeamRead(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceOpsGenieTeamUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*OpsGenieClient).teams
+	client, err := team.NewClient(meta.(*OpsgenieClient).client.Config)
+	if err != nil {
+		return err
+	}
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
 
-	updateRequest := team.UpdateTeamRequest{
+	updateRequest := &team.UpdateTeamRequest{
 		Id:          d.Id(),
 		Name:        name,
 		Description: description,
@@ -145,12 +128,7 @@ func resourceOpsGenieTeamUpdate(d *schema.ResourceData, meta interface{}) error 
 
 	log.Printf("[INFO] Updating OpsGenie team '%s'", name)
 
-	updateResponse, err := client.Update(updateRequest)
-	if err != nil {
-		return err
-	}
-
-	err = checkOpsGenieResponse(updateResponse.Code, updateResponse.Status)
+	_, err = client.Update(context.Background(), updateRequest)
 	if err != nil {
 		return err
 	}
@@ -160,13 +138,16 @@ func resourceOpsGenieTeamUpdate(d *schema.ResourceData, meta interface{}) error 
 
 func resourceOpsGenieTeamDelete(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[INFO] Deleting OpsGenie team '%s'", d.Get("name").(string))
-	client := meta.(*OpsGenieClient).teams
-
-	deleteRequest := team.DeleteTeamRequest{
-		Id: d.Id(),
+	client, err := team.NewClient(meta.(*OpsgenieClient).client.Config)
+	if err != nil {
+		return err
+	}
+	deleteRequest := &team.DeleteTeamRequest{
+		IdentifierType:  team.Id,
+		IdentifierValue: d.Id(),
 	}
 
-	_, err := client.Delete(deleteRequest)
+	_, err = client.Delete(context.Background(), deleteRequest)
 	if err != nil {
 		return err
 	}
@@ -189,8 +170,8 @@ func flattenOpsGenieTeamMembers(input []team.Member) []interface{} {
 
 func expandOpsGenieTeamMembers(d *schema.ResourceData) []team.Member {
 	input := d.Get("member").([]interface{})
-
 	members := make([]team.Member, 0, len(input))
+
 	if input == nil {
 		return members
 	}
@@ -198,11 +179,13 @@ func expandOpsGenieTeamMembers(d *schema.ResourceData) []team.Member {
 	for _, v := range input {
 		config := v.(map[string]interface{})
 
-		username := config["username"].(string)
+		userId := config["id"].(string)
 		role := config["role"].(string)
 
 		member := team.Member{
-			User: username,
+			User: team.User{
+				ID: userId,
+			},
 			Role: role,
 		}
 
@@ -214,27 +197,13 @@ func expandOpsGenieTeamMembers(d *schema.ResourceData) []team.Member {
 
 func validateOpsGenieTeamName(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if !regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString(value) {
+	if !regexp.MustCompile(`^[a-zA-Z0-9_-]+$`).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
 			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
 	}
 
 	if len(value) >= 100 {
 		errors = append(errors, fmt.Errorf("%q cannot be longer than 100 characters: %q %d", k, value, len(value)))
-	}
-
-	return
-}
-
-func validateOpsGenieTeamRole(v interface{}, k string) (ws []string, errors []error) {
-	value := strings.ToLower(v.(string))
-	families := map[string]bool{
-		"admin": true,
-		"user":  true,
-	}
-
-	if !families[value] {
-		errors = append(errors, fmt.Errorf("OpsGenie Team Role can only be 'Admin' or 'User'"))
 	}
 
 	return

@@ -3,44 +3,32 @@ package opsgenie
 import (
 	"log"
 
-	"golang.org/x/net/context"
-
-	"github.com/opsgenie/opsgenie-go-sdk/client"
+	"github.com/hashicorp/go-retryablehttp"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
 )
 
-type OpsGenieClient struct {
-	apiKey string
-
-	StopContext context.Context
-
-	teams client.OpsGenieTeamClient
-	users client.OpsGenieUserClient
+type OpsgenieClient struct {
+	client *client.OpsGenieClient
 }
 
-// Config defines the configuration options for the OpsGenie client
 type Config struct {
 	ApiKey string
+	ApiUrl string
 }
 
-// Client returns a new OpsGenie client
-func (c *Config) Client() (*OpsGenieClient, error) {
-	opsGenie := new(client.OpsGenieClient)
-	opsGenie.SetAPIKey(c.ApiKey)
-	client := OpsGenieClient{}
-
+func (c *Config) Client() (*OpsgenieClient, error) {
+	config := &client.Config{
+		ApiKey:         c.ApiKey,
+		RetryCount:     10,
+		OpsGenieAPIURL: client.ApiUrl(c.ApiUrl),
+		Backoff:        retryablehttp.DefaultBackoff,
+	}
+	ogCli, err := client.NewOpsGenieClient(config)
+	if err != nil {
+		return nil, err
+	}
+	ogClient := OpsgenieClient{}
+	ogClient.client = ogCli
 	log.Printf("[INFO] OpsGenie client configured")
-
-	teamsClient, err := opsGenie.Team()
-	if err != nil {
-		return nil, err
-	}
-	client.teams = *teamsClient
-
-	usersClient, err := opsGenie.User()
-	if err != nil {
-		return nil, err
-	}
-	client.users = *usersClient
-
-	return &client, nil
+	return &ogClient, nil
 }

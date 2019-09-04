@@ -1,7 +1,6 @@
 package opsgenie
 
 import (
-	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -26,12 +25,4 @@ func TestProvider(t *testing.T) {
 
 func TestProvider_impl(t *testing.T) {
 	var _ terraform.ResourceProvider = Provider()
-}
-
-func testAccPreCheck(t *testing.T) {
-	apiKey := os.Getenv("OPSGENIE_API_KEY")
-
-	if apiKey == "" {
-		t.Fatal("OPSGENIE_API_KEY must be set for acceptance tests")
-	}
 }

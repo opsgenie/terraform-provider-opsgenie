@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 )
 
-// Provider represents a resource provider in Terraform
 func Provider() terraform.ResourceProvider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -16,15 +15,23 @@ func Provider() terraform.ResourceProvider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OPSGENIE_API_KEY", nil),
 			},
-		},
-
-		DataSourcesMap: map[string]*schema.Resource{
-			"opsgenie_user": dataSourceOpsGenieUser(),
+			"api_url": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Default:  "api.opsgenie.com",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"opsgenie_team": resourceOpsGenieTeam(),
-			"opsgenie_user": resourceOpsGenieUser(),
+			"opsgenie_team":              resourceOpsGenieTeam(),
+			"opsgenie_user":              resourceOpsGenieUser(),
+			"opsgenie_user_contact":      resourceOpsGenieUserContact(),
+			"opsgenie_escalation":        resourceOpsgenieEscalation(),
+			"opsgenie_api_integration":   resourceOpsgenieApiIntegration(),
+			"opsgenie_email_integration": resourceOpsgenieEmailIntegration(),
+			"opsgenie_schedule":          resourceOpsgenieSchedule(),
+			"opsgenie_schedule_rotation": resourceOpsgenieScheduleRotation(),
+			"opsgenie_maintenance":       resourceOpsgenieMaintenance(),
 		},
 
 		ConfigureFunc: providerConfigure,
@@ -36,6 +43,7 @@ func providerConfigure(data *schema.ResourceData) (interface{}, error) {
 
 	config := Config{
 		ApiKey: data.Get("api_key").(string),
+		ApiUrl: data.Get("api_url").(string),
 	}
 
 	return config.Client()
