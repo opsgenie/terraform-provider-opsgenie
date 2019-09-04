@@ -74,8 +74,15 @@ func TestAccOpsGenieApiIntegration_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieApiIntegration_complete(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieApiIntegration_complete(rs)
+	randomUsername := acctest.RandString(6)
+	randomTeam := acctest.RandString(6)
+	randomTeam2 := acctest.RandString(6)
+	randomSchedule := acctest.RandString(6)
+	randomEscalation := acctest.RandString(6)
+	randomIntegration := acctest.RandString(6)
+	randomIntegration2 := acctest.RandString(6)
+
+	config := testAccOpsGenieApiIntegration_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -147,35 +154,36 @@ func testCheckOpsGenieApiIntegrationExists(name string) resource.TestCheckFunc {
 func testAccOpsGenieApiIntegration_basic(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_api_integration" "test" {
+  type = "API"
   name = "genieintegration-%s"
 }
 `, rString)
 }
 
-func testAccOpsGenieApiIntegration_complete(rString string) string {
+func testAccOpsGenieApiIntegration_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2 string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "genietest@opsgenie.com"
+  username  = "genietest-%s@opsgenie.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
 resource "opsgenie_team" "test" {
-  name        = "genieteam"
+  name        = "genieteam-%s"
   description = "This team deals with all the things"
 }
 resource "opsgenie_team" "test2" {
-  name        = "genieteam2"
+  name        = "genieteam2-%s"
   description = "This team deals with all the things"
 }
 resource "opsgenie_schedule" "test" {
-  name = "genieschedule"
+  name = "genieschedule-%s"
   description = "schedule test"
   timezone = "Europe/Rome"
   enabled = false
 }
 
 resource "opsgenie_escalation" "test" {
- name ="genieescalation"
+ name ="genieescalation-%s"
  rules {
   condition =   "if-not-acked"
     notify_type  =   "default"
@@ -187,6 +195,8 @@ resource "opsgenie_escalation" "test" {
 	}
 }
 resource "opsgenie_api_integration" "test" {
+  type = "API"
+
   name = "genieintegration-%s"
   responders {
     type ="user"
@@ -211,10 +221,10 @@ resource "opsgenie_api_integration" "test" {
   owner_team_id = "${opsgenie_team.test.id}"
 }
 resource "opsgenie_api_integration" "test2" {
-	name          = "genieintegration-prometheus"
+	name          = "genieintegration-prometheus-%s"
 	type          = "Prometheus"
 	owner_team_id = "${opsgenie_team.test.id}"
 	enabled       = true
 }
-`, rString)
+`, randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2)
 }

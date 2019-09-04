@@ -58,8 +58,10 @@ func testSweepScheduleRotations(region string) error {
 }
 
 func TestAccOpsGenieScheduleRotation_basic(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieScheduleRotation_basic(rs)
+	randomTeam := acctest.RandString(6)
+	randomSchedule := acctest.RandString(6)
+	randomRotation := acctest.RandString(6)
+	config := testAccOpsGenieScheduleRotation_basic(randomTeam, randomSchedule, randomRotation)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -76,8 +78,10 @@ func TestAccOpsGenieScheduleRotation_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieScheduleRotation_complete(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieScheduleRotation_complete(rs)
+	randomTeam := acctest.RandString(6)
+	randomSchedule := acctest.RandString(6)
+	randomRotation := acctest.RandString(6)
+	config := testAccOpsGenieScheduleRotation_complete(randomTeam, randomSchedule, randomRotation)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -150,7 +154,7 @@ func testCheckOpsGenieScheduleRotationExists(name string) resource.TestCheckFunc
 	}
 }
 
-func testAccOpsGenieScheduleRotation_basic(rString string) string {
+func testAccOpsGenieScheduleRotation_basic(randomTeam, randomSchedule, randomRotation string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
   username  = "genietest@opsgenie.com"
@@ -159,7 +163,7 @@ resource "opsgenie_user" "test" {
 }
 
 resource "opsgenie_team" "test" {
-  name        = "genieteam"
+  name        = "genieteam-%s"
   description = "This team deals with all the things"
 }
 
@@ -173,7 +177,7 @@ resource "opsgenie_schedule" "test" {
 
 resource "opsgenie_schedule_rotation" "test" { 
     schedule_id = "${opsgenie_schedule.test.id}"
-    name = "test"
+    name = "test-%s"
     start_date = "2019-06-18T17:45:00Z"
     end_date ="2019-06-20T17:45:00Z"
     type ="hourly"
@@ -193,10 +197,10 @@ resource "opsgenie_schedule_rotation" "test" {
       }
 }
 }
-`, rString)
+`, randomTeam, randomSchedule, randomRotation)
 }
 
-func testAccOpsGenieScheduleRotation_complete(rString string) string {
+func testAccOpsGenieScheduleRotation_complete(randomTeam, randomSchedule, randomRotation string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
   username  = "genietest232@opsgenie.com"
@@ -205,7 +209,7 @@ resource "opsgenie_user" "test" {
 }
 
 resource "opsgenie_team" "test" {
-  name        = "genieteam222"
+  name        = "genieteam-%s"
   description = "This team deals with all the things"
 }
 
@@ -242,7 +246,7 @@ resource "opsgenie_schedule_rotation" "test" {
 
 resource "opsgenie_schedule_rotation" "test2" { 
     schedule_id = "${opsgenie_schedule.test.id}"
-    name = "t12st"
+    name = "schedule2-%s"
     start_date = "2019-06-18T17:45:00Z"
     end_date ="2019-06-20T17:45:00Z"
     type ="hourly"
@@ -262,5 +266,5 @@ resource "opsgenie_schedule_rotation" "test2" {
       }
 }
 }
-`, rString)
+`, randomTeam, randomSchedule, randomRotation)
 }

@@ -75,8 +75,11 @@ func TestAccOpsGenieEscalation_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieEscalation_complete(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieEscalation_complete(rs)
+	randomTeam := acctest.RandString(6)
+	randomSchedule := acctest.RandString(6)
+	randomEscalation := acctest.RandString(6)
+
+	config := testAccOpsGenieEscalation_complete(randomTeam, randomSchedule, randomEscalation)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -169,7 +172,7 @@ resource "opsgenie_escalation" "test" {
 `, rString)
 }
 
-func testAccOpsGenieEscalation_complete(rString string) string {
+func testAccOpsGenieEscalation_complete(randomTeam, randomSchedule, randomEscalation string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
   username  = "genietest@opsgenie.com"
@@ -177,11 +180,11 @@ resource "opsgenie_user" "test" {
   role      = "User"
 }
 resource "opsgenie_team" "test" {
-  name        = "genieteam"
+  name        = "genieteam-%s"
   description = "This team deals with all the things"
 }
 resource "opsgenie_schedule" "test" {
-  name = "genieschedule"
+  name = "genieschedule-%s"
   description = "schedule test"
   timezone = "Europe/Rome"
   enabled = false
@@ -214,5 +217,5 @@ repeat  {
   close_alert_after_all = false
   }
 }
-`, rString)
+`, randomTeam, randomSchedule, randomEscalation)
 }

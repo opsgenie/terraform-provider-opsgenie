@@ -74,8 +74,12 @@ func TestAccOpsGenieEmailIntegration_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieEmailIntegration_complete(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieEmailIntegration_complete(rs)
+	randomTeam := acctest.RandString(6)
+	randomTeam2 := acctest.RandString(6)
+	randomSchedule := acctest.RandString(6)
+	randomIntegration := acctest.RandString(6)
+	randomEscalation := acctest.RandString(6)
+	config := testAccOpsGenieEmailIntegration_complete(randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -153,7 +157,7 @@ resource "opsgenie_email_integration" "test" {
 `, rString)
 }
 
-func testAccOpsGenieEmailIntegration_complete(rString string) string {
+func testAccOpsGenieEmailIntegration_complete(randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
   username  = "genietest@opsgenie.com"
@@ -161,22 +165,22 @@ resource "opsgenie_user" "test" {
   role      = "User"
 }
 resource "opsgenie_team" "test" {
-  name        = "genieteam"
+  name        = "genieteam-%s"
   description = "This team deals with all the things"
 }
 resource "opsgenie_team" "test2" {
-  name        = "genieteam2"
+  name        = "genieteam2-%s"
   description = "This team deals with all the things"
 }
 resource "opsgenie_schedule" "test" {
-  name = "genieschedule"
+  name = "genieschedule-%s"
   description = "schedule test"
   timezone = "Europe/Rome"
   enabled = false
 }
 
 resource "opsgenie_escalation" "test" {
- name ="genieescalation"
+ name ="genieescalation-%s"
  rules {
   condition =   "if-not-acked"
     notify_type  =   "default"
@@ -210,5 +214,5 @@ resource "opsgenie_email_integration" "test" {
   ignore_responders_from_payload = true
   suppress_notifications = true
 }
-`, rString)
+`, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration)
 }

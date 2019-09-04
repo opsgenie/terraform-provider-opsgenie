@@ -141,7 +141,8 @@ func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}
 	d.Set("id", result.Data["id"])
 	d.Set("responders", result.Data["responders"])
 	d.Set("type", result.Data["type"])
-	d.Set("ignore_responders_from_payload", result.Data["ignoreRespondersFromPayload"])
+	//TODO set this correctly in future
+	//d.Set("ignore_responders_from_payload", result.Data["ignoreRespondersFromPayload"])
 	d.Set("suppress_notifications", result.Data["suppressNotifications"])
 
 	return nil

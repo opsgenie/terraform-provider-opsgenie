@@ -15,6 +15,7 @@ Manages an API Integration within Opsgenie.
 ```hcl
 resource "opsgenie_api_integration" "example-api-integration" {
   name = "api-based-int"
+  type = "API"
   responders {
     type ="user"
     id = "${opsgenie_user.fahri.id}"
@@ -28,6 +29,7 @@ resource "opsgenie_api_integration" "example-api-integration" {
 
 resource "opsgenie_api_integration" "example-api-integration" {
   name = "api-based-int-2"
+  type = "Prometheus"
   responders {
     type ="user"
     id = "${opsgenie_user.fahri.id}"
@@ -46,7 +48,9 @@ The following arguments are supported:
 
 * `name` - (Required) Name of the integration. Name must be unique for each integration. 
 
-* `allow_write_access` - (Optional) This parameter is for configuring the write access of integration. If write access is restricted, tgohe integration will not be authorized to write within any domain. Defaults to true.
+* `type` - (Optional) Type of the integration. (API,Marid,Prometheus ...)
+
+* `allow_write_access` - (Optional) This parameter is for configuring the write access of integration. If write access is restricted, the integration will not be authorized to write within any domain. Defaults to true.
 
 * `enabled` - (Optional) This parameter is for specifying whether the integration will be enabled or not. Defaults to true
 
