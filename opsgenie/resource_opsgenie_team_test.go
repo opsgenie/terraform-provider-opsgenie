@@ -75,8 +75,9 @@ func TestAccOpsGenieTeam_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieTeam_complete(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieTeam_complete(rs)
+	randomTeam := acctest.RandString(6)
+	randomUser := acctest.RandString(6)
+	config := testAccOpsGenieTeam_complete(randomUser, randomTeam)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -155,10 +156,10 @@ resource "opsgenie_team" "test" {
 `, rString)
 }
 
-func testAccOpsGenieTeam_complete(rString string) string {
+func testAccOpsGenieTeam_complete(randomUser, randomTeam string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "genietest@opsgenie.com"
+  username  = "genietest-%s@opsgenie.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
@@ -171,5 +172,5 @@ resource "opsgenie_team" "test" {
     role     = "admin"
   }
 }
-`, rString)
+`, randomUser, randomTeam)
 }
