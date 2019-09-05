@@ -57,8 +57,10 @@ func testSweepEscalation(region string) error {
 }
 
 func TestAccOpsGenieEscalation_basic(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieEscalation_basic(rs)
+	randomName := acctest.RandString(6)
+	randomEscalation := acctest.RandString(6)
+
+	config := testAccOpsGenieEscalation_basic(randomName, randomEscalation)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -75,11 +77,12 @@ func TestAccOpsGenieEscalation_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieEscalation_complete(t *testing.T) {
+	randomName := acctest.RandString(6)
 	randomTeam := acctest.RandString(6)
 	randomSchedule := acctest.RandString(6)
 	randomEscalation := acctest.RandString(6)
 
-	config := testAccOpsGenieEscalation_complete(randomTeam, randomSchedule, randomEscalation)
+	config := testAccOpsGenieEscalation_complete(randomName, randomTeam, randomSchedule, randomEscalation)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -150,10 +153,10 @@ func testCheckOpsGenieEscalationExists(name string) resource.TestCheckFunc {
 	}
 }
 
-func testAccOpsGenieEscalation_basic(rString string) string {
+func testAccOpsGenieEscalation_basic(randomName, randomEscalation string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "genietest@opsgenie.com"
+  username  = "genietest-%s@opsgenie.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
@@ -169,13 +172,13 @@ resource "opsgenie_escalation" "test" {
     delay = 1
 	}
 }
-`, rString)
+`, randomName, randomEscalation)
 }
 
-func testAccOpsGenieEscalation_complete(randomTeam, randomSchedule, randomEscalation string) string {
+func testAccOpsGenieEscalation_complete(randomUser, randomTeam, randomSchedule, randomEscalation string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "genietest@opsgenie.com"
+  username  = "genietest-%s@opsgenie.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
@@ -217,5 +220,5 @@ repeat  {
   close_alert_after_all = false
   }
 }
-`, randomTeam, randomSchedule, randomEscalation)
+`, randomUser, randomTeam, randomSchedule, randomEscalation)
 }

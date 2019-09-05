@@ -57,8 +57,10 @@ func testSweepMaintenance(region string) error {
 }
 
 func TestAccOpsGenieMaintenance_complete(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieMaintenance_complete(rs)
+	randomName := acctest.RandString(6)
+	randomMaintenenace := acctest.RandString(6)
+
+	config := testAccOpsGenieMaintenance_complete(randomName, randomMaintenenace)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -127,33 +129,18 @@ func testCheckOpsGenieMaintenanceExists(name string) resource.TestCheckFunc {
 	}
 }
 
-func testAccOpsGenieMaintenance_basic(rString string) string {
-	return fmt.Sprintf(`
-resource "opsgenie_maintenance" "test" {
-  description = "geniemaintenance-%s"
-  time {
-    type = "schedule"
-    start_date = "2019-06-20T17:45:00Z"
-    end_date  = "2019-06-20T17:50:00Z"
-  }
-rules{
-}
-}
-`, rString)
-}
-
-func testAccOpsGenieMaintenance_complete(rString string) string {
+func testAccOpsGenieMaintenance_complete(randomName, randomMaintenance string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_email_integration" "test" {
   name = "testemailapi-maintenance"
-  email_username ="fahri"
+  email_username ="user-%s"
 }
 resource "opsgenie_maintenance" "test" {
   description = "geniemaintenance-%s"
   time {
     type = "schedule"
     start_date = "2019-06-20T17:45:00Z"
-    end_date  = "2019-%02d-%02dT17:50:00Z"
+    end_date  = "%04d-%02d-%02dT17:50:00Z"
   }
   rules {
     state = "enabled"
@@ -163,5 +150,5 @@ resource "opsgenie_maintenance" "test" {
     }
   }
 }
-`, rString, time.Now().Month(), time.Now().Day())
+`, randomName, randomMaintenance, time.Now().Year()+1, time.Now().Month(), time.Now().Day())
 }

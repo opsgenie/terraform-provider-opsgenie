@@ -56,8 +56,10 @@ func testSweepEmailIntegration(region string) error {
 }
 
 func TestAccOpsGenieEmailIntegration_basic(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieEmailIntegration_basic(rs)
+	randomName := acctest.RandString(6)
+	randomMail := acctest.RandString(6)
+
+	config := testAccOpsGenieEmailIntegration_basic(randomName, randomMail)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -74,12 +76,13 @@ func TestAccOpsGenieEmailIntegration_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieEmailIntegration_complete(t *testing.T) {
+	randomName := acctest.RandString(6)
 	randomTeam := acctest.RandString(6)
 	randomTeam2 := acctest.RandString(6)
 	randomSchedule := acctest.RandString(6)
 	randomIntegration := acctest.RandString(6)
 	randomEscalation := acctest.RandString(6)
-	config := testAccOpsGenieEmailIntegration_complete(randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration)
+	config := testAccOpsGenieEmailIntegration_complete(randomName, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -148,19 +151,19 @@ func testCheckOpsGenieEmailIntegrationExists(name string) resource.TestCheckFunc
 	}
 }
 
-func testAccOpsGenieEmailIntegration_basic(rString string) string {
+func testAccOpsGenieEmailIntegration_basic(randomMail, randomName string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_email_integration" "test" {
   name = "genieintegration-%s"
-  email_username="fahri"
+  email_username="fahri-%s"
 }
-`, rString)
+`, randomName, randomMail)
 }
 
-func testAccOpsGenieEmailIntegration_complete(randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration string) string {
+func testAccOpsGenieEmailIntegration_complete(randomUser, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "genietest@opsgenie.com"
+  username  = "genietest-%s@opsgenie.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
@@ -214,5 +217,5 @@ resource "opsgenie_email_integration" "test" {
   ignore_responders_from_payload = true
   suppress_notifications = true
 }
-`, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration)
+`, randomUser, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration)
 }
