@@ -6,7 +6,7 @@ description: |-
   Manages a Maintenance within Opsgenie.
 ---
 
-# opsgenie_escalation
+# opsgenie_maintenance
 
 Manages a Maintenance within Opsgenie.
 
