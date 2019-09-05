@@ -34,22 +34,32 @@ func testSweepScheduleRotations(region string) error {
 	if err != nil {
 		return err
 	}
-
-	resp, err := client.ListRotations(context.Background(), &schedule.ListRotationsRequest{})
+	scheduleResp, err := client.List(context.Background(), &schedule.ListRequest{})
 	if err != nil {
 		return err
 	}
+	for _, u := range scheduleResp.Schedule {
+		if strings.HasPrefix(u.Name, "genieschedule-") {
 
-	for _, u := range resp.Rotations {
-		if strings.HasPrefix(u.Name, "genierotation-") {
-			log.Printf("Destroying schedule rotation %s", u.Name)
-
-			deleteRequest := schedule.DeleteRotationRequest{
-				RotationId: u.Id,
-			}
-
-			if _, err := client.DeleteRotation(context.Background(), &deleteRequest); err != nil {
+			resp, err := client.ListRotations(context.Background(), &schedule.ListRotationsRequest{
+				ScheduleIdentifierType:  schedule.Name,
+				ScheduleIdentifierValue: "acceptance-test",
+			})
+			if err != nil {
 				return err
+			}
+			for _, u := range resp.Rotations {
+				if strings.HasPrefix(u.Name, "genierotation-") {
+					log.Printf("Destroying schedule rotation %s", u.Name)
+
+					deleteRequest := schedule.DeleteRotationRequest{
+						RotationId: u.Id,
+					}
+
+					if _, err := client.DeleteRotation(context.Background(), &deleteRequest); err != nil {
+						return err
+					}
+				}
 			}
 		}
 	}

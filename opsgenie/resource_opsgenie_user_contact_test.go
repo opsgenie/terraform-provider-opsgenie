@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 	"log"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/resource"
@@ -31,23 +33,34 @@ func testSweepUserContact(region string) error {
 	if err != nil {
 		return err
 	}
-	resp, err := client.List(context.Background(), &contact.ListRequest{
-		UserIdentifier: "genietest+contact@opsgenie.com",
-	})
+
+	userClient, err := user.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
 	}
+	respUser, err := userClient.List(context.Background(), &user.ListRequest{})
+	if err != nil {
+		return err
+	}
+	for _, u := range respUser.Users {
+		if strings.HasPrefix(u.Username, "genietest-") {
+			resp, err := client.List(context.Background(), &contact.ListRequest{
+				UserIdentifier: u.Id,
+			})
+			if err != nil {
+				return err
+			}
+			for _, c := range resp.Contact {
+				deleteRequest := contact.DeleteRequest{
+					ContactIdentifier: c.Id,
+				}
 
-	for _, c := range resp.Contact {
-		deleteRequest := contact.DeleteRequest{
-			ContactIdentifier: c.Id,
-		}
-
-		if _, err := client.Delete(context.Background(), &deleteRequest); err != nil {
-			return err
+				if _, err := client.Delete(context.Background(), &deleteRequest); err != nil {
+					return err
+				}
+			}
 		}
 	}
-
 	return nil
 }
 
