@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 	"log"
 	"strings"
@@ -65,7 +66,8 @@ func testSweepUserContact(region string) error {
 }
 
 func TestAccOpsGenieUserContact_basic(t *testing.T) {
-	config := testAccOpsGenieUserContact_basic()
+	randomName := acctest.RandString(6)
+	config := testAccOpsGenieUserContact_basic(randomName)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -74,7 +76,7 @@ func TestAccOpsGenieUserContact_basic(t *testing.T) {
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
-					testCheckOpsGenieUserContactExists("opsgenie_user_contact.contact"),
+					testCheckOpsGenieUserContactExists("opsgenie_user_contact.contact", randomName),
 				),
 			},
 		},
@@ -91,7 +93,7 @@ func testCheckOpsGenieUserContactDestroy(s *terraform.State) error {
 			continue
 		}
 		req := contact.GetRequest{
-			UserIdentifier:    "genietest+contact@opsgenie.com",
+			UserIdentifier:    rs.Primary.Attributes["username"],
 			ContactIdentifier: rs.Primary.Attributes["id"],
 		}
 		_, err := client.Get(context.Background(), &req)
@@ -106,7 +108,7 @@ func testCheckOpsGenieUserContactDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testCheckOpsGenieUserContactExists(name string) resource.TestCheckFunc {
+func testCheckOpsGenieUserContactExists(name, username string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
 		rs, ok := s.RootModule().Resources[name]
@@ -120,7 +122,7 @@ func testCheckOpsGenieUserContactExists(name string) resource.TestCheckFunc {
 		}
 		req := contact.GetRequest{
 			ContactIdentifier: rs.Primary.Attributes["id"],
-			UserIdentifier:    "genietest+contact@opsgenie.com",
+			UserIdentifier:    fmt.Sprintf("genietest+contact-%s@opsgenie.com", username),
 		}
 
 		_, err = client.Get(context.Background(), &req)
@@ -134,10 +136,10 @@ func testCheckOpsGenieUserContactExists(name string) resource.TestCheckFunc {
 	}
 }
 
-func testAccOpsGenieUserContact_basic() string {
+func testAccOpsGenieUserContact_basic(randomName string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
-  username  = "genietest+contact@opsgenie.com"
+  username  = "genietest+contact-%s@opsgenie.com"
   full_name = "Acceptance Test User"
   role      = "User"
 }
@@ -148,5 +150,5 @@ resource "opsgenie_user_contact" "contact" {
   enabled="true"
 }
 
-`)
+`, randomName)
 }
