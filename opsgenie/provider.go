@@ -32,6 +32,7 @@ func Provider() terraform.ResourceProvider {
 			"opsgenie_schedule":          resourceOpsgenieSchedule(),
 			"opsgenie_schedule_rotation": resourceOpsgenieScheduleRotation(),
 			"opsgenie_maintenance":       resourceOpsgenieMaintenance(),
+			"opsgenie_heartbeat":         resourceOpsgenieHeartbeat(),
 		},
 
 		ConfigureFunc: providerConfigure,

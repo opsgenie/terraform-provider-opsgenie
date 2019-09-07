@@ -244,8 +244,7 @@ func NewOpsGenieClient(cfg *Config) (*OpsGenieClient, error) {
 }
 
 func printInfoLog(client *OpsGenieClient) {
-	client.Config.Logger.Infof("Client is configured with ApiKey: %s, ApiUrl: %s, LogLevel: %s, RetryMaxCount: %v",
-		client.Config.ApiKey,
+	client.Config.Logger.Infof("Client is configured with ApiUrl: %s, LogLevel: %s, RetryMaxCount: %v",
 		client.Config.OpsGenieAPIURL,
 		client.Config.Logger.GetLevel().String(),
 		client.RetryableClient.RetryMax)
