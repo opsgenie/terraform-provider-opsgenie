@@ -1,4 +1,13 @@
 ## 0.2.1 (Unreleased)
+
+IMPROVEMENTS:
+
+* **New Resource:** Heartbeat
+
+BUGFIXES:
+
+* Documents updated
+
 ## 0.2.0 (September 05, 2019)
 
 IMPROVEMENTS:

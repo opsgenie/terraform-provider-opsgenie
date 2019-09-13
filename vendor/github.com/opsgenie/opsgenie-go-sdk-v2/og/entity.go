@@ -14,6 +14,7 @@ type OwnerTeam struct {
 
 type Rotation struct {
 	client.BaseRequest
+	Id              string           `json:"id,omitempty"`
 	Name            string           `json:"name,omitempty"`
 	StartDate       *time.Time       `json:"startDate,omitempty"`
 	EndDate         *time.Time       `json:"endDate,omitempty"`
