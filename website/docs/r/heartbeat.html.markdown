@@ -31,23 +31,23 @@ resource "opsgenie_heartbeat" "test" {
 
 The following arguments are supported:
 
-* `name` - (Required) Name of the integration. Name must be unique for each integration. 
+* `name` - (Required) Name of the heartbeat
 
-* `description` - (Optional) Type of the integration. (API,Marid,Prometheus ...)
+* `description` - (Optional) An optional description of the heartbeat
 
-* `interval_unit` - (Optional) This parameter is for configuring the write access of integration. If write access is restricted, the integration will not be authorized to write within any domain. Defaults to true.
+* `interval_unit` - (Required) Interval specified as minutes, hours or days.
 
-* `interval` - (Optional) This parameter is for specifying whether the integration will be enabled or not. Defaults to true
+* `interval` - (Required) Specifies how often a heartbeat message should be expected.
 
-* `enabled` - (Optional) If enabled, the integration will ignore recipients sent in request payloads. Defaults to false.
+* `enabled` - (True) Enable/disable heartbeat monitoring.
 
-* `owner_team_id` - (Optional) Owner team id of the integration.
+* `owner_team_id` - (Optional) Owner team of the heartbeat.
 
-* `alert_message` - (Optional) If enabled, notifications that come from alerts will be suppressed. Defaults to false.
+* `alert_message` - (Optional) Specifies the alert message for heartbeat expiration alert. If this is not provided, default alert message is "HeartbeatName is expired".
 
-* `alert_priority` - (Optional)  User, schedule, teams or escalation names to calculate which users will receive the notifications of the alert.
+* `alert_priority` - (Optional) Specifies the alert priority for heartbeat expiration alert. If this is not provided, default priority is P3.
 
-* `alert_tags` - (Optional)  User, schedule, teams or escalation names to calculate which users will receive the notifications of the alert.
+* `alert_tags` - (Optional)  Specifies the alert tags for heartbeat expiration alert.
 
 
 ## Attributes Reference

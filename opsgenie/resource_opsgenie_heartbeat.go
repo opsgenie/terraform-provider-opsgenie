@@ -2,9 +2,11 @@ package opsgenie
 
 import (
 	"context"
+	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/heartbeat"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
+	"regexp"
 )
 
 func resourceOpsgenieHeartbeat() *schema.Resource {
@@ -18,9 +20,10 @@ func resourceOpsgenieHeartbeat() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ForceNew:     true,
+				ValidateFunc: validateOpsgenieHeartbeat,
 			},
 			"description": {
 				Type:     schema.TypeString,
@@ -191,4 +194,18 @@ func flattenTags(d *schema.ResourceData) []string {
 	}
 
 	return tags
+}
+
+func validateOpsgenieHeartbeat(v interface{}, k string) (ws []string, errors []error) {
+	value := v.(string)
+	if !regexp.MustCompile(`^[a-zA-Z0-9_-]+$`).MatchString(value) {
+		errors = append(errors, fmt.Errorf(
+			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
+	}
+
+	if len(value) >= 100 {
+		errors = append(errors, fmt.Errorf("%q cannot be longer than 100 characters: %q %d", k, value, len(value)))
+	}
+
+	return
 }
