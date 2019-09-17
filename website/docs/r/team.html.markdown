@@ -30,13 +30,13 @@ resource "opsgenie_team" "test" {
   description = "This team deals with all the things"
 
   member {
-    username = "${opsgenie_user.first.username}"
-    role     = "admin"
+    id   = "${opsgenie_user.first.id}"
+    role = "admin"
   }
 
   member {
-    username = "${opsgenie_user.second.username}"
-    role     = "user"
+    id   = "${opsgenie_user.second.id}"
+    role = "user"
   }
 }
 ```
@@ -53,14 +53,14 @@ The following arguments are supported:
 
 `member` supports the following:
 
-* `username` - (Required) The username for the member to add to this Team.
-* `role` - (Required) The role for the user within the Team - can be either 'Admin' or 'User'.
+* `id` - (Required) The UUID for the member to add to this Team.
+* `role` - (Optional) The role for the user within the Team - can be either 'admin' or 'user', defaults to 'user' if not set.
 
 ## Attributes Reference
 
 The following attributes are exported:
 
-* `id` - The ID of the Opsgenie User.
+* `id` - The ID of the Opsgenie Team.
 
 ## Import
 
