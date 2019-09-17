@@ -49,6 +49,11 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"api_key": {
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
+			},
 			"responders": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -109,6 +114,7 @@ func resourceOpsgenieApiIntegrationCreate(d *schema.ResourceData, meta interface
 	}
 
 	d.SetId(result.Id)
+	d.Set("api_key", result.ApiKey)
 
 	if enabled {
 		_, err = client.Enable(context.Background(), &integration.EnableIntegrationRequest{
