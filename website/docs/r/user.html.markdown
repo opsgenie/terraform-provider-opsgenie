@@ -6,7 +6,7 @@ description: |-
   Manages a User within Opsgenie.
 ---
 
-# opsgenie\_user
+# opsgenie_user
 
 Manages a User within Opsgenie.
 
@@ -15,7 +15,7 @@ Manages a User within Opsgenie.
 ```hcl
 resource "opsgenie_user" "test" {
   username  = "user@domain.com"
-  full_name = "Cookie Monster"
+  full_name = "Test User"
   role      = "User"
   locale    = "en_US"
   timezone  = "America/New_York"

@@ -20,7 +20,7 @@ resource "opsgenie_user" "first" {
 }
 
 resource "opsgenie_user" "second" {
-  username  = "eggman@dr-robotnik.com"
+  username  = "test@domain.com"
   full_name = "name "
   role      = "User"
 }

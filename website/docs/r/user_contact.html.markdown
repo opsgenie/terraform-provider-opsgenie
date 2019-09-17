@@ -6,7 +6,7 @@ description: |-
   Manages a User Contact.
 ---
 
-# opsgenie\_user
+# opsgenie_user_contact
 
 Manages a User Contact.
 
@@ -14,17 +14,17 @@ Manages a User Contact.
 
 ```hcl
 resource "opsgenie_user_contact" "sms" {
-  user_id = "${opsgenie_user.fahri.id}"
+  user_id = "${opsgenie_user.exampleuser.id}"
   to="39-123"
   method="sms"
 }
 resource "opsgenie_user_contact" "email" {
-  user_id = "${opsgenie_user.fahri.id}"
+  user_id = "${opsgenie_user.exampleuser.id}"
   to="fahri@opsgenie.com"
   method="email"
 }
 resource "opsgenie_user_contact" "voice" {
-  user_id = "${opsgenie_user.fahri.id}"
+  user_id = "${opsgenie_user.exampleuser.id}"
   to="39-123"
   method="voice"
 }
@@ -54,5 +54,5 @@ The following attributes are exported:
 Users can be imported using the `id`, e.g.
 
 ```
-$ terraform import opsgenie_user_contact.contact da4faf16-5546-41e4-8330-4d0002b74048
+$ terraform import opsgenie_user_contact.testcontact da4faf16-5546-41e4-8330-4d0002b74048
 ```
