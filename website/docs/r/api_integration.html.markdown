@@ -18,7 +18,7 @@ resource "opsgenie_api_integration" "example-api-integration" {
   type = "API"
   responders {
     type ="user"
-    id = "${opsgenie_user.fahri.id}"
+    id = "${opsgenie_user.user.id}"
   }
    responders {
     type ="user"
@@ -32,7 +32,7 @@ resource "opsgenie_api_integration" "example-api-integration" {
   type = "Prometheus"
   responders {
     type ="user"
-    id = "${opsgenie_user.fahri.id}"
+    id = "${opsgenie_user.user.id}"
   }
   enabled = false
   allow_write_access = false
