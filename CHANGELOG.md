@@ -1,4 +1,13 @@
 ## 0.2.2 (Unreleased)
+
+IMPROVEMENTS:
+
+* **Edited Resource:** You can refer api based integrations api key to external resources by `.api_key` field. 
+
+BUGFIXES:
+
+* Documents updated
+
 ## 0.2.1 (September 13, 2019)
 
 IMPROVEMENTS:
