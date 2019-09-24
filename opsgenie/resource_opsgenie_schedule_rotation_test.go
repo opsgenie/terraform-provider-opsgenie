@@ -192,8 +192,8 @@ resource "opsgenie_schedule" "test" {
 resource "opsgenie_schedule_rotation" "test" { 
     schedule_id = "${opsgenie_schedule.test.id}"
     name = "test-%s"
-    start_date = "2019-06-18T17:45:00Z"
-    end_date ="2019-06-20T17:45:00Z"
+    start_date = "2019-06-18T17:30:00Z"
+    end_date ="2019-06-20T17:30:00Z"
     type ="hourly"
     length = 6
     participant {
@@ -238,8 +238,8 @@ resource "opsgenie_schedule" "test" {
 resource "opsgenie_schedule_rotation" "test" { 
     schedule_id = "${opsgenie_schedule.test.id}"
     name = "test-%s"
-    start_date = "2019-06-18T17:45:00Z"
-    end_date ="2019-06-20T17:45:00Z"
+    start_date = "2019-06-18T17:30:00Z"
+    end_date ="2019-06-20T17:30:00Z"
     type ="hourly"
     length = 6
     participant {
@@ -248,21 +248,21 @@ resource "opsgenie_schedule_rotation" "test" {
     }
 
     time_restriction {
-      type ="time-of-day"
-      restriction {
+      	type ="time-of-day"
+      	restriction {
         start_hour = 1
         start_min = 1
         end_hour = 10
         end_min = 1
-      }
-}
+		}
+	}
 }
 
 resource "opsgenie_schedule_rotation" "test2" { 
     schedule_id = "${opsgenie_schedule.test.id}"
     name = "schedule2-%s"
-    start_date = "2019-06-18T17:45:00Z"
-    end_date ="2019-06-20T17:45:00Z"
+    start_date = "2019-06-18T17:30:00Z"
+    end_date ="2019-06-20T17:00:00Z"
     type ="hourly"
     length = 6
     participant {

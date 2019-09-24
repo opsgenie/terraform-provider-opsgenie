@@ -155,13 +155,12 @@ func resourceOpsGenieTeamDelete(d *schema.ResourceData, meta interface{}) error 
 	return nil
 }
 
-func flattenOpsGenieTeamMembers(input []team.Member) []interface{} {
-	members := make([]interface{}, 0, len(input))
+func flattenOpsGenieTeamMembers(input []team.Member) []map[string]interface{} {
+	members := make([]map[string]interface{}, 0, len(input))
 	for _, inputMember := range input {
 		outputMember := make(map[string]interface{})
-		outputMember["username"] = inputMember.User
+		outputMember["id"] = inputMember.User.ID
 		outputMember["role"] = inputMember.Role
-
 		members = append(members, outputMember)
 	}
 

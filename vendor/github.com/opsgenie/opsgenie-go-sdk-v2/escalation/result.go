@@ -45,7 +45,7 @@ type Escalation struct {
 	Description string        `json:"description,omitempty"`
 	Rules       []Rule        `json:"rules,omitempty"`
 	OwnerTeam   *og.OwnerTeam `json:"ownerTeam,omitempty"`
-	Repeat      Repeat        `json:"rotations,omitempty"`
+	Repeat      Repeat        `json:"repeat,omitempty"`
 }
 
 type Repeat struct {

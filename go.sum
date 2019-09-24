@@ -238,8 +238,8 @@ github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+W
 github.com/onsi/ginkgo v1.7.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
 github.com/onsi/gomega v1.4.3/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1CpauHY=
 github.com/openzipkin/zipkin-go v0.1.1/go.mod h1:NtoC/o8u3JlF1lSlyPNswIbeQH9bJTmOf0Erfk+hxe8=
-github.com/opsgenie/opsgenie-go-sdk-v2 v0.0.0-20190910100104-ad123e4320a9 h1:by2UP4j7UNh2uUtsq25UdMuyjHhfFN5dJArdgUJuLAM=
-github.com/opsgenie/opsgenie-go-sdk-v2 v0.0.0-20190910100104-ad123e4320a9/go.mod h1:06KdK4ULIGwYaNDXiszv5QoDGDkOl6PV56XQQrQCpys=
+github.com/opsgenie/opsgenie-go-sdk-v2 v0.0.0-20190925114845-8388ea1fcf79 h1:xQkBE7i037nN5RDjX0WM5VcuwIhBGtdqjI7DpUUmKn4=
+github.com/opsgenie/opsgenie-go-sdk-v2 v0.0.0-20190925114845-8388ea1fcf79/go.mod h1:06KdK4ULIGwYaNDXiszv5QoDGDkOl6PV56XQQrQCpys=
 github.com/packer-community/winrmcp v0.0.0-20180102160824-81144009af58/go.mod h1:f6Izs6JvFTdnRbziASagjZ2vmf55NSIkC/weStxCHqk=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pkg/errors v0.0.0-20170505043639-c605e284fe17 h1:chPfVn+gpAM5CTpTyVU9j8J+xgRGwmoDlNDLjKnJiYo=

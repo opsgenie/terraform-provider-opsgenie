@@ -60,8 +60,6 @@ The following arguments are supported:
 
 * `owner_team_id` - (Optional) Owner team id of the integration.
 
-* `api_key` - (Computed) API key of the created integration
-
 * `responder` - (Optional)  User, schedule, teams or escalation names to calculate which users will receive the notifications of the alert.
 
 `responder` supports the following:
@@ -74,6 +72,9 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `id` - The ID of the Opsgenie API Integration.
+
+* `api_key` - (Computed) API key of the created integration
+
 
 ## Import
 

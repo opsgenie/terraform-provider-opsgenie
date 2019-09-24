@@ -213,7 +213,6 @@ resource "opsgenie_email_integration" "test" {
     id = "${opsgenie_team.test2.id}"
   }
   email_username="fahri"
-  enabled = true
   ignore_responders_from_payload = true
   suppress_notifications = true
 }

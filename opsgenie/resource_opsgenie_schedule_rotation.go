@@ -34,12 +34,12 @@ func resourceOpsgenieScheduleRotation() *schema.Resource {
 			"start_date": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validateDate,
+				ValidateFunc: validateDateWithMinutes,
 			},
 			"end_date": {
 				Type:         schema.TypeString,
 				Optional:     true,
-				ValidateFunc: validateDate,
+				ValidateFunc: validateDateWithMinutes,
 			},
 			"type": {
 				Type:         schema.TypeString,
@@ -226,13 +226,25 @@ func resourceOpsgenieScheduleRotationRead(d *schema.ResourceData, meta interface
 	if err != nil {
 		return err
 	}
-
-	d.Set("id", getResponse.Rotation.Id)
-	d.Set("participant", getResponse.Rotation.Participants)
-	d.Set("type", getResponse.Rotation.Type)
-	d.Set("start_date", getResponse.Rotation.StartDate)
+	startDate := getResponse.StartDate.Format("2006-01-02T15:04:05Z")
+	d.SetId(getResponse.Rotation.Id)
+	d.Set("participant", flattenOpsgenieScheduleRotationParticipant(getResponse.Participants))
+	d.Set("type", getResponse.Type)
+	d.Set("start_date", startDate)
 
 	return nil
+}
+
+func flattenOpsgenieScheduleRotationParticipant(input []og.Participant) []map[string]interface{} {
+	participants := make([]map[string]interface{}, 0, len(input))
+	for _, part := range input {
+		outputMember := make(map[string]interface{})
+		outputMember["id"] = part.Id
+		outputMember["type"] = part.Type
+		participants = append(participants, outputMember)
+	}
+
+	return participants
 }
 
 func resourceOpsgenieScheduleRotationUpdate(d *schema.ResourceData, meta interface{}) error {
@@ -364,14 +376,17 @@ func expandOpsgenieScheduleRestrictions(input []interface{}) []og.Restriction {
 
 	for _, v := range input {
 		config := v.(map[string]interface{})
-
+		startHour := uint32(config["start_hour"].(int))
+		startMin := uint32(config["start_min"].(int))
+		endHour := uint32(config["end_hour"].(int))
+		endMin := uint32(config["end_min"].(int))
 		restriction := og.Restriction{
 			StartDay:  og.Day(config["start_day"].(string)),
-			StartHour: uint32(config["start_hour"].(int)),
-			StartMin:  uint32(config["start_min"].(int)),
-			EndHour:   uint32(config["end_hour"].(int)),
+			StartHour: &startHour,
+			StartMin:  &startMin,
+			EndHour:   &endHour,
 			EndDay:    og.Day(config["end_day"].(string)),
-			EndMin:    uint32(config["end_min"].(int)),
+			EndMin:    &endMin,
 		}
 
 		restrictionList = append(restrictionList, restriction)
@@ -385,12 +400,15 @@ func expandOpsgenieScheduleRestriction(input []interface{}) og.Restriction {
 	restriction := og.Restriction{}
 	for _, v := range input {
 		config := v.(map[string]interface{})
-
+		startHour := uint32(config["start_hour"].(int))
+		startMin := uint32(config["start_min"].(int))
+		endHour := uint32(config["end_hour"].(int))
+		endMin := uint32(config["end_min"].(int))
 		restriction = og.Restriction{
-			StartHour: uint32(config["start_hour"].(int)),
-			StartMin:  uint32(config["start_min"].(int)),
-			EndHour:   uint32(config["end_hour"].(int)),
-			EndMin:    uint32(config["end_min"].(int)),
+			StartHour: &startHour,
+			StartMin:  &startMin,
+			EndHour:   &endHour,
+			EndMin:    &endMin,
 		}
 
 	}
