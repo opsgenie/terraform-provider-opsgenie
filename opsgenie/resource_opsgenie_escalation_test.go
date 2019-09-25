@@ -77,12 +77,11 @@ func TestAccOpsGenieEscalation_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieEscalation_complete(t *testing.T) {
-	randomName := acctest.RandString(6)
 	randomTeam := acctest.RandString(6)
 	randomSchedule := acctest.RandString(6)
 	randomEscalation := acctest.RandString(6)
 
-	config := testAccOpsGenieEscalation_complete(randomName, randomTeam, randomSchedule, randomEscalation)
+	config := testAccOpsGenieEscalation_complete(randomTeam, randomSchedule, randomEscalation)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -175,13 +174,8 @@ resource "opsgenie_escalation" "test" {
 `, randomName, randomEscalation)
 }
 
-func testAccOpsGenieEscalation_complete(randomUser, randomTeam, randomSchedule, randomEscalation string) string {
+func testAccOpsGenieEscalation_complete(randomTeam, randomSchedule, randomEscalation string) string {
 	return fmt.Sprintf(`
-resource "opsgenie_user" "test" {
-  username  = "genietest-%s@opsgenie.com"
-  full_name = "Acceptance Test User"
-  role      = "User"
-}
 resource "opsgenie_team" "test" {
   name        = "genieteam-%s"
   description = "This team deals with all the things"
@@ -198,14 +192,6 @@ resource "opsgenie_escalation" "test" {
  rules {
   condition =   "if-not-acked"
     notify_type  =   "default"
-    recipient {
-      type  = "user"
-      id  = "${opsgenie_user.test.id}"
-    }   
-	recipient {
-      type  = "team"
-      id  = "${opsgenie_team.test.id}"
-    }   
 	recipient {
       type  = "schedule"
       id  = "${opsgenie_schedule.test.id}"
@@ -215,10 +201,10 @@ resource "opsgenie_escalation" "test" {
 owner_team_id = "${opsgenie_team.test.id}"
 repeat  {
   wait_interval = 10
-  count = 1
+  count = 20
   reset_recipient_states = true
   close_alert_after_all = false
   }
 }
-`, randomUser, randomTeam, randomSchedule, randomEscalation)
+`, randomTeam, randomSchedule, randomEscalation)
 }

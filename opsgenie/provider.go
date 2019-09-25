@@ -35,6 +35,14 @@ func Provider() terraform.ResourceProvider {
 			"opsgenie_heartbeat":         resourceOpsgenieHeartbeat(),
 		},
 
+		DataSourcesMap: map[string]*schema.Resource{
+			"opsgenie_team":       dataSourceOpsGenieTeam(),
+			"opsgenie_user":       dataSourceOpsGenieUser(),
+			"opsgenie_escalation": dataSourceOpsgenieEscalation(),
+			"opsgenie_schedule":   dataSourceOpsgenieSchedule(),
+			"opsgenie_heartbeat":  dataSourceOpsgenieHeartbeat(),
+		},
+
 		ConfigureFunc: providerConfigure,
 	}
 }

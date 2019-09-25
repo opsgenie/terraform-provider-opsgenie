@@ -153,7 +153,15 @@ func resourceOpsgenieEscalationRead(d *schema.ResourceData, meta interface{}) er
 
 	d.Set("name", getResponse.Name)
 	d.Set("id", getResponse.Id)
-	d.Set("rules", getResponse.Rules)
+	d.Set("description", getResponse.Description)
+	d.Set("rules", flattenOpsgenieEscalationRules(getResponse.Rules))
+	repeat := d.Get("repeat").([]interface{})
+	if len(repeat) > 0 {
+		d.Set("repeat", flattenOpsgenieEscalationRepeat(getResponse.Repeat))
+	}
+	if getResponse.OwnerTeam != nil {
+		d.Set("owner_team_id", getResponse.OwnerTeam.Id)
+	}
 
 	return nil
 }
@@ -209,6 +217,36 @@ func resourceOpsgenieEscalationDelete(d *schema.ResourceData, meta interface{}) 
 	}
 
 	return nil
+}
+
+func flattenOpsgenieEscalationRules(input []escalation.Rule) []map[string]interface{} {
+	rules := make([]map[string]interface{}, 0, len(input))
+	for _, rule := range input {
+		out := make(map[string]interface{})
+		out["notify_type"] = rule.NotifyType
+		out["condition"] = rule.Condition
+		out["delay"] = rule.Delay.TimeAmount
+		recipientArr := make([]map[string]interface{}, 0, 1)
+		recipient := make(map[string]interface{})
+		recipient["id"] = rule.Recipient.Id
+		recipient["type"] = rule.Recipient.Type
+		recipientArr = append(recipientArr, recipient)
+		out["recipient"] = recipientArr
+		rules = append(rules, out)
+	}
+
+	return rules
+}
+
+func flattenOpsgenieEscalationRepeat(input escalation.Repeat) []map[string]interface{} {
+	repeats := make([]map[string]interface{}, 0, 1)
+	out := make(map[string]interface{})
+	out["count"] = input.Count
+	out["wait_interval"] = input.WaitInterval
+	out["close_alert_after_all"] = input.CloseAlertAfterAll
+	out["reset_recipient_states"] = input.ResetRecipientStates
+	repeats = append(repeats, out)
+	return repeats
 }
 
 func expandOpsgenieEscalationRules(d *schema.ResourceData) []escalation.RuleRequest {

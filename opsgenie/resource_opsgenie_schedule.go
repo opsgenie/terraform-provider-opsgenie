@@ -103,6 +103,12 @@ func resourceOpsgenieScheduleRead(d *schema.ResourceData, meta interface{}) erro
 
 	d.Set("name", getResponse.Schedule.Name)
 	d.Set("id", getResponse.Schedule.Id)
+	if getResponse.Schedule.OwnerTeam != nil {
+		d.Set("owner_team_id", getResponse.Schedule.OwnerTeam.Id)
+	}
+	d.Set("timezone", getResponse.Schedule.Timezone)
+	d.Set("description", getResponse.Schedule.Description)
+
 	return nil
 }
 

@@ -53,6 +53,7 @@ func testSweepUserContact(region string) error {
 			}
 			for _, c := range resp.Contact {
 				deleteRequest := contact.DeleteRequest{
+					UserIdentifier:    u.Id,
 					ContactIdentifier: c.Id,
 				}
 

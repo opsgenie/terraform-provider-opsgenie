@@ -39,7 +39,7 @@ func testSweepTeam(region string) error {
 	}
 
 	for _, u := range resp.Teams {
-		if strings.HasPrefix(u.Name, "genieteam-") {
+		if strings.HasPrefix(u.Name, "genieteam") {
 			log.Printf("Destroying team %s", u.Name)
 
 			deleteRequest := team.DeleteTeamRequest{

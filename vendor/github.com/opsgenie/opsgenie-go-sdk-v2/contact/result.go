@@ -25,7 +25,6 @@ type GetResult struct {
 	Id              string `json:"id"`
 	MethodOfContact string `json:"method"`
 	To              string `json:"to,omitempty"`
-	Enabled         bool   `json:"enabled"`
 	Status          Status `json:"status,omitempty"`
 }
 

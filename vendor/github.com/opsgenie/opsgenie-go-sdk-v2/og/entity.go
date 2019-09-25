@@ -160,34 +160,48 @@ func ValidateConditions(conditions []Condition) error {
 }
 
 func ValidateRestrictions(timeRestriction *TimeRestriction) error {
-	if timeRestriction.Type == "" {
-		return errors.New("Type of time restriction must be time-of-day or weekday-and-time-of-day.")
-	}
-	if timeRestriction.Type == WeekdayAndTimeOfDay && timeRestriction.RestrictionList == nil {
-		return errors.New("Restrictions cannot be empty.")
-	}
-	if len(timeRestriction.RestrictionList) != 0 {
-		for _, restriction := range timeRestriction.RestrictionList {
-			if timeRestriction.Type == "weekday-and-time-of-day" &&
-				(restriction.EndMin < 0 ||
-					restriction.EndHour <= 0 ||
-					restriction.EndDay == "" ||
-					restriction.StartDay == "" ||
-					restriction.StartHour <= 0 ||
-					restriction.StartMin < 0) {
-				return errors.New("startDay, startHour, startMin, endDay, endHour, endMin cannot be empty.")
+	if timeRestriction.Type == WeekdayAndTimeOfDay {
+		if len(timeRestriction.RestrictionList) != 0 {
+			for _, restriction := range timeRestriction.RestrictionList {
+				err := validateRestriction(restriction, WeekdayAndTimeOfDay)
+				if err != nil {
+					return err
+				}
 			}
+			return nil
+		} else {
+			return errors.New("Restrictions cannot be empty.")
 		}
-	}
-	if timeRestriction.Type == TimeOfDay &&
-		(timeRestriction.Restriction.EndMin < 0 ||
-			timeRestriction.Restriction.EndHour <= 0 ||
-			timeRestriction.Restriction.StartHour <= 0 ||
-			timeRestriction.Restriction.StartMin < 0) {
-		return errors.New("startHour, startMin, endHour, endMin cannot be empty.")
+	} else if timeRestriction.Type == TimeOfDay {
+		return validateRestriction(timeRestriction.Restriction, TimeOfDay)
 	}
 
+	return errors.New("Type of time restriction must be time-of-day or weekday-and-time-of-day.")
+}
+
+func validateRestriction(restriction Restriction, restrictionType RestrictionType) error {
+	if restriction.EndHour == nil || restriction.StartHour == nil || restriction.StartMin == nil || restriction.EndMin == nil {
+		return errors.New("startHour, startMin, endHour, endMin cannot be empty.")
+	}
+	if restrictionType == WeekdayAndTimeOfDay && (restriction.EndDay == "" || restriction.StartDay == "") {
+		return errors.New("startDay, endDay cannot be empty.")
+	}
+	if *restriction.EndHour > 24 {
+		return errors.New("restriction end hour should between 0 and 24.")
+	}
+	if *restriction.StartHour > 24 {
+		return errors.New("restriction start hour should between 0 and 24.")
+	}
+	//minutes converted nearest 0 or 30 automatically so do not need to validate
 	return nil
+}
+
+func Hour(hour uint32) *uint32 {
+	return &hour
+}
+
+func Minute(minute uint32) *uint32 {
+	return &minute
 }
 
 type RotationType string
@@ -273,12 +287,12 @@ type TimeRestriction struct {
 }
 
 type Restriction struct {
-	StartDay  Day    `json:"startDay,omitempty"`
-	StartHour uint32 `json:"startHour,omitempty"`
-	StartMin  uint32 `json:"startMin,omitempty"`
-	EndHour   uint32 `json:"endHour,omitempty"`
-	EndDay    Day    `json:"endDay,omitempty"`
-	EndMin    uint32 `json:"endMin,omitempty"`
+	StartDay  Day     `json:"startDay,omitempty"`
+	StartHour *uint32 `json:"startHour,omitempty"`
+	StartMin  *uint32 `json:"startMin,omitempty"`
+	EndHour   *uint32 `json:"endHour,omitempty"`
+	EndDay    Day     `json:"endDay,omitempty"`
+	EndMin    *uint32 `json:"endMin,omitempty"`
 }
 
 type Filter struct {

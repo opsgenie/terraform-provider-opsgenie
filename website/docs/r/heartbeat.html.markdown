@@ -8,7 +8,7 @@ description: |-
 
 # opsgenie_heartbeat
 
-Manages an heartbeat within Opsgenie.
+Manages heartbeat within Opsgenie.
 
 ## Example Usage
 
@@ -52,9 +52,8 @@ The following arguments are supported:
 
 ## Attributes Reference
 
-The following attributes are exported:
+Only the arguments listed above are exposed as attributes.
 
-* `id` - The ID of the Opsgenie Heartbeat.
 
 ## Import
 

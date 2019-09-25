@@ -1,4 +1,18 @@
 ## 0.2.3 (Unreleased)
+
+IMPROVEMENTS:
+
+You can now refer existing resources on Opsgenie using datasources.
+
+* **New Datasources:**  Schedule, Escalation, Heartbeat, Team, User
+* **Edited Resources:** Schedule, Schedule Rotations, Team and User Contact
+
+BUGFIXES:
+
+* Some resources states are fixed.
+* Edited date validations
+* Test improvements
+
 ## 0.2.2 (September 18, 2019)
 
 IMPROVEMENTS:

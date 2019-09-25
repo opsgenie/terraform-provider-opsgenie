@@ -27,6 +27,7 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  true,
 			},
 			"allow_write_access": {
 				Type:     schema.TypeBool,
@@ -149,6 +150,7 @@ func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}
 	d.Set("type", result.Data["type"])
 	//TODO set this correctly in future
 	//d.Set("ignore_responders_from_payload", result.Data["ignoreRespondersFromPayload"])
+	d.Set("enabled", result.Data["enabled"])
 	d.Set("suppress_notifications", result.Data["suppressNotifications"])
 
 	return nil

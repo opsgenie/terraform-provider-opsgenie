@@ -120,7 +120,7 @@ func resourceOpsgenieEmailIntegrationRead(d *schema.ResourceData, meta interface
 	d.Set("id", result.Data["id"])
 	d.Set("responders", result.Data["responders"])
 	d.Set("email_username", result.Data["emailUsername"])
-
+	d.Set("enabled", result.Data["enabled"])
 	return nil
 }
 
