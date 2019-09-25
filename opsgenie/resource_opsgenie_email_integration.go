@@ -30,6 +30,7 @@ func resourceOpsgenieEmailIntegration() *schema.Resource {
 			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  true,
 			},
 			"ignore_responders_from_payload": {
 				Type:     schema.TypeBool,
