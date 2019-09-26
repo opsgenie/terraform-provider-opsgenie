@@ -8,7 +8,7 @@ import (
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/escalation"
 )
 
