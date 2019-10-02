@@ -13,18 +13,17 @@ Manages a Schedule within Opsgenie.
 ## Example Usage
 ```hcl
 resource "opsgenie_schedule" "test" {
-  name = "genieschedule-%s"
+  name        = "genieschedule-%s"
   description = "schedule test"
-  timezone = "Europe/Rome"
-  enabled = false
+  timezone    = "Europe/Rome"
+  enabled     = false
 }
-```
-```hcl
+
 resource "opsgenie_schedule" "test" {
-  name = "genieschedule-%s"
-  description = "schedule test"
-  timezone = "Europe/Rome"
-  enabled = false
+  name          = "genieschedule-%s"
+  description   = "schedule test"
+  timezone      = "Europe/Rome"
+  enabled       = false
   owner_team_id = "${opsgenie_team.test.id}"
 }
 ```
@@ -55,6 +54,4 @@ The following attributes are exported:
 
 Schedule can be imported using the `id`, e.g.
 
-```
-$ terraform import opsgenie_schedule.test 812be1a1-32c8-4666-a7fb-03ecc385106c
-```
+`$ terraform import opsgenie_schedule.test 812be1a1-32c8-4666-a7fb-03ecc385106c`

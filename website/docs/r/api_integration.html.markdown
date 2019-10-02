@@ -16,29 +16,32 @@ Manages an API Integration within Opsgenie.
 resource "opsgenie_api_integration" "example-api-integration" {
   name = "api-based-int"
   type = "API"
+
   responders {
-    type ="user"
-    id = "${opsgenie_user.user.id}"
+    type = "user"
+    id   = "${opsgenie_user.user.id}"
   }
-   responders {
-    type ="user"
-    id = "${opsgenie_user.fahri.id}"
+
+  responders {
+    type = "user"
+    id   = "${opsgenie_user.fahri.id}"
   }
 }
-
 
 resource "opsgenie_api_integration" "example-api-integration" {
   name = "api-based-int-2"
   type = "Prometheus"
+
   responders {
-    type ="user"
-    id = "${opsgenie_user.user.id}"
+    type = "user"
+    id   = "${opsgenie_user.user.id}"
   }
-  enabled = false
-  allow_write_access = false
+
+  enabled                        = false
+  allow_write_access             = false
   ignore_responders_from_payload = true
-  suppress_notifications = true
-  owner_team_id = "${opsgenie_team_genies.id}"
+  suppress_notifications         = true
+  owner_team_id                  = "${opsgenie_team_genies.id}"
 }
 ```
 
@@ -46,7 +49,7 @@ resource "opsgenie_api_integration" "example-api-integration" {
 
 The following arguments are supported:
 
-* `name` - (Required) Name of the integration. Name must be unique for each integration. 
+* `name` - (Required) Name of the integration. Name must be unique for each integration.
 
 * `type` - (Optional) Type of the integration. (API,Marid,Prometheus ...)
 
@@ -75,11 +78,8 @@ The following attributes are exported:
 
 * `api_key` - (Computed) API key of the created integration
 
-
 ## Import
 
 API Integrations can be imported using the `id`, e.g.
 
-```
-$ terraform import opsgenie_team.team1 812be1a1-32c8-4666-a7fb-03ecc385106c
-```
+`$ terraform import opsgenie_team.team1 812be1a1-32c8-4666-a7fb-03ecc385106c`

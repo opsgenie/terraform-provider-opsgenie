@@ -13,26 +13,28 @@ Manages a Schedule Rotation within Opsgenie.
 ## Example Usage
 ```hcl
 resource "opsgenie_schedule_rotation" "test" { 
-    schedule_id = "${opsgenie_schedule.test.id}"
-    name = "test"
-    start_date = "2019-06-18T17:45:00Z"
-    end_date ="2019-06-20T17:45:00Z"
-    type ="hourly"
-    length = 6
-    participant {
-      type = "user"
-      id = "${opsgenie_user.test.id}"
-    }
+  schedule_id = "${opsgenie_schedule.test.id}"
+  name        = "test"
+  start_date  = "2019-06-18T17:45:00Z"
+  end_date    ="2019-06-20T17:45:00Z"
+  type        ="hourly"
+  length      = 6
+  
+  participant {
+    type = "user"
+    id   = "${opsgenie_user.test.id}"
+  }
 
-    time_restriction {
-      type ="time-of-day"
-      restriction {
-        start_hour = 1
-        start_min = 1
-        end_hour = 10
-        end_min = 1
-      }
-}
+  time_restriction {
+    type = "time-of-day"
+    
+    restriction {
+      start_hour = 1
+      start_min  = 1
+      end_hour   = 10
+      end_min    = 1
+    }
+  }
 }
 ```
 
@@ -87,6 +89,4 @@ The following attributes are exported:
 
 Schedule Rotations can be imported using the `id`, e.g.
 
-```
-$ terraform import opsgenie_schedule_rotation.test 812be1a1-32c8-4666-a7fb-03ecc385106c
-```
+`$ terraform import opsgenie_schedule_rotation.test 812be1a1-32c8-4666-a7fb-03ecc385106c`

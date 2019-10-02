@@ -66,6 +66,4 @@ The following attributes are exported:
 
 Teams can be imported using the `id`, e.g.
 
-```
-$ terraform import opsgenie_team.team1 812be1a1-32c8-4666-a7fb-03ecc385106c
-```
+`$ terraform import opsgenie_team.team1 812be1a1-32c8-4666-a7fb-03ecc385106c`

@@ -14,7 +14,7 @@ Manages existing heartbeat within Opsgenie.
 
 ```hcl
 data "opsgenie_heartbeat" "test" {
-	name = "genieheartbeat-existing"
+  name = "genieheartbeat-existing"
 }
 ```
 
