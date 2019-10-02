@@ -89,6 +89,4 @@ The following attributes are exported:
 
 Schedule Rotations can be imported using the `id`, e.g.
 
-```
-$ terraform import opsgenie_schedule_rotation.test 812be1a1-32c8-4666-a7fb-03ecc385106c
-```
+`$ terraform import opsgenie_schedule_rotation.test 812be1a1-32c8-4666-a7fb-03ecc385106c`
