@@ -11,37 +11,40 @@ description: |-
 Manages an Email Integration within Opsgenie.
 
 ## Example Usage
-```hcl
 
+```hcl
 resource "opsgenie_email_integration" "test" {
-  name = "genieintegration-%s"
-  email_username="fahri"
+  name           = "genieintegration-name"
+  email_username = "fahri"
 }
-```
-```hcl
 
 resource "opsgenie_email_integration" "test" {
   name = "genieintegration-%s"
+
   responders {
-    type ="user"
-    id = "${opsgenie_user.test.id}"
+    type = "user"
+    id   = "${opsgenie_user.test.id}"
   }
+
   responders {
-    type ="schedule"
-    id = "${opsgenie_schedule.test.id}"
+    type = "schedule"
+    id   = "${opsgenie_schedule.test.id}"
   }
+
   responders {
-    type ="escalation"
-    id = "${opsgenie_escalation.test.id}"
+    type = "escalation"
+    id   = "${opsgenie_escalation.test.id}"
   }
+
   responders {
-    type ="team"
-    id = "${opsgenie_team.test2.id}"
+    type = "team"
+    id   = "${opsgenie_team.test2.id}"
   }
-  email_username="test"
-  enabled = true
+
+  email_username                 = "test"
+  enabled                        = true
   ignore_responders_from_payload = true
-  suppress_notifications = true
+  suppress_notifications         = true
 }
 ```
 
@@ -65,7 +68,7 @@ The following arguments are supported:
 
 `responder` supports the following:
 
-* `type` - (Required) The responder type. 
+* `type` - (Required) The responder type.
 * `id` - (Required) The id of the responder.
 
 ## Attributes Reference
@@ -78,6 +81,4 @@ The following attributes are exported:
 
 Email Integrations can be imported using the `id`, e.g.
 
-```
-$ terraform import opsgenie_email_integration.test 812be1a1-32c8-4666-a7fb-03ecc385106c
-```
+`$ terraform import opsgenie_email_integration.test 812be1a1-32c8-4666-a7fb-03ecc385106c`

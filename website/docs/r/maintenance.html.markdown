@@ -14,27 +14,30 @@ Manages a Maintenance within Opsgenie.
 ```hcl
 resource "opsgenie_maintenance" "test" {
   description = "geniemaintenance-%s"
+  
   time {
-    type = "schedule"
+    type       = "schedule"
     start_date = "2019-06-20T17:45:00Z"
-    end_date  = "2019-06-20T17:50:00Z"
+    end_date   = "2019-06-20T17:50:00Z"
   }
-rules{
+
+  rules{}
 }
-}
-```
-```hcl
+
 resource "opsgenie_maintenance" "test" {
   description = "geniemaintenance-%s"
+  
   time {
-    type = "schedule"
+    type       = "schedule"
     start_date = "2019-06-20T17:45:00Z"
-    end_date  = "2019-06-%dT17:50:00Z"
+    end_date   = "2019-06-%dT17:50:00Z"
   }
+  
   rules {
     state = "enabled"
+  
     entity {
-      id = "${opsgenie_email_integration.test.id}"
+      id   = "${opsgenie_email_integration.test.id}"
       type = "integration"
     }
   }
@@ -78,6 +81,4 @@ The following attributes are exported:
 
 Maintenance policies can be imported using the `id`, e.g.
 
-```
-$ terraform import opsgenie_maintenance.test 812be1a1-32c8-4666-a7fb-03ecc385106c
-```
+`$ terraform import opsgenie_maintenance.test 812be1a1-32c8-4666-a7fb-03ecc385106c`

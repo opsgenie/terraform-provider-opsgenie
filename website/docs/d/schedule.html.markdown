@@ -13,18 +13,17 @@ Manages a Schedule within Opsgenie.
 ## Example Usage
 ```hcl
 resource "opsgenie_schedule" "test" {
-  name = "genieschedule-%s"
+  name        = "genieschedule-%s"
   description = "schedule test"
-  timezone = "Europe/Rome"
-  enabled = false
+  timezone    = "Europe/Rome"
+  enabled     = false
 }
-```
-```hcl
+
 resource "opsgenie_schedule" "test" {
-  name = "genieschedule-%s"
-  description = "schedule test"
-  timezone = "Europe/Rome"
-  enabled = false
+  name          = "genieschedule-%s"
+  description   = "schedule test"
+  timezone      = "Europe/Rome"
+  enabled       = false
   owner_team_id = "${opsgenie_team.test.id}"
 }
 ```

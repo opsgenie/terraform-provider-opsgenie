@@ -15,7 +15,6 @@ Manages existing User within Opsgenie.
 ```hcl
 data "opsgenie_user" "test" {
   username  = "user@domain.com"
-
 }
 ```
 

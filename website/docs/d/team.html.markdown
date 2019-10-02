@@ -14,7 +14,7 @@ Manages existing Team within Opsgenie.
 
 ```hcl
 data "opsgenie_team" "sre-team" {
-    name = "sre-team"
+  name = "sre-team"
 }
 
 ```

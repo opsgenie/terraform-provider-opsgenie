@@ -12,10 +12,8 @@ Manages an Escalation within Opsgenie.
 
 ## Example Usage
 ```hcl
-
 data "opsgenie_escalation" "test" {
- name ="existing-escalation"
-
+  name ="existing-escalation"
 }
 ```
 
