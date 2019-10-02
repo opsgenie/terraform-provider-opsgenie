@@ -16,7 +16,6 @@ Manages existing Team within Opsgenie.
 data "opsgenie_team" "sre-team" {
   name = "sre-team"
 }
-
 ```
 
 ## Argument Reference
