@@ -3,7 +3,7 @@ package opsgenie
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/heartbeat"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"regexp"

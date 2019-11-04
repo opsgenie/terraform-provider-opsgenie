@@ -1,4 +1,14 @@
 ## 0.2.4 (Unreleased)
+
+IMPROVEMENTS:
+
+* **Updated opsgenie-go-sdk-v2** 
+* **Migrated to terraform-plugin-sdk** 
+
+BUGFIXES:
+
+* Global heartbeat creation fixed.
+
 ## 0.2.3 (September 25, 2019)
 
 IMPROVEMENTS:
