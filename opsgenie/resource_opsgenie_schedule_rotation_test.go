@@ -34,7 +34,8 @@ func testSweepScheduleRotations(region string) error {
 	if err != nil {
 		return err
 	}
-	scheduleResp, err := client.List(context.Background(), &schedule.ListRequest{})
+	expand := false
+	scheduleResp, err := client.List(context.Background(), &schedule.ListRequest{Expand: &expand})
 	if err != nil {
 		return err
 	}
