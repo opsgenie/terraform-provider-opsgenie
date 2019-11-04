@@ -33,7 +33,8 @@ func testSweepSchedule(region string) error {
 	if err != nil {
 		return err
 	}
-	resp, err := client.List(context.Background(), &schedule.ListRequest{})
+	expand := false
+	resp, err := client.List(context.Background(), &schedule.ListRequest{Expand: &expand})
 	if err != nil {
 		return err
 	}
