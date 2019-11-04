@@ -96,9 +96,9 @@ func resourceOpsgenieApiIntegrationCreate(d *schema.ResourceData, meta interface
 	createRequest := &integration.APIBasedIntegrationRequest{
 		Name:                        name,
 		Type:                        integrationType,
-		AllowWriteAccess:            allowWriteAccess,
-		IgnoreRespondersFromPayload: ignoreRespondersFromPayload,
-		SuppressNotifications:       suppressNotifications,
+		AllowWriteAccess:            &allowWriteAccess,
+		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
+		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
 	}
 	if ownerTeam != "" {
@@ -175,10 +175,10 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		Id:                          d.Id(),
 		Name:                        name,
 		Type:                        integrationType,
-		IgnoreRespondersFromPayload: ignoreRespondersFromPayload,
-		SuppressNotifications:       suppressNotifications,
+		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
+		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
-		Enabled:                     enabled,
+		Enabled:                     &enabled,
 	}
 
 	log.Printf("[INFO] Updating OpsGenie api based integration '%s'", name)

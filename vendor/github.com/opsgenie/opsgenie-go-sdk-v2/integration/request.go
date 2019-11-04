@@ -48,9 +48,9 @@ type APIBasedIntegrationRequest struct {
 	client.BaseRequest
 	Name                        string        `json:"name"`
 	Type                        string        `json:"type"`
-	AllowWriteAccess            bool          `json:"allowWriteAccess,omitempty"`
-	IgnoreRespondersFromPayload bool          `json:"ignoreRespondersFromPayload,omitempty"`
-	SuppressNotifications       bool          `json:"suppressNotifications,omitempty"`
+	AllowWriteAccess            *bool         `json:"allowWriteAccess"`
+	IgnoreRespondersFromPayload *bool         `json:"ignoreRespondersFromPayload"`
+	SuppressNotifications       *bool         `json:"suppressNotifications"`
 	OwnerTeam                   *og.OwnerTeam `json:"ownerTeam,omitempty"`
 	Responders                  []Responder   `json:"responders,omitempty"`
 }
@@ -79,8 +79,8 @@ type EmailBasedIntegrationRequest struct {
 	Name                        string      `json:"name"`
 	Type                        string      `json:"type"`
 	EmailUsername               string      `json:"emailUsername"`
-	IgnoreRespondersFromPayload bool        `json:"ignoreRespondersFromPayload,omitempty"`
-	SuppressNotifications       bool        `json:"suppressNotifications,omitempty"`
+	IgnoreRespondersFromPayload *bool       `json:"ignoreRespondersFromPayload,omitempty"`
+	SuppressNotifications       *bool       `json:"suppressNotifications,omitempty"`
 	Responders                  []Responder `json:"responders,omitempty"`
 }
 
@@ -109,9 +109,9 @@ type UpdateIntegrationRequest struct {
 	Name                        string
 	Type                        string
 	EmailUsername               string
-	Enabled                     bool
-	IgnoreRespondersFromPayload bool
-	SuppressNotifications       bool
+	Enabled                     *bool
+	IgnoreRespondersFromPayload *bool
+	SuppressNotifications       *bool
 	Responders                  []Responder
 	OtherFields
 }
@@ -269,12 +269,12 @@ type CreateIntegrationActionsRequest struct {
 	Message                          string            `json:"message,omitempty"`
 	Description                      string            `json:"description,omitempty"`
 	Entity                           string            `json:"entity,omitempty"`
-	AppendAttachments                bool              `json:"appendAttachments,omitempty"`
+	AppendAttachments                *bool             `json:"appendAttachments,omitempty"`
 	AlertActions                     []string          `json:"alertActions,omitempty"`
-	IgnoreAlertActionsFromPayload    bool              `json:"ignoreAlertActionsFromPayload,omitempty"`
-	IgnoreRespondersFromPayload      bool              `json:"ignoreRespondersFromPayload,omitempty"`
-	IgnoreTagsFromPayload            bool              `json:"ignoreTagsFromPayload,omitempty"`
-	IgnoreExtraPropertiesFromPayload bool              `json:"ignoreExtraPropertiesFromPayload,omitempty"`
+	IgnoreAlertActionsFromPayload    *bool             `json:"ignoreAlertActionsFromPayload,omitempty"`
+	IgnoreRespondersFromPayload      *bool             `json:"ignoreRespondersFromPayload,omitempty"`
+	IgnoreTagsFromPayload            *bool             `json:"ignoreTagsFromPayload,omitempty"`
+	IgnoreExtraPropertiesFromPayload *bool             `json:"ignoreExtraPropertiesFromPayload,omitempty"`
 	Responders                       []Responder       `json:"responders,omitempty"`
 	Tags                             []string          `json:"tags,omitempty"`
 	ExtraProperties                  map[string]string `json:"extraProperties,omitempty"`
@@ -333,12 +333,12 @@ type IntegrationAction struct {
 	Message                          string            `json:"message,omitempty"`
 	Description                      string            `json:"description,omitempty"`
 	Entity                           string            `json:"entity,omitempty"`
-	AppendAttachments                bool              `json:"appendAttachments,omitempty"`
+	AppendAttachments                *bool             `json:"appendAttachments,omitempty"`
 	AlertActions                     []string          `json:"alertActions,omitempty"`
-	IgnoreAlertActionsFromPayload    bool              `json:"ignoreAlertActionsFromPayload,omitempty"`
-	IgnoreRespondersFromPayload      bool              `json:"ignoreRespondersFromPayload,omitempty"`
-	IgnoreTagsFromPayload            bool              `json:"ignoreTagsFromPayload,omitempty"`
-	IgnoreExtraPropertiesFromPayload bool              `json:"ignoreExtraPropertiesFromPayload,omitempty"`
+	IgnoreAlertActionsFromPayload    *bool             `json:"ignoreAlertActionsFromPayload,omitempty"`
+	IgnoreRespondersFromPayload      *bool             `json:"ignoreRespondersFromPayload,omitempty"`
+	IgnoreTagsFromPayload            *bool             `json:"ignoreTagsFromPayload,omitempty"`
+	IgnoreExtraPropertiesFromPayload *bool             `json:"ignoreExtraPropertiesFromPayload,omitempty"`
 	Responders                       []Responder       `json:"responders,omitempty"`
 	Tags                             []string          `json:"tags,omitempty"`
 	ExtraProperties                  map[string]string `json:"extraProperties,omitempty"`

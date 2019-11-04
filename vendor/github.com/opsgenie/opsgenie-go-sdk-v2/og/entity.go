@@ -296,13 +296,13 @@ type Restriction struct {
 }
 
 type Filter struct {
-	ConditionMatchType ConditionMatchType `json:"type,omitempty"`
+	ConditionMatchType ConditionMatchType `json:"conditionMatchType,omitempty"`
 	Conditions         []Condition        `json:"conditions,omitempty"`
 }
 
 type Condition struct {
 	Field         ConditionFieldType `json:"field,omitempty"`
-	IsNot         bool               `json:"not,omitempty"`
+	IsNot         *bool              `json:"not,omitempty"`
 	Operation     ConditionOperation `json:"operation,omitempty"`
 	ExpectedValue string             `json:"expectedValue,omitempty"`
 	Key           string             `json:"key,omitempty"`
@@ -335,7 +335,7 @@ type SendAfter struct {
 type Step struct {
 	Contact   Contact    `json:"contact,omitempty"`
 	SendAfter *SendAfter `json:"sendAfter,omitempty"`
-	Enabled   bool       `json:"enabled,omitempty"`
+	Enabled   *bool      `json:"enabled,omitempty"`
 }
 
 type Criteria struct {

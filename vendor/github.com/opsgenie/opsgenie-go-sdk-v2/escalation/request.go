@@ -18,8 +18,8 @@ const (
 type RepeatRequest struct {
 	WaitInterval         uint32 `json:"waitInterval,omitempty"`
 	Count                uint32 `json:"count,omitempty"`
-	ResetRecipientStates bool   `json:"resetRecipientStates,omitempty"`
-	CloseAlertAfterAll   bool   `json:"closeAlertAfterAll,omitempty"`
+	ResetRecipientStates *bool  `json:"resetRecipientStates,omitempty"`
+	CloseAlertAfterAll   *bool  `json:"closeAlertAfterAll,omitempty"`
 }
 
 type RuleRequest struct {

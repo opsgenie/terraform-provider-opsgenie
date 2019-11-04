@@ -78,10 +78,24 @@ type ParentIntegration struct {
 }
 
 type GenericActionFields struct {
-	Type   string    `json:"type"`
-	Name   string    `json:"name"`
-	Order  int       `json:"order"`
-	Filter og.Filter `json:"filter"`
+	Type   string       `json:"type"`
+	Name   string       `json:"name"`
+	Order  int          `json:"order"`
+	Filter FilterResult `json:"filter"`
+}
+
+type FilterResult struct {
+	ConditionMatchType og.ConditionMatchType `json:"conditionMatchType,omitempty"`
+	Conditions         []ConditionResult     `json:"conditions,omitempty"`
+}
+
+type ConditionResult struct {
+	Field         og.ConditionFieldType `json:"field,omitempty"`
+	IsNot         bool                  `json:"not,omitempty"`
+	Operation     og.ConditionOperation `json:"operation,omitempty"`
+	ExpectedValue string                `json:"expectedValue,omitempty"`
+	Key           string                `json:"key,omitempty"`
+	Order         *int                  `json:"order,omitempty"`
 }
 
 type CreateAction struct {

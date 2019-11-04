@@ -63,7 +63,7 @@ func resourceOpsgenieScheduleCreate(d *schema.ResourceData, meta interface{}) er
 
 	createRequest := &schedule.CreateRequest{
 		Name:        name,
-		Enabled:     enabled,
+		Enabled:     &enabled,
 		Description: description,
 		Timezone:    timezone,
 	}
@@ -127,7 +127,7 @@ func resourceOpsgenieScheduleUpdate(d *schema.ResourceData, meta interface{}) er
 		IdentifierType:  schedule.Id,
 		IdentifierValue: d.Id(),
 		Name:            name,
-		Enabled:         enabled,
+		Enabled:         &enabled,
 		Description:     description,
 		Timezone:        timezone,
 	}

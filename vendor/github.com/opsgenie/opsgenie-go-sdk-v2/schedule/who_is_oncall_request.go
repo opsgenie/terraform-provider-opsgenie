@@ -9,7 +9,7 @@ import (
 
 type GetOnCallsRequest struct {
 	client.BaseRequest
-	Flat                   bool
+	Flat                   *bool
 	Date                   *time.Time
 	ScheduleIdentifierType Identifier
 	ScheduleIdentifier     string
@@ -40,7 +40,7 @@ func (r *GetOnCallsRequest) RequestParams() map[string]string {
 	} else {
 		params["scheduleIdentifierType"] = "id"
 	}
-	if r.Flat {
+	if *r.Flat {
 		params["flat"] = "true"
 	}
 
@@ -53,7 +53,7 @@ func (r *GetOnCallsRequest) RequestParams() map[string]string {
 
 type GetNextOnCallsRequest struct {
 	client.BaseRequest
-	Flat                   bool
+	Flat                   *bool
 	Date                   *time.Time
 	ScheduleIdentifierType Identifier
 	ScheduleIdentifier     string
@@ -84,7 +84,7 @@ func (r *GetNextOnCallsRequest) RequestParams() map[string]string {
 	} else {
 		params["scheduleIdentifierType"] = "id"
 	}
-	if r.Flat {
+	if *r.Flat {
 		params["flat"] = "true"
 	}
 

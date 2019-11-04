@@ -203,7 +203,7 @@ github.com/mitchellh/mapstructure
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
-# github.com/opsgenie/opsgenie-go-sdk-v2 v0.0.0-20190925114845-8388ea1fcf79
+# github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.3
 github.com/opsgenie/opsgenie-go-sdk-v2/client
 github.com/opsgenie/opsgenie-go-sdk-v2/contact
 github.com/opsgenie/opsgenie-go-sdk-v2/escalation
@@ -215,7 +215,7 @@ github.com/opsgenie/opsgenie-go-sdk-v2/schedule
 github.com/opsgenie/opsgenie-go-sdk-v2/team
 github.com/opsgenie/opsgenie-go-sdk-v2/user
 github.com/opsgenie/opsgenie-go-sdk-v2/alert
-# github.com/pkg/errors v0.0.0-20170505043639-c605e284fe17
+# github.com/pkg/errors v0.8.1
 github.com/pkg/errors
 # github.com/posener/complete v1.2.1
 github.com/posener/complete
@@ -224,7 +224,7 @@ github.com/posener/complete/cmd
 github.com/posener/complete/match
 # github.com/satori/go.uuid v1.2.0
 github.com/satori/go.uuid
-# github.com/sirupsen/logrus v1.3.0
+# github.com/sirupsen/logrus v1.4.2
 github.com/sirupsen/logrus
 # github.com/spf13/afero v1.2.1
 github.com/spf13/afero
@@ -266,7 +266,6 @@ go.opencensus.io/internal/tagencoding
 # golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734
 golang.org/x/crypto/openpgp
 golang.org/x/crypto/bcrypt
-golang.org/x/crypto/ssh/terminal
 golang.org/x/crypto/ssh
 golang.org/x/crypto/openpgp/armor
 golang.org/x/crypto/openpgp/errors
@@ -281,7 +280,7 @@ golang.org/x/crypto/cast5
 golang.org/x/crypto/openpgp/elgamal
 golang.org/x/crypto/ed25519/internal/edwards25519
 golang.org/x/crypto/internal/subtle
-# golang.org/x/net v0.0.0-20190502183928-7f726cade0ab
+# golang.org/x/net v0.0.0-20190607181551-461777fb6f67
 golang.org/x/net/context
 golang.org/x/net/trace
 golang.org/x/net/internal/timeseries
@@ -298,7 +297,6 @@ golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
 # golang.org/x/sys v0.0.0-20190502175342-a43fa875dd82
 golang.org/x/sys/unix
-golang.org/x/sys/windows
 golang.org/x/sys/cpu
 # golang.org/x/text v0.3.2
 golang.org/x/text/unicode/norm
