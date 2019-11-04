@@ -7,7 +7,7 @@ import (
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/contact"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceOpsGenieUserContact() *schema.Resource {

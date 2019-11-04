@@ -7,7 +7,7 @@ import (
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/maintenance"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func resourceOpsgenieMaintenance() *schema.Resource {

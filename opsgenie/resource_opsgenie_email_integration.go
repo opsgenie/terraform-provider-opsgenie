@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
@@ -76,8 +76,8 @@ func resourceOpsgenieEmailIntegrationCreate(d *schema.ResourceData, meta interfa
 		Name:                        name,
 		Type:                        EmailIntegrationType,
 		EmailUsername:               emailUsername,
-		IgnoreRespondersFromPayload: ignoreRespondersFromPayload,
-		SuppressNotifications:       suppressNotifications,
+		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
+		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
 	}
 
@@ -141,10 +141,10 @@ func resourceOpsgenieEmailIntegrationUpdate(d *schema.ResourceData, meta interfa
 		Name:                        name,
 		Type:                        EmailIntegrationType,
 		EmailUsername:               emailUsername,
-		IgnoreRespondersFromPayload: ignoreRespondersFromPayload,
-		SuppressNotifications:       suppressNotifications,
+		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
+		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
-		Enabled:                     enabled,
+		Enabled:                     &enabled,
 	}
 
 	log.Printf("[INFO] Updating OpsGenie email based integration '%s'", name)

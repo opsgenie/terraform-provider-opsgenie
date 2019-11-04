@@ -8,7 +8,7 @@ import (
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/escalation"
 )
 
@@ -296,10 +296,12 @@ func expandOpsgenieEscalationRepeat(d *schema.ResourceData) *escalation.RepeatRe
 	repeat := escalation.RepeatRequest{}
 	for _, r := range input {
 		repeatMap := r.(map[string]interface{})
+		resetRecipientState := repeatMap["reset_recipient_states"].(bool)
+		closeAlertAfterAll := repeatMap["close_alert_after_all"].(bool)
 		repeat.WaitInterval = uint32(repeatMap["wait_interval"].(int))
 		repeat.Count = uint32(repeatMap["count"].(int))
-		repeat.ResetRecipientStates = repeatMap["reset_recipient_states"].(bool)
-		repeat.CloseAlertAfterAll = repeatMap["close_alert_after_all"].(bool)
+		repeat.ResetRecipientStates = &resetRecipientState
+		repeat.CloseAlertAfterAll = &closeAlertAfterAll
 	}
 
 	return &repeat

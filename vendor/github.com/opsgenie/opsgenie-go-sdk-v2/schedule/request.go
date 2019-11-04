@@ -17,7 +17,7 @@ type CreateRequest struct {
 	Name        string        `json:"name"`
 	Description string        `json:"description,omitempty"`
 	Timezone    string        `json:"timezone,omitempty"`
-	Enabled     bool          `json:"enabled,omitempty"`
+	Enabled     *bool         `json:"enabled,omitempty"`
 	OwnerTeam   *og.OwnerTeam `json:"ownerTeam,omitempty"`
 	Rotations   []og.Rotation `json:"rotations,omitempty"`
 }
@@ -84,7 +84,7 @@ type UpdateRequest struct {
 	Name            string        `json:"name, omitempty"`
 	Description     string        `json:"description,omitempty"`
 	Timezone        string        `json:"timezone,omitempty"`
-	Enabled         bool          `json:"enabled,omitempty"`
+	Enabled         *bool         `json:"enabled,omitempty"`
 	OwnerTeam       *og.OwnerTeam `json:"ownerTeam,omitempty"`
 	Rotations       []og.Rotation `json:"rotations,omitempty"`
 }
@@ -161,7 +161,7 @@ func (r *DeleteRequest) RequestParams() map[string]string {
 
 type ListRequest struct {
 	client.BaseRequest
-	Expand bool
+	Expand *bool
 }
 
 func (r *ListRequest) Validate() error {
@@ -181,7 +181,7 @@ func (r *ListRequest) RequestParams() map[string]string {
 
 	params := make(map[string]string)
 
-	if r.Expand {
+	if *r.Expand {
 		params["expand"] = "rotation"
 
 	}

@@ -3,7 +3,7 @@ package opsgenie
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/heartbeat"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"regexp"
@@ -84,7 +84,7 @@ func resourceOpsgenieHeartbeatCreate(d *schema.ResourceData, meta interface{}) e
 		Description:   description,
 		Interval:      interval,
 		IntervalUnit:  heartbeat.Unit(intervalUnit),
-		Enabled:       enabled,
+		Enabled:       &enabled,
 		AlertMessage:  alertMessage,
 		AlertTag:      flattenTags(d),
 		AlertPriority: alertPriority,
@@ -148,7 +148,7 @@ func resourceOpsgenieHeartbeatUpdate(d *schema.ResourceData, meta interface{}) e
 		Description:   description,
 		Interval:      interval,
 		IntervalUnit:  heartbeat.Unit(intervalUnit),
-		Enabled:       enabled,
+		Enabled:       &enabled,
 		AlertMessage:  alertMessage,
 		AlertTag:      flattenTags(d),
 		AlertPriority: alertPriority,

@@ -213,7 +213,7 @@ func (r *ListTeamLogsRequest) RequestParams() map[string]string {
 //team role api
 type Right struct {
 	Right   string `json:"right"`
-	Granted bool   `json:"granted"`
+	Granted *bool  `json:"granted"`
 }
 
 type CreateTeamRoleRequest struct {
