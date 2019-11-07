@@ -51,7 +51,7 @@ The following arguments are supported:
 
 * `name` - (Required) Name of the integration. Name must be unique for each integration.
 
-* `type` - (Optional) Type of the integration (API, Marid, Prometheus, etc). The full list of options can be fetched from the [OpsGenie API](https://docs.opsgenie.com/docs/integration-api#section-list-integrations).
+* `type` - (Optional) Type of the integration (API, Marid, Prometheus, etc). The full list of options can be found [here](https://docs.opsgenie.com/docs/integration-types-to-use-with-api).
 
 * `allow_write_access` - (Optional) This parameter is for configuring the write access of integration. If write access is restricted, the integration will not be authorized to write within any domain. Defaults to true.
 
