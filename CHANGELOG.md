@@ -1,3 +1,4 @@
+## 0.2.6 (Unreleased)
 ## 0.2.5 (November 19, 2019)
 
 IMPROVEMENTS:
