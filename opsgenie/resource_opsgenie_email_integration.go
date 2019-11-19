@@ -2,6 +2,7 @@ package opsgenie
 
 import (
 	"context"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -40,6 +41,10 @@ func resourceOpsgenieEmailIntegration() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+			"owner_team_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"responders": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -71,6 +76,7 @@ func resourceOpsgenieEmailIntegrationCreate(d *schema.ResourceData, meta interfa
 	ignoreRespondersFromPayload := d.Get("ignore_responders_from_payload").(bool)
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	enabled := d.Get("enabled").(bool)
+	ownerTeam := d.Get("owner_team_id").(string)
 
 	createRequest := &integration.EmailBasedIntegrationRequest{
 		Name:                        name,
@@ -79,6 +85,12 @@ func resourceOpsgenieEmailIntegrationCreate(d *schema.ResourceData, meta interfa
 		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
 		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
+	}
+
+	if ownerTeam != "" {
+		createRequest.OwnerTeam = &og.OwnerTeam{
+			Id: ownerTeam,
+		}
 	}
 
 	log.Printf("[INFO] Creating OpsGenie email integration '%s'", name)

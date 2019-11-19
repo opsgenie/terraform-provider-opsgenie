@@ -1,4 +1,13 @@
 ## 0.2.5 (Unreleased)
+
+IMPROVEMENTS:
+
+* **Updated opsgenie-go-sdk-v2** 
+
+BUGFIXES:
+
+* OwnerTeam filed added to EmailBasedIntegrations https://github.com/terraform-providers/terraform-provider-opsgenie/issues/40
+
 ## 0.2.4 (November 04, 2019)
 
 IMPROVEMENTS:
