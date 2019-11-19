@@ -76,12 +76,13 @@ func (r *APIBasedIntegrationRequest) Method() string {
 
 type EmailBasedIntegrationRequest struct {
 	client.BaseRequest
-	Name                        string      `json:"name"`
-	Type                        string      `json:"type"`
-	EmailUsername               string      `json:"emailUsername"`
-	IgnoreRespondersFromPayload *bool       `json:"ignoreRespondersFromPayload,omitempty"`
-	SuppressNotifications       *bool       `json:"suppressNotifications,omitempty"`
-	Responders                  []Responder `json:"responders,omitempty"`
+	Name                        string        `json:"name"`
+	Type                        string        `json:"type"`
+	EmailUsername               string        `json:"emailUsername"`
+	IgnoreRespondersFromPayload *bool         `json:"ignoreRespondersFromPayload,omitempty"`
+	SuppressNotifications       *bool         `json:"suppressNotifications,omitempty"`
+	OwnerTeam                   *og.OwnerTeam `json:"ownerTeam,omitempty"`
+	Responders                  []Responder   `json:"responders,omitempty"`
 }
 
 func (r *EmailBasedIntegrationRequest) Validate() error {

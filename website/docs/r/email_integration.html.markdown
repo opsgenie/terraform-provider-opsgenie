@@ -46,6 +46,24 @@ resource "opsgenie_email_integration" "test" {
   ignore_responders_from_payload = true
   suppress_notifications         = true
 }
+
+
+resource "opsgenie_email_integration" "test" {
+  name = "genieintegration-%s"
+
+  responders {
+    type = "user"
+    id   = "${opsgenie_user.test.id}"
+  }
+
+  email_username                 = "test"
+  enabled                        = true
+  ignore_responders_from_payload = true
+  suppress_notifications         = true
+  owner_team_id                  = "${opsgenie_team_genies.id}"
+
+}
+
 ```
 
 ## Argument Reference

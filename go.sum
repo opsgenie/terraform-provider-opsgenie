@@ -168,6 +168,8 @@ github.com/onsi/ginkgo v1.7.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+W
 github.com/onsi/gomega v1.4.3/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1CpauHY=
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.3 h1:XAqJ0IIb/Q/mss3OMrXInA6KOQzGOrZRtJIY7qWpSxQ=
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.3/go.mod h1:f0ezb0R/mrB9Hpm5RrIS6EX3ydjsR2nAB88nYYXZcNY=
+github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.4-0.20191118113006-8251c4baf730 h1:Mzaem+i8WSQef9YY4xrqh8utl76v1PsDS3wxqmXMivM=
+github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.4-0.20191118113006-8251c4baf730/go.mod h1:f0ezb0R/mrB9Hpm5RrIS6EX3ydjsR2nAB88nYYXZcNY=
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
