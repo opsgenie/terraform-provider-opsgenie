@@ -351,6 +351,7 @@ const (
 	Default  NotifyType = "default"
 	Users    NotifyType = "users"
 	Admins   NotifyType = "admins"
+	Random   NotifyType = "random"
 	All      NotifyType = "all"
 )
 

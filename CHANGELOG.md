@@ -1,4 +1,10 @@
 ## 0.2.6 (Unreleased)
+
+BUGFIXES:
+
+* Random NotifyType added.
+
+
 ## 0.2.5 (November 19, 2019)
 
 IMPROVEMENTS:

@@ -315,6 +315,7 @@ func validateOpsgenieEscalationRulesNotifyType(v interface{}, k string) (ws []st
 		"previous": true,
 		"users":    true,
 		"admins":   true,
+		"random":   true,
 		"all":      true,
 	}
 
