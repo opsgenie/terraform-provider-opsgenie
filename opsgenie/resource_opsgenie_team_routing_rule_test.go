@@ -67,8 +67,11 @@ func testSweepTeamRoutingRule(region string) error {
 }
 
 func TestAccOpsGenieTeamRoutingRule_basic(t *testing.T) {
-	rs := acctest.RandString(6)
-	config := testAccOpsGenieTeamRoutingRule_basic(rs)
+	teamName := acctest.RandString(6)
+	scheduleName := acctest.RandString(6)
+	routeRuleName := acctest.RandString(6)
+
+	config := testAccOpsGenieTeamRoutingRule_basic(scheduleName, teamName, routeRuleName)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -139,40 +142,50 @@ func testCheckOpsGenieTeamRoutingRuleExists(name string) resource.TestCheckFunc 
 	}
 }
 
-func testAccOpsGenieTeamRoutingRule_basic(rString string) string {
+func testAccOpsGenieTeamRoutingRule_basic(scheduleName, teamName, routingRuleName string) string {
 	return fmt.Sprintf(`
-	resource "opsgenie_team_routing_rule" "test" {
-	name        = "genieteam-%s"
-	team_id = "a9b12343-c2c1-4d3f-8412-d715f7a2fc28"
-	order = 0
-	timezone = "America/Los_Angeles"
-	criteria  {
-	type = "match-any-condition"
-	conditions {
-	field = "message"
-	operation = "contains"
-	expected_value = "expected1"
-    not = false
-
-    }
-	}
-	time_restriction {
-	type = "weekday-and-time-of-day"
-    restrictions {
-	start_day="monday"
-	start_hour = 8
-	start_min = 0
-	end_day = "tuesday"
-	end_hour = 18
-	end_min = 30
-	}
-	}
- notify {
-        name="uuu-test-team-ops_schedule"
-        type="schedule"
-    }
-
+resource "opsgenie_schedule" "test" {
+  name = "genieschedule-%s"
+  description = "schedule test"
+  timezone = "Europe/Rome"
+  enabled = false
 }
 
-`, rString)
+resource "opsgenie_team" "test" {
+  name        = "genieteam-%s"
+  description = "This team deals with all the things"
+}
+
+resource "opsgenie_team_routing_rule" "test" {
+  name     = "genieteam-%s"
+  team_id  = "${opsgenie_team.test.id}"
+  order    = 0
+  timezone = "America/Los_Angeles"
+  criteria {
+    type = "match-any-condition"
+    conditions {
+      field          = "message"
+      operation      = "contains"
+      expected_value = "expected1"
+      not            = false
+    }
+  }
+  time_restriction {
+    type = "weekday-and-time-of-day"
+    restrictions {
+      start_day  = "monday"
+      start_hour = 8
+      start_min  = 0
+      end_day    = "tuesday"
+      end_hour   = 18
+      end_min    = 30
+    }
+  }
+  notify {
+    name = "${opsgenie_schedule.test.name}"
+    type = "schedule"
+  }
+
+}
+`, scheduleName, teamName, routingRuleName)
 }

@@ -1,8 +1,14 @@
 ## 0.2.6 (Unreleased)
 
+IMPROVEMENTS:
+
+* **Updated opsgenie-go-sdk-v2** 
+
+* **New Resource:** Team Routing Rule
+
 BUGFIXES:
 
-* Random NotifyType added.
+* 'Random' NotifyType added.
 
 
 ## 0.2.5 (November 19, 2019)

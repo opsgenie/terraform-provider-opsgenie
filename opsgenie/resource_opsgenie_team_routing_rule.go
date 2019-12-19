@@ -43,10 +43,12 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 						"id": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"name": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"type": {
 							Type:     schema.TypeString,
@@ -230,8 +232,8 @@ func resourceOpsGenieTeamRoutingRuleRead(d *schema.ResourceData, meta interface{
 
 	d.Set("name", result.Name)
 	d.Set("time_restriction", flattenOpsgenieTimeRestriction(result.TimeRestriction))
-	//d.Set("notify", flattenOpsgenieNotify(result.Notify))
-	//	d.Set("criteria", flattenOpsgenieCriteria(result.Criteria))
+	d.Set("notify", flattenOpsgenieNotify(result.Notify))
+	d.Set("criteria", flattenOpsgenieCriteria(result.Criteria))
 	d.Set("timezone", result.Timezone)
 
 	return nil
@@ -297,6 +299,7 @@ func flattenOpsgenieNotify(input team.Notify) []map[string]interface{} {
 	rules := make([]map[string]interface{}, 0, 1)
 	out := make(map[string]interface{})
 	out["type"] = input.Type
+
 	out["id"] = input.Id
 	out["name"] = input.Name
 	rules = append(rules, out)
