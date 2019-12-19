@@ -167,6 +167,9 @@ func setConfiguration(opsGenieClient *OpsGenieClient, cfg *Config) {
 	if cfg.RequestTimeout != 0 {
 		opsGenieClient.RetryableClient.HTTPClient.Timeout = cfg.RequestTimeout
 	}
+	if cfg.ProxyConfiguration != nil {
+		setProxySettings(opsGenieClient)
+	}
 	opsGenieClient.Config.apiUrl = string(cfg.OpsGenieAPIURL)
 }
 
@@ -363,43 +366,35 @@ func (cli *OpsGenieClient) buildHttpRequest(apiRequest ApiRequest) (*request, er
 }
 
 func buildRequestUrl(cli *OpsGenieClient, apiRequest ApiRequest, queryParams url.Values) string {
-	var scheme = "https"
-	var user *url.Userinfo
-	var host = cli.Config.apiUrl
-	if cli.Config.ProxyConfiguration != nil {
-		scheme = string(cli.Config.ProxyConfiguration.Protocol)
-		if cli.Config.ProxyConfiguration.Username != "" {
-			user = url.UserPassword(cli.Config.ProxyConfiguration.Username, cli.Config.ProxyConfiguration.Password)
-		}
-		host = cli.Config.ProxyConfiguration.Host
-		if cli.Config.ProxyConfiguration.Port != 0 {
-			host = host + ":" + strconv.Itoa(cli.Config.ProxyConfiguration.Port)
-		}
-	}
 	requestUrl := url.URL{
-		User:     user,
-		Scheme:   scheme,
-		Host:     host,
+		Scheme:   string(Https),
+		Host:     cli.Config.apiUrl,
 		Path:     apiRequest.ResourcePath(),
 		RawQuery: queryParams.Encode(),
 	}
-
 	//test purposes only
 	if !strings.Contains(cli.Config.apiUrl, "api") {
 		requestUrl.Scheme = "http"
 	}
 	//
-
-	if cli.Config.ProxyConfiguration != nil {
-		proxyUrl, err := url.Parse(requestUrl.String())
-		if err != nil {
-			fmt.Println(err)
-		}
-		cli.RetryableClient.HTTPClient.Transport = &http.Transport{
-			Proxy: http.ProxyURL(proxyUrl),
-		}
-	}
 	return requestUrl.String()
+}
+
+func setProxySettings(cli *OpsGenieClient) {
+	proxy := cli.Config.ProxyConfiguration.Host
+	if cli.Config.ProxyConfiguration.Port != 0 {
+		proxy = proxy + ":" + strconv.Itoa(cli.Config.ProxyConfiguration.Port)
+	}
+	proxyUrl := &url.URL{
+		Host:   proxy,
+		Scheme: string(cli.Config.ProxyConfiguration.Protocol),
+	}
+	if cli.Config.ProxyConfiguration.Username != "" {
+		proxyUrl.User = url.UserPassword(cli.Config.ProxyConfiguration.Username, cli.Config.ProxyConfiguration.Password)
+	}
+	cli.RetryableClient.HTTPClient.Transport = &http.Transport{
+		Proxy: http.ProxyURL(proxyUrl),
+	}
 }
 
 func setBodyAsJson(buf *io.ReadWriter, apiRequest ApiRequest, contentType *string, details map[string]interface{}) error {

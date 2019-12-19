@@ -194,7 +194,7 @@ func resourceOpsgenieScheduleRotationCreate(d *schema.ResourceData, meta interfa
 		createRequest.Rotation.Length = uint32(length)
 	}
 	if len(timeRestriction) > 0 {
-		createRequest.Rotation.TimeRestriction = expandOpsgenieScheduleTimeRestrictions(timeRestriction)
+		createRequest.Rotation.TimeRestriction = expandTimeRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Creating OpsGenie rotation '%s'", name)
@@ -290,7 +290,7 @@ func resourceOpsgenieScheduleRotationUpdate(d *schema.ResourceData, meta interfa
 		updateRequest.Rotation.EndDate = &endDate
 	}
 	if len(timeRestriction) > 0 {
-		updateRequest.Rotation.TimeRestriction = expandOpsgenieScheduleTimeRestrictions(timeRestriction)
+		updateRequest.Rotation.TimeRestriction = expandTimeRestrictions(timeRestriction)
 	}
 	log.Printf("[INFO] Updating OpsGenie schedule rotation '%s'", name)
 
@@ -347,7 +347,7 @@ func expandOpsgenieScheduleParticipants(input []interface{}) []og.Participant {
 
 	return participants
 }
-func expandOpsgenieScheduleTimeRestrictions(d []interface{}) *og.TimeRestriction {
+func expandTimeRestrictions(d []interface{}) *og.TimeRestriction {
 
 	timeRestriction := og.TimeRestriction{}
 
@@ -358,16 +358,16 @@ func expandOpsgenieScheduleTimeRestrictions(d []interface{}) *og.TimeRestriction
 		timeRestriction.Type = og.RestrictionType(timeRestrictionType)
 
 		if len(config["restrictions"].([]interface{})) > 0 {
-			timeRestriction.RestrictionList = expandOpsgenieScheduleRestrictions(config["restrictions"].([]interface{}))
+			timeRestriction.RestrictionList = expandOpsgenieRestrictions(config["restrictions"].([]interface{}))
 		} else {
-			timeRestriction.Restriction = expandOpsgenieScheduleRestriction(config["restriction"].([]interface{}))
+			timeRestriction.Restriction = expandOpsgenieRestriction(config["restriction"].([]interface{}))
 		}
 	}
 
 	return &timeRestriction
 }
 
-func expandOpsgenieScheduleRestrictions(input []interface{}) []og.Restriction {
+func expandOpsgenieRestrictions(input []interface{}) []og.Restriction {
 	restrictionList := make([]og.Restriction, 0, len(input))
 
 	if input == nil {
@@ -395,7 +395,7 @@ func expandOpsgenieScheduleRestrictions(input []interface{}) []og.Restriction {
 	return restrictionList
 }
 
-func expandOpsgenieScheduleRestriction(input []interface{}) og.Restriction {
+func expandOpsgenieRestriction(input []interface{}) og.Restriction {
 
 	restriction := og.Restriction{}
 	for _, v := range input {

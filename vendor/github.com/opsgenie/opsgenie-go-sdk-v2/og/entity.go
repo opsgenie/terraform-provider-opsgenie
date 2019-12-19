@@ -119,6 +119,22 @@ func ValidateFilter(filter Filter) error {
 	return nil
 }
 
+func ValidateCriteria(criteria Criteria) error {
+	if criteria.CriteriaType != MatchAll && criteria.CriteriaType != MatchAllConditions && criteria.CriteriaType != MatchAnyCondition {
+		return errors.New("criteria condition type should be one of match-all, match-any-condition or match-all-conditions")
+	}
+	if (criteria.CriteriaType == MatchAllConditions || criteria.CriteriaType == MatchAnyCondition) && len(criteria.Conditions) == 0 {
+		return errors.New("criteria conditions cannot be empty")
+	}
+	if len(criteria.Conditions) > 0 {
+		err := ValidateConditions(criteria.Conditions)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func ValidateConditions(conditions []Condition) error {
 	for _, condition := range conditions {
 		if condition.Field != ExtraProperties && condition.Key != "" {
@@ -351,6 +367,7 @@ const (
 	Default  NotifyType = "default"
 	Users    NotifyType = "users"
 	Admins   NotifyType = "admins"
+	Random   NotifyType = "random"
 	All      NotifyType = "all"
 )
 

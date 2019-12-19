@@ -608,7 +608,7 @@ type CreateRoutingRuleRequest struct {
 	Name                string              `json:"name,omitempty"`
 	Order               *int                `json:"order,omitempty"`
 	Timezone            string              `json:"timezone,omitempty"`
-	Criteria            *og.Filter          `json:"criteria,omitempty"`
+	Criteria            *og.Criteria        `json:"criteria,omitempty"`
 	TimeRestriction     *og.TimeRestriction `json:"timeRestriction,omitempty"`
 	Notify              *Notify             `json:"notify"`
 }
@@ -635,7 +635,7 @@ func (r *CreateRoutingRuleRequest) Validate() error {
 	}
 
 	if r.Criteria != nil {
-		err = og.ValidateFilter(*r.Criteria)
+		err = og.ValidateCriteria(*r.Criteria)
 		if err != nil {
 			return err
 		}
@@ -722,7 +722,7 @@ type UpdateRoutingRuleRequest struct {
 	RoutingRuleId       string
 	Name                string              `json:"name,omitempty"`
 	Timezone            string              `json:"timezone,omitempty"`
-	Criteria            *og.Filter          `json:"criteria,omitempty"`
+	Criteria            *og.Criteria        `json:"criteria,omitempty"`
 	TimeRestriction     *og.TimeRestriction `json:"timeRestriction,omitempty"`
 	Notify              *Notify             `json:"notify,omitempty"`
 }
@@ -745,7 +745,7 @@ func (r *UpdateRoutingRuleRequest) Validate() error {
 	}
 
 	if r.Criteria != nil {
-		err = og.ValidateFilter(*r.Criteria)
+		err = og.ValidateCriteria(*r.Criteria)
 		if err != nil {
 			return err
 		}
