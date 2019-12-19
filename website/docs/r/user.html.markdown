@@ -30,7 +30,7 @@ The following arguments are supported:
 
 * `full_name` - (Required) The Full Name of the User.
 
-* `role` - (Required) The Role assigned to the User. Either a built-in such as 'Owner', 'Admin' or 'User' - or the name of a custom role.
+* `role` - (Required) The Role assigned to the User. Either a built-in such as 'Admin' or 'User' - or the name of a custom role.
 
 * `locale` - (Optional) Location information for the user. Please look at [Supported Locale Ids](https://docs.opsgenie.com/docs/supported-locales) for available locales.
 

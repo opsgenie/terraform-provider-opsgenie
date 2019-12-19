@@ -1,4 +1,11 @@
-## 0.2.5 (Unreleased)
+## 0.2.6 (Unreleased)
+
+BUGFIXES:
+
+* Random NotifyType added.
+
+
+## 0.2.5 (November 19, 2019)
 
 IMPROVEMENTS:
 
@@ -6,7 +13,7 @@ IMPROVEMENTS:
 
 BUGFIXES:
 
-* OwnerTeam filed added to EmailBasedIntegrations https://github.com/terraform-providers/terraform-provider-opsgenie/issues/40
+* OwnerTeam field added to EmailBasedIntegrations https://github.com/terraform-providers/terraform-provider-opsgenie/issues/40
 
 ## 0.2.4 (November 04, 2019)
 
