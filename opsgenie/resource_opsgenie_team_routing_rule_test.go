@@ -18,7 +18,7 @@ import (
 func init() {
 	resource.AddTestSweepers("opsgenie_team_routing_rule", &resource.Sweeper{
 		Name: "opsgenie_team_routing_roule",
-		F:    testSweepTeam,
+		F:    testSweepTeamRoutingRule,
 	})
 
 }
@@ -40,15 +40,25 @@ func testSweepTeamRoutingRule(region string) error {
 
 	for _, u := range resp.Teams {
 		if strings.HasPrefix(u.Name, "genieteam") {
-			log.Printf("Destroying team %s", u.Name)
-
-			deleteRequest := team.DeleteTeamRequest{
-				IdentifierType:  team.Id,
-				IdentifierValue: u.Id,
-			}
-
-			if _, err := client.Delete(context.Background(), &deleteRequest); err != nil {
+			log.Printf("Destroying team routing rule %s", u.Name)
+			resp2, err := client.ListRoutingRules(context.Background(), &team.ListRoutingRulesRequest{
+				TeamIdentifierType:  team.Id,
+				TeamIdentifierValue: u.Id,
+			})
+			if err != nil {
 				return err
+			}
+			for _, k := range resp2.RoutingRules {
+
+				deleteRequest := team.DeleteRoutingRuleRequest{
+					TeamIdentifierType:  team.Id,
+					TeamIdentifierValue: u.Id,
+					RoutingRuleId:       k.Id,
+				}
+
+				if _, err := client.DeleteRoutingRule(context.Background(), &deleteRequest); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -67,7 +77,7 @@ func TestAccOpsGenieTeamRoutingRule_basic(t *testing.T) {
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
-					testCheckOpsGenieTeamExists("opsgenie_team_routing_rule.test"),
+					testCheckOpsGenieTeamRoutingRuleExists("opsgenie_team_routing_rule.test"),
 				),
 			},
 		},
@@ -84,15 +94,16 @@ func testCheckOpsGenieTeamRoutingRuleDestroy(s *terraform.State) error {
 			continue
 		}
 
-		req := team.GetTeamRequest{
-			IdentifierType:  team.Id,
-			IdentifierValue: rs.Primary.Attributes["id"],
+		req := team.GetRoutingRuleRequest{
+			TeamIdentifierType:  team.Id,
+			TeamIdentifierValue: rs.Primary.Attributes["team_id"],
+			RoutingRuleId:       rs.Primary.Attributes["id"],
 		}
-		_, err := client.Get(context.Background(), &req)
+		_, err := client.GetRoutingRule(context.Background(), &req)
 		if err != nil {
 			x := err.(*ogClient.ApiError)
 			if x.StatusCode != 404 {
-				return errors.New(fmt.Sprintf("Team still exists : %s", x.Error()))
+				return errors.New(fmt.Sprintf("Team routing rule still exists : %s", x.Error()))
 			}
 		}
 	}
@@ -109,20 +120,20 @@ func testCheckOpsGenieTeamRoutingRuleExists(name string) resource.TestCheckFunc 
 		}
 
 		id := rs.Primary.Attributes["id"]
-		teamname := rs.Primary.Attributes["name"]
 
 		client, err := team.NewClient(testAccProvider.Meta().(*OpsgenieClient).client.Config)
 		if err != nil {
 			return err
 		}
-		req := team.GetTeamRequest{
-			IdentifierType:  team.Id,
-			IdentifierValue: rs.Primary.Attributes["id"],
+		req := team.GetRoutingRuleRequest{
+			TeamIdentifierType:  team.Id,
+			TeamIdentifierValue: rs.Primary.Attributes["team_id"],
+			RoutingRuleId:       id,
 		}
 
-		_, err = client.Get(context.Background(), &req)
+		_, err = client.GetRoutingRule(context.Background(), &req)
 		if err != nil {
-			return fmt.Errorf("Bad: Team %q (teamname: %q) does not exist", id, teamname)
+			return fmt.Errorf("Bad: Team routing rule %q  does not exist", id)
 		}
 		return nil
 	}
@@ -130,14 +141,38 @@ func testCheckOpsGenieTeamRoutingRuleExists(name string) resource.TestCheckFunc 
 
 func testAccOpsGenieTeamRoutingRule_basic(rString string) string {
 	return fmt.Sprintf(`
-resource "opsgenie_team_routing_rule" "test" {
-  name        = "genieteam-%s"
-  team_id = "a"
-  order = 1
-criteria = {
-id="id"
-role="fahri"
-}	
+	resource "opsgenie_team_routing_rule" "test" {
+	name        = "genieteam-%s"
+	team_id = "a9b12343-c2c1-4d3f-8412-d715f7a2fc28"
+	order = 0
+	timezone = "America/Los_Angeles"
+	criteria  {
+	type = "match-any-condition"
+	conditions {
+	field = "message"
+	operation = "contains"
+	expected_value = "expected1"
+    not = false
+
+    }
+	}
+	time_restriction {
+	type = "weekday-and-time-of-day"
+    restrictions {
+	start_day="monday"
+	start_hour = 8
+	start_min = 0
+	end_day = "tuesday"
+	end_hour = 18
+	end_min = 30
+	}
+	}
+ notify {
+        name="uuu-test-team-ops_schedule"
+        type="schedule"
+    }
+
 }
+
 `, rString)
 }

@@ -203,7 +203,7 @@ func validateRules(rules []RuleRequest) error {
 			return errors.New("Rule Condition should be one of these: 'if-not-acked', 'if-not-closed'.")
 		}
 		switch rule.NotifyType {
-		case og.Next, og.Previous, og.Default, og.Users, og.Admins, og.All:
+		case og.Next, og.Previous, og.Default, og.Users, og.Admins, og.All, og.Random:
 			break
 		default:
 			return errors.New("Notify Type should be one of these: 'next', 'previous', 'default', 'users', 'admins', 'all'.")

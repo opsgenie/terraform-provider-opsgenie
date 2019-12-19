@@ -4,7 +4,7 @@ import "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 
 type Maintenance struct {
 	Id          string `json:"id"`
-	Status      string `json:"planned"`
+	Status      string `json:"status"`
 	Time        Time   `json:"time"`
 	Description string `json:"description"`
 }
@@ -22,7 +22,7 @@ type UpdateResult struct {
 type GetResult struct {
 	client.ResultMetadata
 	Id          string `json:"id"`
-	Status      string `json:"planned"`
+	Status      string `json:"status"`
 	Time        Time   `json:"time"`
 	Description string `json:"description"`
 	Results     []Rule `json:"rules"`
