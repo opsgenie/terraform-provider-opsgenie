@@ -14,21 +14,21 @@ Manages a User Contact.
 
 ```hcl
 resource "opsgenie_user_contact" "sms" {
-  user_id = "${opsgenie_user.exampleuser.id}"
-  to      = "39-123"
-  method  = "sms"
+  username = "${opsgenie_user.exampleuser.username}"
+  to       = "39-123"
+  method   = "sms"
 }
 
 resource "opsgenie_user_contact" "email" {
-  user_id = "${opsgenie_user.exampleuser.id}"
-  to      = "fahri@opsgenie.com"
-  method  = "email"
+  username = "${opsgenie_user.exampleuser.username}"
+  to       = "fahri@opsgenie.com"
+  method   = "email"
 }
 
 resource "opsgenie_user_contact" "voice" {
-  user_id = "${opsgenie_user.exampleuser.id}"
-  to      = "39-123"
-  method  = "voice"
+  username = "${opsgenie_user.exampleuser.username}"
+  to       = "39-123"
+  method   = "voice"
 }
 ```
 
