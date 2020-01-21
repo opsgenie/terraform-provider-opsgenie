@@ -55,4 +55,10 @@ The following attributes are exported:
 
 Users can be imported using the `id`, e.g.
 
-`$ terraform import opsgenie_user_contact.testcontact da4faf16-5546-41e4-8330-4d0002b74048`
+`$ terraform import opsgenie_user_contact.testcontact username/contactId`
+
+For this example:
+- Username = `genie@awesometeam.com` 
+- Contact Id = `2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+
+`$ terraform import opsgenie_user_contact.testcontact genie@awesometeam.com/2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
