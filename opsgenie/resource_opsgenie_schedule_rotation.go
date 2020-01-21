@@ -20,7 +20,17 @@ func resourceOpsgenieScheduleRotation() *schema.Resource {
 		Update: resourceOpsgenieScheduleRotationUpdate,
 		Delete: resourceOpsgenieScheduleRotationDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				idParts := strings.Split(d.Id(), "/")
+				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected schedule_id/schedule_rotation_id", d.Id())
+				}
+				scheduleId := idParts[0]
+				scheduleRotationId := idParts[1]
+				d.Set("schedule_id", scheduleId)
+				d.SetId(scheduleRotationId)
+				return []*schema.ResourceData{d}, nil
+			},
 		},
 		Schema: map[string]*schema.Schema{
 			"schedule_id": {

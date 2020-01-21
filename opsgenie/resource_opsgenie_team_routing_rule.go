@@ -2,8 +2,10 @@ package opsgenie
 
 import (
 	"context"
+	"fmt"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"log"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
@@ -16,7 +18,17 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 		Update: resourceOpsGenieTeamRoutingRuleUpdate,
 		Delete: resourceOpsGenieTeamRoutingRuleDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				idParts := strings.Split(d.Id(), "/")
+				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected team_id/routing_rule_id", d.Id())
+				}
+				teamId := idParts[0]
+				teamRoutingRuleId := idParts[1]
+				d.Set("team_id", teamId)
+				d.SetId(teamRoutingRuleId)
+				return []*schema.ResourceData{d}, nil
+			},
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {

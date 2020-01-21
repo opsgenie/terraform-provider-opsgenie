@@ -1,4 +1,9 @@
 ## 0.2.7 (Unreleased)
+
+BUGFIX:
+
+* Importing with parent resources fixed. It can be imported using parentID/resourceID syntax through cli.
+
 ## 0.2.6 (December 19, 2019)
 
 IMPROVEMENTS:

@@ -119,4 +119,10 @@ The following attributes are exported:
 
 Teams can be imported using the `id`, e.g.
 
-`$ terraform import opsgenie_team_routing_rule.ruletest 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_team_routing_rule.ruletest teamId/routingRuleId`
+
+For this example:
+- Team Id = `c827c472-31f2-497b-9ec6-8ec855d7d94c` 
+- Routing Rule Id = `2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+
+`$ terraform import opsgenie_team_routing_rule.ruletest c827c472-31f2-497b-9ec6-8ec855d7d94c/2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
