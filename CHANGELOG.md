@@ -1,4 +1,4 @@
-## 0.2.7 (Unreleased)
+## 0.2.7 (January 21, 2020)
 
 BUGFIX:
 
