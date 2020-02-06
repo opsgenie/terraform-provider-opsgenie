@@ -16,9 +16,9 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.EnvDefaultFunc("OPSGENIE_API_KEY", nil),
 			},
 			"api_url": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "api.opsgenie.com",
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("OPSGENIE_API_URL", "api.opsgenie.com"),
 			},
 		},
 
@@ -27,6 +27,7 @@ func Provider() terraform.ResourceProvider {
 			"opsgenie_team_routing_rule": resourceOpsGenieTeamRoutingRule(),
 			"opsgenie_user":              resourceOpsGenieUser(),
 			"opsgenie_user_contact":      resourceOpsGenieUserContact(),
+			"opsgenie_notification_rule": resourceOpsGenieNotificationRule(),
 			"opsgenie_escalation":        resourceOpsgenieEscalation(),
 			"opsgenie_api_integration":   resourceOpsgenieApiIntegration(),
 			"opsgenie_email_integration": resourceOpsgenieEmailIntegration(),
