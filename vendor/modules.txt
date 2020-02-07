@@ -199,7 +199,7 @@ github.com/mitchellh/mapstructure
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
-# github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.5
+# github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.6
 github.com/opsgenie/opsgenie-go-sdk-v2/client
 github.com/opsgenie/opsgenie-go-sdk-v2/contact
 github.com/opsgenie/opsgenie-go-sdk-v2/escalation
