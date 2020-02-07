@@ -1,4 +1,4 @@
-## 0.2.8 (Unreleased)
+## 0.2.8 (February 07, 2020)
 
 IMPROVEMENTS:
 
