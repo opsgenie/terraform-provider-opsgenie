@@ -63,9 +63,9 @@ The following arguments are supported:
 
 * `owner_team_id` - (Optional) Owner team id of the integration.
 
-* `responder` - (Optional)  User, schedule, teams or escalation names to calculate which users will receive the notifications of the alert.
+* `responders` - (Optional)  User, schedule, teams or escalation names to calculate which users will receive the notifications of the alert.
 
-`responder` supports the following:
+`responders` supports the following:
 
 * `type` - (Required) The responder type.
 * `id` - (Required) The id of the responder.
