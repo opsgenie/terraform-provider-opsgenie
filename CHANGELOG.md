@@ -1,4 +1,16 @@
 ## 0.2.8 (Unreleased)
+
+IMPROVEMENTS:
+
+* **Updated opsgenie-go-sdk-v2** 
+
+* **New Resource:** Notification Policy
+
+BUGFIX:
+
+* **Updated documentations** 
+
+
 ## 0.2.7 (January 21, 2020)
 
 BUGFIX:
