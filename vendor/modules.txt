@@ -129,6 +129,7 @@ github.com/hashicorp/terraform-config-inspect/tfconfig
 # github.com/hashicorp/terraform-plugin-sdk v1.0.0
 github.com/hashicorp/terraform-plugin-sdk/plugin
 github.com/hashicorp/terraform-plugin-sdk/helper/schema
+github.com/hashicorp/terraform-plugin-sdk/helper/validation
 github.com/hashicorp/terraform-plugin-sdk/terraform
 github.com/hashicorp/terraform-plugin-sdk/internal/configs/configschema
 github.com/hashicorp/terraform-plugin-sdk/internal/helper/plugin
@@ -140,6 +141,7 @@ github.com/hashicorp/terraform-plugin-sdk/internal/tfplugin5
 github.com/hashicorp/terraform-plugin-sdk/helper/hashcode
 github.com/hashicorp/terraform-plugin-sdk/internal/configs/hcl2shim
 github.com/hashicorp/terraform-plugin-sdk/internal/tfdiags
+github.com/hashicorp/terraform-plugin-sdk/helper/structure
 github.com/hashicorp/terraform-plugin-sdk/internal/addrs
 github.com/hashicorp/terraform-plugin-sdk/internal/configs
 github.com/hashicorp/terraform-plugin-sdk/internal/dag
@@ -161,7 +163,6 @@ github.com/hashicorp/terraform-plugin-sdk/internal/svchost/disco
 github.com/hashicorp/terraform-plugin-sdk/internal/lang/blocktoattr
 github.com/hashicorp/terraform-plugin-sdk/internal/lang/funcs
 github.com/hashicorp/terraform-plugin-sdk/helper/logging
-github.com/hashicorp/terraform-plugin-sdk/helper/validation
 github.com/hashicorp/terraform-plugin-sdk/internal/command/format
 github.com/hashicorp/terraform-plugin-sdk/internal/configs/configload
 github.com/hashicorp/terraform-plugin-sdk/internal/helper/config
@@ -207,11 +208,11 @@ github.com/opsgenie/opsgenie-go-sdk-v2/heartbeat
 github.com/opsgenie/opsgenie-go-sdk-v2/integration
 github.com/opsgenie/opsgenie-go-sdk-v2/maintenance
 github.com/opsgenie/opsgenie-go-sdk-v2/og
+github.com/opsgenie/opsgenie-go-sdk-v2/policy
 github.com/opsgenie/opsgenie-go-sdk-v2/schedule
 github.com/opsgenie/opsgenie-go-sdk-v2/team
 github.com/opsgenie/opsgenie-go-sdk-v2/user
 github.com/opsgenie/opsgenie-go-sdk-v2/alert
-github.com/opsgenie/opsgenie-go-sdk-v2/policy
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
 # github.com/posener/complete v1.2.1
