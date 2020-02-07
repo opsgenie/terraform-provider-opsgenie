@@ -161,6 +161,7 @@ github.com/hashicorp/terraform-plugin-sdk/internal/svchost/disco
 github.com/hashicorp/terraform-plugin-sdk/internal/lang/blocktoattr
 github.com/hashicorp/terraform-plugin-sdk/internal/lang/funcs
 github.com/hashicorp/terraform-plugin-sdk/helper/logging
+github.com/hashicorp/terraform-plugin-sdk/helper/validation
 github.com/hashicorp/terraform-plugin-sdk/internal/command/format
 github.com/hashicorp/terraform-plugin-sdk/internal/configs/configload
 github.com/hashicorp/terraform-plugin-sdk/internal/helper/config
@@ -198,7 +199,7 @@ github.com/mitchellh/mapstructure
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
-# github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.5
+# github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.6
 github.com/opsgenie/opsgenie-go-sdk-v2/client
 github.com/opsgenie/opsgenie-go-sdk-v2/contact
 github.com/opsgenie/opsgenie-go-sdk-v2/escalation
@@ -210,6 +211,7 @@ github.com/opsgenie/opsgenie-go-sdk-v2/schedule
 github.com/opsgenie/opsgenie-go-sdk-v2/team
 github.com/opsgenie/opsgenie-go-sdk-v2/user
 github.com/opsgenie/opsgenie-go-sdk-v2/alert
+github.com/opsgenie/opsgenie-go-sdk-v2/policy
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
 # github.com/posener/complete v1.2.1

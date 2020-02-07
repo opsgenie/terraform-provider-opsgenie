@@ -312,7 +312,7 @@ type Restriction struct {
 }
 
 type Filter struct {
-	ConditionMatchType ConditionMatchType `json:"conditionMatchType,omitempty"`
+	ConditionMatchType ConditionMatchType `json:"type,omitempty"`
 	Conditions         []Condition        `json:"conditions,omitempty"`
 }
 
