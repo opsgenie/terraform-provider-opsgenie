@@ -43,10 +43,6 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
-			"timezone": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
 			"notify": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -195,7 +191,6 @@ func resourceOpsGenieTeamRoutingRuleCreate(d *schema.ResourceData, meta interfac
 	name := d.Get("name").(string)
 	teamId := d.Get("team_id").(string)
 	order := d.Get("order").(int)
-	timezone := d.Get("timezone").(string)
 	timeRestriction := d.Get("time_restriction").([]interface{})
 	criteria := d.Get("criteria").([]interface{})
 	notify := d.Get("notify").([]interface{})
@@ -205,7 +200,6 @@ func resourceOpsGenieTeamRoutingRuleCreate(d *schema.ResourceData, meta interfac
 		TeamIdentifierValue: teamId,
 		Name:                name,
 		Order:               &order,
-		Timezone:            timezone,
 		Criteria:            expandOpsgenieCriteria(criteria),
 		Notify:              expandOpsgenieNotify(notify),
 	}
@@ -246,7 +240,6 @@ func resourceOpsGenieTeamRoutingRuleRead(d *schema.ResourceData, meta interface{
 	d.Set("time_restriction", flattenOpsgenieTimeRestriction(result.TimeRestriction))
 	d.Set("notify", flattenOpsgenieNotify(result.Notify))
 	d.Set("criteria", flattenOpsgenieCriteria(result.Criteria))
-	d.Set("timezone", result.Timezone)
 
 	return nil
 }
@@ -258,7 +251,6 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 	}
 	name := d.Get("name").(string)
 	teamId := d.Get("team_id").(string)
-	timezone := d.Get("timezone").(string)
 	timeRestriction := d.Get("time_restriction").([]interface{})
 	criteria := d.Get("criteria").([]interface{})
 	notify := d.Get("notify").([]interface{})
@@ -268,7 +260,6 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		TeamIdentifierValue: teamId,
 		RoutingRuleId:       d.Id(),
 		Name:                name,
-		Timezone:            timezone,
 		Criteria:            expandOpsgenieCriteria(criteria),
 		Notify:              expandOpsgenieNotify(notify),
 	}

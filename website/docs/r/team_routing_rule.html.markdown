@@ -31,7 +31,6 @@ resource "opsgenie_team_routing_rule" "test" {
   name     = "routing rule example"
   team_id  = "${opsgenie_team.test.id}"
   order    = 0
-  timezone = "America/Los_Angeles"
   criteria {
     type = "match-any-condition"
     conditions {

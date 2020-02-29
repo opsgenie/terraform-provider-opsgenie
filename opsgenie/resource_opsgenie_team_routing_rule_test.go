@@ -147,7 +147,6 @@ func testAccOpsGenieTeamRoutingRule_basic(scheduleName, teamName, routingRuleNam
 resource "opsgenie_schedule" "test" {
   name = "genieschedule-%s"
   description = "schedule test"
-  timezone = "Europe/Rome"
   enabled = false
   owner_team_id = "${opsgenie_team.test.id}"
 }
@@ -161,7 +160,6 @@ resource "opsgenie_team_routing_rule" "test" {
   name     = "genieteam-%s"
   team_id  = "${opsgenie_team.test.id}"
   order    = 0
-  timezone = "America/Los_Angeles"
   criteria {
     type = "match-any-condition"
     conditions {
