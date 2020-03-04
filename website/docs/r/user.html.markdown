@@ -26,7 +26,7 @@ resource "opsgenie_user" "test" {
 
 The following arguments are supported:
 
-* `username` - (Required) The email address associated with this user. Opsgenie defines that this must not be longer than 100 characters.
+* `username` - (Required) The email address associated with this user. Opsgenie defines that this must not be longer than 100 characters and must contain lowercase characters only.
 
 * `full_name` - (Required) The Full Name of the User.
 

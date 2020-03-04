@@ -1,4 +1,9 @@
 ## 0.3.0 (Unreleased)
+
+IMPROVEMENTS:
+
+* **Show warning if Opsgenie username (email addr) contains uppercase characters. This lead to unexpected behaviour in the past.**
+
 ## 0.2.8 (February 07, 2020)
 
 IMPROVEMENTS:
