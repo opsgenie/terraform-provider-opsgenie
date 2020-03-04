@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -91,6 +92,21 @@ func TestAccOpsGenieUser_complete(t *testing.T) {
 	})
 }
 
+func TestAccOpsGenieUser_usernameValidationError(t *testing.T) {
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieUser_usernameValidationError(rs)
+
+	resource.Test(t, resource.TestCase{
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config:      config,
+				ExpectError: regexp.MustCompile(fmt.Sprintf(`config is invalid: username contains uppercase characters, only lowercase characters are allowed: "GenieTest-%v@opsgenie.com"`, rs)),
+			},
+		},
+	})
+}
+
 func testCheckOpsGenieUserDestroy(s *terraform.State) error {
 	client, err := user.NewClient(testAccProvider.Meta().(*OpsgenieClient).client.Config)
 	if err != nil {
@@ -163,6 +179,16 @@ resource "opsgenie_user" "test" {
   role      = "User"
   locale    = "en_GB"
   timezone = "Europe/Rome"
+}
+`, rString)
+}
+
+func testAccOpsGenieUser_usernameValidationError(rString string) string {
+	return fmt.Sprintf(`
+resource "opsgenie_user" "test" {
+  username  = "GenieTest-%s@opsgenie.com"
+  full_name = "Acceptance Test User"
+  role      = "User"
 }
 `, rString)
 }

@@ -3,6 +3,7 @@ package opsgenie
 import (
 	"context"
 	"log"
+	"strings"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 
@@ -163,6 +164,10 @@ func validateOpsGenieUserUsername(v interface{}, k string) (ws []string, errors 
 
 	if len(value) >= 100 {
 		errors = append(errors, fmt.Errorf("%q cannot be longer than 100 characters: %q %d", k, value, len(value)))
+	}
+
+	if value != strings.ToLower(value) {
+		errors = append(errors, fmt.Errorf("%v contains uppercase characters, only lowercase characters are allowed: %q", k, value))
 	}
 
 	return
