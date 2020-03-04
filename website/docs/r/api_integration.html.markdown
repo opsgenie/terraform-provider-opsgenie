@@ -41,7 +41,7 @@ resource "opsgenie_api_integration" "example-api-integration" {
   allow_write_access             = false
   ignore_responders_from_payload = true
   suppress_notifications         = true
-  owner_team_id                  = "${opsgenie_team_genies.id}"
+  owner_team_id                  = "${opsgenie_team.team.id}"
 }
 ```
 
