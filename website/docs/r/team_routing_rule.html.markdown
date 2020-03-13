@@ -6,7 +6,7 @@ description: |-
   Manages a Team Routing Rule within Opsgenie.
 ---
 
-# opsgenie\_team
+# opsgenie\_team\_routing\_rule
 
 Manages a Team Routing Rule within Opsgenie.
 
@@ -117,7 +117,7 @@ The following attributes are exported:
 
 ## Import
 
-Teams can be imported using the `id`, e.g.
+Team Routing Rules can be imported using the `id`, e.g.
 
 `$ terraform import opsgenie_team_routing_rule.ruletest teamId/routingRuleId`
 
