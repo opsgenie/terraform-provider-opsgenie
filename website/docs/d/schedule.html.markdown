@@ -11,20 +11,10 @@ description: |-
 Manages a Schedule within Opsgenie.
 
 ## Example Usage
-```hcl
-resource "opsgenie_schedule" "test" {
-  name        = "genieschedule-%s"
-  description = "schedule test"
-  timezone    = "Europe/Rome"
-  enabled     = false
-}
 
-resource "opsgenie_schedule" "test" {
-  name          = "genieschedule-%s"
-  description   = "schedule test"
-  timezone      = "Europe/Rome"
-  enabled       = false
-  owner_team_id = "${opsgenie_team.test.id}"
+```hcl
+data "opsgenie_schedule" "test" {
+  name = "sre-team schedule"
 }
 ```
 
