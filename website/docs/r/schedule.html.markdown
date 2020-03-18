@@ -36,9 +36,9 @@ The following arguments are supported:
 
 * `rules` - (Required) A Member block as documented below.
 
-* `description` - (Optional) Timezone of schedule. Please look at [Supported Timezone Ids](https://docs.opsgenie.com/docs/supported-timezone-ids) for available timezones - Defaults to "America/New_York".
+* `description` - (Optional) The description of schedule.
 
-* `timezone` - (Optional) The description of schedule.
+* `timezone` -  (Optional) Timezone of schedule. Please look at [Supported Timezone Ids](https://docs.opsgenie.com/docs/supported-timezone-ids) for available timezones - Defaults to "America/New_York".
 
 * `enabled` - (Optional) Enable/disable state of schedule
 
