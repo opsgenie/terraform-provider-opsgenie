@@ -65,6 +65,7 @@ func dataSourceOpsgenieScheduleRead(d *schema.ResourceData, meta interface{}) er
 	}
 	d.Set("description", getResponse.Schedule.Description)
 	d.Set("timezone", getResponse.Schedule.Timezone)
+	d.Set("enabled", getResponse.Schedule.Enabled)
 
 	return nil
 }
