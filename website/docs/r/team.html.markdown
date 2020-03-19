@@ -55,7 +55,7 @@ The following arguments are supported:
 
 * `description` - (Optional) A description for this team.
 
-* `ignore_members` - (Optional) Set to false to ignore any configured member blocks and any team member added/updated/removed via OpsGenie web UI. Use this option e.g. to maintain membership via web UI only and use it only for new teams. Changing the value for existing teams might lead to strange behaviour. Defaults to true.
+* `ignore_members` - (Optional) Set to false to ignore any configured member blocks and any team member added/updated/removed via OpsGenie web UI. Use this option e.g. to maintain membership via web UI only and use it only for new teams. Changing the value for existing teams might lead to strange behaviour. Defaults to false.
 
 * `member` - (Optional) A Member block as documented below.
 
