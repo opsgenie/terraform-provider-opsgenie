@@ -69,7 +69,6 @@ func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error 
 		Description: description,
 	}
 
-
 	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
 		createRequest.Members = expandOpsGenieTeamMembers(d)
 	}
