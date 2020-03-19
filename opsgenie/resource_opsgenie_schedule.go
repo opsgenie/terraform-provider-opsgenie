@@ -108,6 +108,7 @@ func resourceOpsgenieScheduleRead(d *schema.ResourceData, meta interface{}) erro
 	}
 	d.Set("timezone", getResponse.Schedule.Timezone)
 	d.Set("description", getResponse.Schedule.Description)
+	d.Set("enabled", getResponse.Schedule.Enabled)
 
 	return nil
 }
