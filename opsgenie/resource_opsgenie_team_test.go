@@ -263,7 +263,7 @@ func testAccOpsGenieTeam_basicNoMember(randomUser, rString string) string {
 resource "opsgenie_team" "test" {
   name           = "genieteam-%s"
   description    = "This team deals with all the things"
-  ignore_members = false
+  ignore_members = true
   depends_on     = [opsgenie_user.test] # Just a hack for the test to destroy resources in the right order
 }
 resource "opsgenie_user" "test" {
