@@ -15,9 +15,9 @@ Manages a Schedule Rotation within Opsgenie.
 resource "opsgenie_schedule_rotation" "test" { 
   schedule_id = "${opsgenie_schedule.test.id}"
   name        = "test"
-  start_date  = "2019-06-18T17:45:00Z"
-  end_date    ="2019-06-20T17:45:00Z"
-  type        ="hourly"
+  start_date  = "2019-06-18T17:00:00Z"
+  end_date    = "2019-06-20T17:30:00Z"
+  type        = "hourly"
   length      = 6
   
   participant {
@@ -38,7 +38,6 @@ resource "opsgenie_schedule_rotation" "test" {
 }
 ```
 
-
 ## Argument Reference
 
 The following arguments are supported:
@@ -53,11 +52,11 @@ The following arguments are supported:
 
 * `type` - (Required) Type of rotation. May be one of daily, weekly and hourly.
 
-* `length` - (Required) Length of the rotation with default value 1.
+* `length` - (Optional) Length of the rotation with default value 1.
 
 * `participant` - (Required) List of escalations, teams, users or the reserved word none which will be used in schedule. Each of them can be used multiple times and will be rotated in the order they given. "user,escalation,team,none"
 
-* `time_restriction` - (Required)
+* `time_restriction` - (Optional)
 
 `participant` supports the following:
 
@@ -66,18 +65,29 @@ The following arguments are supported:
 
 `time_restriction` supports the following:
 
-* `type` - (Required) This parameter should be set time-of-day
+* `type` - (Required) This parameter should be set to `time-of-day` or `weekday-and-time-of-day`.
                       
-* `restriction` - (Required) It is a restriction object which is described below. In this case startDay/endDay fields are not supported.
+* `restriction` - (Optional) It is a restriction object which is described below. In this case startDay/endDay fields are not supported. This can be used only if time restriction type is `time-of-day`.
 
     `restriction` supports the following:
 
-     * `start_hour` - (Required) Value of the hour that frame will start
+     * `start_hour` - (Required) Value of the hour that frame will start.
      * `start_min` - (Required) Value of the minute that frame will start. Minutes may take 0 or 30 as value. Otherwise they will be converted to nearest 0 or 30 automatically.
      * `end_hour` - (Required) Value of the hour that frame will end.
      * `end_min` - (Required) Value of the minute that frame will end. Minutes may take 0 or 30 as value. Otherwise they will be converted to nearest 0 or 30 automatically.
 
+* `restrictions` - (Optional) It is a restriction object which is described below. This can be used only if time restriction type is `weekday-and-time-of-day`.
 
+    `restrictions` supports the following:
+
+     * `start_day` - (Required) Value of the day that frame will start.
+     * `start_hour` - (Required) Value of the hour that frame will start
+     * `start_min` - (Required) Value of the minute that frame will start. Minutes may take 0 or 30 as value. Otherwise they will be converted to nearest 0 or 30 automatically.
+     * `end_day` - (Required) Value of the day that frame will end.
+     * `end_hour` - (Required) Value of the hour that frame will end.
+     * `end_min` - (Required) Value of the minute that frame will end. Minutes may take 0 or 30 as value. Otherwise they will be converted to nearest 0 or 30 automatically.
+
+     Both `start_day` and `end_day` can assume only `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, or `sunday` values.
 
 ## Attributes Reference
 
