@@ -30,6 +30,10 @@ func resourceOpsGenieTeam() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"ignore_members": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 			"member": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -63,10 +67,13 @@ func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error 
 	createRequest := &team.CreateTeamRequest{
 		Name:        name,
 		Description: description,
-		Members:     expandOpsGenieTeamMembers(d),
 	}
 
-	log.Printf("[INFO] Creating OpsGenie team '%s'", name)
+	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
+		createRequest.Members = expandOpsGenieTeamMembers(d)
+	}
+
+	log.Printf("[INFO] Creating OpsGenie team %q", name)
 
 	_, err = client.Create(context.Background(), createRequest)
 	if err != nil {
@@ -99,6 +106,8 @@ func resourceOpsGenieTeamRead(d *schema.ResourceData, meta interface{}) error {
 		IdentifierValue: d.Id(),
 	}
 
+	log.Printf("[INFO] Retrieving state of OpsGenie team '%s'", d.Get("name"))
+
 	getResponse, err := client.Get(context.Background(), getRequest)
 	if err != nil {
 		return err
@@ -106,7 +115,10 @@ func resourceOpsGenieTeamRead(d *schema.ResourceData, meta interface{}) error {
 
 	d.Set("name", getResponse.Name)
 	d.Set("description", getResponse.Description)
-	d.Set("member", flattenOpsGenieTeamMembers(getResponse.Members))
+
+	if !d.Get("ignore_members").(bool) {
+		d.Set("member", flattenOpsGenieTeamMembers(getResponse.Members))
+	}
 
 	return nil
 }
@@ -123,7 +135,10 @@ func resourceOpsGenieTeamUpdate(d *schema.ResourceData, meta interface{}) error 
 		Id:          d.Id(),
 		Name:        name,
 		Description: description,
-		Members:     expandOpsGenieTeamMembers(d),
+	}
+
+	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
+		updateRequest.Members = expandOpsGenieTeamMembers(d)
 	}
 
 	log.Printf("[INFO] Updating OpsGenie team '%s'", name)

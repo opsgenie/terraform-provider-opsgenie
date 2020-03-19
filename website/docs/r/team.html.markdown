@@ -39,6 +39,12 @@ resource "opsgenie_team" "test" {
     role = "user"
   }
 }
+
+resource "opsgenie_team" "self-service" {
+  name           = "Self Service"
+  description    = "Membership in this team is managed via OpsGenie web UI only"
+  ignore_members = false
+}
 ```
 
 ## Argument Reference
@@ -48,6 +54,8 @@ The following arguments are supported:
 * `name` - (Required) The name associated with this team. Opsgenie defines that this must not be longer than 100 characters.
 
 * `description` - (Optional) A description for this team.
+
+* `ignore_members` - (Optional) Set to false to ignore any configured member blocks and any team member added/updated/removed via OpsGenie web UI. Use this option e.g. to maintain membership via web UI only and use it only for new teams. Changing the value for existing teams might lead to strange behaviour. Defaults to false.
 
 * `member` - (Optional) A Member block as documented below.
 
