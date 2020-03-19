@@ -30,10 +30,9 @@ func resourceOpsGenieTeam() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"manage_members": {
+			"ignore_members": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true,
 			},
 			"member": {
 				Type:     schema.TypeList,
@@ -70,7 +69,8 @@ func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error 
 		Description: description,
 	}
 
-	if len(d.Get("member").([]interface{})) > 0 && d.Get("manage_members").(bool) {
+
+	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
 		createRequest.Members = expandOpsGenieTeamMembers(d)
 	}
 
@@ -117,7 +117,7 @@ func resourceOpsGenieTeamRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", getResponse.Name)
 	d.Set("description", getResponse.Description)
 
-	if d.Get("manage_members").(bool) {
+	if !d.Get("ignore_members").(bool) {
 		d.Set("member", flattenOpsGenieTeamMembers(getResponse.Members))
 	}
 
@@ -138,7 +138,7 @@ func resourceOpsGenieTeamUpdate(d *schema.ResourceData, meta interface{}) error 
 		Description: description,
 	}
 
-	if len(d.Get("member").([]interface{})) > 0 && d.Get("manage_members").(bool) {
+	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
 		updateRequest.Members = expandOpsGenieTeamMembers(d)
 	}
 
