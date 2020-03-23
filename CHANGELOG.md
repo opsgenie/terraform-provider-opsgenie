@@ -1,4 +1,4 @@
-## 0.2.9 (Unreleased)
+## 0.2.9 (March 23, 2020)
 
 IMPROVEMENTS:
 
