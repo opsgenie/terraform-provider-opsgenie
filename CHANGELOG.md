@@ -8,7 +8,7 @@ IMPROVEMENTS:
 BUGFIX:
 
 * **Updated documentations** 
-* **Added missing resource fields in schedule ** 
+* **Added missing resource fields in schedule** 
 
 
 ## 0.2.8 (February 07, 2020)
