@@ -1,9 +1,15 @@
-## 0.3.0 (Unreleased)
+## 0.2.9 (Unreleased)
 
 IMPROVEMENTS:
 
-* **Show warning if Opsgenie username (email addr) contains uppercase characters. This lead to unexpected behaviour in the past.**
+* **Show warning if Opsgenie username (email addr) contains uppercase characters:** This lead to unexpected behaviour in the past.
 * **Updated Resource opsgenie_team:** New optional argument *ignore_members* added to change team membership management behaviour (#65). The provider will add this argument to every new/existing opsgenie_team resource state with the default value (false).  
+
+BUGFIX:
+
+* **Updated documentations** 
+* **Added missing resource fields in schedule ** 
+
 
 ## 0.2.8 (February 07, 2020)
 
