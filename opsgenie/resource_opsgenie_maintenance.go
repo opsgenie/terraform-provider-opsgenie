@@ -2,6 +2,7 @@ package opsgenie
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -144,20 +145,47 @@ func resourceOpsgenieMaintenanceUpdate(d *schema.ResourceData, meta interface{})
 	if err != nil {
 		return err
 	}
-	description := d.Get("description").(string)
 
-	updateRequest := &maintenance.UpdateRequest{
-		Id:          d.Id(),
-		Description: description,
-		Rules:       expandOpsgenieMaintenanceRules(d),
-		Time:        expandOpsgenieMaintenanceTime(d),
-	}
-
-	log.Printf("[INFO] Updating OpsGenie maintenance")
-
-	_, err = client.Update(context.Background(), updateRequest)
+	mnt, err := client.Get(context.Background(), &maintenance.GetRequest{
+		Id: d.Id(),
+	})
 	if err != nil {
+		log.Printf("[ERROR] Maintenance could not fetch")
 		return err
+
+	}
+	maintenanceTime := expandOpsgenieMaintenanceTime(d)
+	if mnt.Status == "active" {
+
+		_, err := client.ChangeEndDate(context.Background(), &maintenance.ChangeEndDateRequest{
+			Id:      d.Id(),
+			EndDate: maintenanceTime.EndDate,
+		})
+		if err != nil {
+			return err
+		}
+
+	} else if mnt.Status == "planned" {
+		description := d.Get("description").(string)
+
+		updateRequest := &maintenance.UpdateRequest{
+			Id:          d.Id(),
+			Description: description,
+			Rules:       expandOpsgenieMaintenanceRules(d),
+			Time:        maintenanceTime,
+		}
+
+		log.Printf("[INFO] Updating OpsGenie maintenance")
+
+		_, err = client.Update(context.Background(), updateRequest)
+		if err != nil {
+			log.Printf("%s", err.Error())
+			return err
+		}
+	} else {
+		log.Printf("[ERROR] You cannot edit past maintenance")
+		return errors.New("You cannot edit" + mnt.Status + " maintenances")
+
 	}
 
 	return nil
