@@ -92,6 +92,30 @@ func (r *UpdateRequest) Method() string {
 	return http.MethodPut
 }
 
+type ChangeEndDateRequest struct {
+	client.BaseRequest
+	Id      string
+	EndDate *time.Time `json:"endDate"`
+}
+
+func (r *ChangeEndDateRequest) Validate() error {
+	if r.Id == "" {
+		return errors.New("Maintenance ID cannot be blank.")
+	}
+	if r.EndDate == nil {
+		return errors.New("Maintenance End Date cannot be blank.")
+	}
+	return nil
+}
+
+func (r *ChangeEndDateRequest) ResourcePath() string {
+	return "/v1/maintenance/" + r.Id + "/change-end-date"
+}
+
+func (r *ChangeEndDateRequest) Method() string {
+	return http.MethodPost
+}
+
 type DeleteRequest struct {
 	client.BaseRequest
 	Id string

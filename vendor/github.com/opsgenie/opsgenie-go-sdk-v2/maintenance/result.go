@@ -19,6 +19,11 @@ type UpdateResult struct {
 	Maintenance
 }
 
+type ChangeEndDateResult struct {
+	client.ResultMetadata
+	Maintenance
+}
+
 type GetResult struct {
 	client.ResultMetadata
 	Id          string `json:"id"`

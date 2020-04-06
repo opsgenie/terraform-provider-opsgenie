@@ -44,6 +44,15 @@ func (c *Client) Update(context context.Context, request *UpdateRequest) (*Updat
 	return result, nil
 }
 
+func (c *Client) ChangeEndDate(context context.Context, request *ChangeEndDateRequest) (*ChangeEndDateResult, error) {
+	result := &ChangeEndDateResult{}
+	err := c.client.Exec(context, request, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *Client) Delete(context context.Context, request *DeleteRequest) (*DeleteResult, error) {
 	result := &DeleteResult{}
 	err := c.client.Exec(context, request, result)
