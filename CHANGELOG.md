@@ -1,4 +1,10 @@
 ## 0.3.0 (Unreleased)
+
+BUGFIX:
+
+* **Maintenance:** Fixed edit maintenance end date.
+
+
 ## 0.2.9 (March 23, 2020)
 
 IMPROVEMENTS:
