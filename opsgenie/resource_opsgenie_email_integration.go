@@ -129,6 +129,11 @@ func resourceOpsgenieEmailIntegrationRead(d *schema.ResourceData, meta interface
 		return err
 	}
 
+	if result.Data["ownerTeam"] != nil {
+		ownerTeam := result.Data["ownerTeam"].(map[string]interface{})
+		d.Set("owner_team_id", ownerTeam["id"])
+	}
+	d.Set("suppress_notifications", result.Data["suppressNotifications"])
 	d.Set("name", result.Data["name"])
 	d.Set("id", result.Data["id"])
 	d.Set("responders", result.Data["responders"])

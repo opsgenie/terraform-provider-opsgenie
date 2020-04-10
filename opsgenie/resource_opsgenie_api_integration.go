@@ -144,12 +144,15 @@ func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}
 		return err
 	}
 
+	if result.Data["ownerTeam"] != nil {
+		ownerTeam := result.Data["ownerTeam"].(map[string]interface{})
+		d.Set("owner_team_id", ownerTeam["id"])
+	}
 	d.Set("name", result.Data["name"])
 	d.Set("id", result.Data["id"])
 	d.Set("responders", result.Data["responders"])
 	d.Set("type", result.Data["type"])
-	//TODO set this correctly in future
-	//d.Set("ignore_responders_from_payload", result.Data["ignoreRespondersFromPayload"])
+	d.Set("allow_write_access", result.Data["allow_write_access"])
 	d.Set("enabled", result.Data["enabled"])
 	d.Set("suppress_notifications", result.Data["suppressNotifications"])
 

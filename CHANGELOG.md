@@ -3,6 +3,8 @@
 BUGFIX:
 
 * **Maintenance:** Fixed edit maintenance end date.
+* **Integrations:** Added missing fields for states (owner_team_id, allow_configure_access).
+* **Schedule Rotation:** Fix import https://github.com/terraform-providers/terraform-provider-opsgenie/pull/88 
 
 
 ## 0.2.9 (March 23, 2020)
