@@ -3,9 +3,10 @@ package opsgenie
 import (
 	"context"
 	"fmt"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"log"
 	"strings"
+
+	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
@@ -125,7 +126,7 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 							Required: true,
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{

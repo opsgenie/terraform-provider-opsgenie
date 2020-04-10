@@ -134,9 +134,7 @@ func testCheckOpsGenieScheduleRotationDestroy(s *terraform.State) error {
 				return errors.New(fmt.Sprintf("Schedule rotation still exists : %s", x.Error()))
 			}
 		}
-
 	}
-
 	return nil
 }
 
@@ -194,8 +192,8 @@ resource "opsgenie_schedule_rotation" "test" {
     schedule_id = "${opsgenie_schedule.test.id}"
     name = "test-%s"
     start_date = "2019-06-18T17:30:00Z"
-    end_date ="2019-06-20T17:30:00Z"
-    type ="hourly"
+    end_date = "2019-06-20T17:30:00Z"
+    type = "hourly"
     length = 6
     participant {
       type = "user"
@@ -203,14 +201,14 @@ resource "opsgenie_schedule_rotation" "test" {
     }
 
     time_restriction {
-      type ="time-of-day"
+      type = "time-of-day"
       restriction {
         start_hour = 1
-        start_min = 1
+        start_min = 0
         end_hour = 10
-        end_min = 1
+        end_min = 0
       }
-}
+    }
 }
 `, randomUser, randomTeam, randomSchedule, randomRotation)
 }
@@ -249,13 +247,13 @@ resource "opsgenie_schedule_rotation" "test" {
     }
 
     time_restriction {
-      	type ="time-of-day"
-      	restriction {
+      type ="time-of-day"
+      restriction {
         start_hour = 1
-        start_min = 1
+        start_min = 0
         end_hour = 10
-        end_min = 1
-		}
+        end_min = 0
+	  }
 	}
 }
 
@@ -275,11 +273,11 @@ resource "opsgenie_schedule_rotation" "test2" {
       type ="time-of-day"
       restriction {
         start_hour = 1
-        start_min = 1
+        start_min = 0
         end_hour = 10
-        end_min = 1
+        end_min = 0
       }
-}
+    }
 }
 `, randomName, randomTeam, randomSchedule, randomRotation, randomRotation2)
 }
