@@ -200,15 +200,6 @@ resource "opsgenie_schedule_rotation" "test" {
       id = "${opsgenie_user.test.id}"
     }
 
-    time_restriction {
-      type = "time-of-day"
-      restriction {
-        start_hour = 1
-        start_min = 0
-        end_hour = 10
-        end_min = 0
-      }
-    }
 }
 `, randomUser, randomTeam, randomSchedule, randomRotation)
 }
