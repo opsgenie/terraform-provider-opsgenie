@@ -243,7 +243,9 @@ func resourceOpsgenieScheduleRotationRead(d *schema.ResourceData, meta interface
 	d.Set("length", getResponse.Length)
 	d.Set("type", getResponse.Type)
 	d.Set("participant", flattenOpsgenieScheduleRotationParticipant(getResponse.Participants))
-	d.Set("time_restriction", flattenOpsgenieScheduleRotationTimeRestriction(getResponse.TimeRestriction))
+	if getResponse.TimeRestriction != nil {
+		d.Set("time_restriction", flattenOpsgenieScheduleRotationTimeRestriction(getResponse.TimeRestriction))
+	}
 	d.Set("start_date", startDate)
 	if getResponse.EndDate != nil {
 		endDate := getResponse.EndDate.Format("2006-01-02T15:04:05Z")
