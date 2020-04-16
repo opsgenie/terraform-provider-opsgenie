@@ -1,4 +1,10 @@
-## 0.4.0 (Unreleased)
+## 0.3.1 (Unreleased)
+
+BUGFIX:
+
+* **Schedule Rotation:** Time restriction reading causes provider crash. This bug introduced in 0.3.0 version its fixed this release. 
+
+
 ## 0.3.0 (April 10, 2020)
 
 BUGFIX:
