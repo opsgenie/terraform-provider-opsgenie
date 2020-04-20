@@ -67,6 +67,8 @@ resource "opsgenie_team_routing_rule" "test" {
 The following arguments are supported:
 
 * `name` - (Optional) Name of the team routing rule
+
+* `team_id` - (Required) Id of the team owning the routing rule
                      
 * `order` - (Optional) The order of the team routing rule within the rules. order value is actually the index of the team routing rule whose minimum value is 0 and whose maximum value is n-1 (number of team routing rules is n)
 
@@ -76,7 +78,7 @@ The following arguments are supported:
 
 * `timeRestriction` - (Optional) You can refer Time Restriction for detailed information about time restriction and its fields.
 
-* `notify` - (Optional) Target entity of schedule, escalation, or the reserved word none which will be notified in routing rule. The possible values for notify type : schedule, escalation, none
+* `notify` - (Required) Target entity of schedule, escalation, or the reserved word none which will be notified in routing rule. The possible values for notify type : schedule, escalation, none
 
 `notify` supports the following:
 
