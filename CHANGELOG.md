@@ -1,4 +1,10 @@
-## 0.4.0 (Unreleased)
+## 0.3.2 (Unreleased)
+
+BUGFIX:
+
+* **Team Routing Rule:** Some fields was optional but provider expects its to be mandatory. pr/96 fixes this.
+
+
 ## 0.3.1 (April 16, 2020)
 
 BUGFIX:
