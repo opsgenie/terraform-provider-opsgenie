@@ -34,7 +34,7 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"team_id": {
 				Type:     schema.TypeString,
@@ -42,11 +42,11 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 			},
 			"order": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
 			},
 			"timezone": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"notify": {
 				Type:     schema.TypeList,
