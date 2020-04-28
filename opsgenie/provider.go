@@ -28,6 +28,7 @@ func Provider() terraform.ResourceProvider {
 			"opsgenie_user":                resourceOpsGenieUser(),
 			"opsgenie_user_contact":        resourceOpsGenieUserContact(),
 			"opsgenie_notification_policy": resourceOpsGenieNotificationPolicy(),
+			"opsgenie_notification_rule":   resourceOpsGenieNotificationRule(),
 			"opsgenie_escalation":          resourceOpsgenieEscalation(),
 			"opsgenie_api_integration":     resourceOpsgenieApiIntegration(),
 			"opsgenie_email_integration":   resourceOpsgenieEmailIntegration(),
