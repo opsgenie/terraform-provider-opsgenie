@@ -152,7 +152,7 @@ resource "opsgenie_notification_rule" "test" {
   steps {
     contact {
       method = "email"
-      to = "example@user.com"
+      to = "genieuser-%s@opsgenie.com"
     }
   }
 }
