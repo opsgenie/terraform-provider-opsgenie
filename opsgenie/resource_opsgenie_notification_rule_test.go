@@ -157,5 +157,5 @@ resource "opsgenie_notification_rule" "test" {
   }
 }
 
-`, randomName, randomName)
+`, randomName, randomName, randomName)
 }
