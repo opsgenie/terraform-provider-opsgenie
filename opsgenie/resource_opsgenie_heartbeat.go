@@ -113,7 +113,7 @@ func resourceOpsgenieHeartbeatRead(d *schema.ResourceData, meta interface{}) err
 
 	result, err := client.Get(context.Background(), d.Id())
 	if err != nil {
-		return err
+		return fmt.Errorf("%w [id=%s]", err, d.Id())
 	}
 
 	d.Set("name", result.Name)
