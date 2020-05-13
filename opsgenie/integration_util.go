@@ -1,11 +1,14 @@
 package opsgenie
 
 import (
+	"errors"
 	"fmt"
+	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
@@ -64,3 +67,10 @@ const (
 	ApiIntegrationType   = "API"
 	EmailIntegrationType = "Email"
 )
+
+func isNotFoundError(err error) bool {
+	var apiError *client.ApiError
+	match := errors.As(err, &apiError)
+
+	return match && apiError.StatusCode == http.StatusNotFound
+}

@@ -3,10 +3,11 @@ package opsgenie
 import (
 	"context"
 	"fmt"
+	"regexp"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/heartbeat"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"regexp"
 )
 
 func resourceOpsgenieHeartbeat() *schema.Resource {
@@ -112,7 +113,10 @@ func resourceOpsgenieHeartbeatRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	result, err := client.Get(context.Background(), d.Id())
-	if err != nil {
+	if isNotFoundError(err) {
+		d.SetId("")
+		return nil
+	} else if err != nil {
 		return fmt.Errorf("%w [id=%s]", err, d.Id())
 	}
 
