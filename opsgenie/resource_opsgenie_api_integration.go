@@ -12,7 +12,7 @@ import (
 func resourceOpsgenieApiIntegration() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieApiIntegrationCreate,
-		Read:   resourceOpsgenieApiIntegrationRead,
+		Read:   handleNonExistentResource(resourceOpsgenieApiIntegrationRead),
 		Update: resourceOpsgenieApiIntegrationUpdate,
 		Delete: resourceOpsgenieApiIntegrationDelete,
 		Importer: &schema.ResourceImporter{

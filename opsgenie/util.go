@@ -2,8 +2,32 @@ package opsgenie
 
 import (
 	"fmt"
+	"net/http"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
 )
+
+// handleNonExistentResource is a wrapper of resourceFunc that
+// handles errors returned by a read function.
+func handleNonExistentResource(f schema.ReadFunc) schema.ReadFunc {
+	return func(d *schema.ResourceData, meta interface{}) error {
+		if err := f(d, meta); err != nil {
+			// if the error that we receive is an ApiError and
+			// the status code is 404, it means we need to re-create
+			// the specific resource
+			apiErr, ok := err.(*client.ApiError)
+			if !ok || apiErr.StatusCode != http.StatusNotFound {
+				return err
+			}
+			d.SetId("")
+			return nil
+		}
+
+		return nil
+	}
+}
 
 func validateDateWithMinutes(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)

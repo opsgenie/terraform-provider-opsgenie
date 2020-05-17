@@ -16,7 +16,7 @@ import (
 func resourceOpsgenieScheduleRotation() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieScheduleRotationCreate,
-		Read:   resourceOpsgenieScheduleRotationRead,
+		Read:   handleNonExistentResource(resourceOpsgenieScheduleRotationRead),
 		Update: resourceOpsgenieScheduleRotationUpdate,
 		Delete: resourceOpsgenieScheduleRotationDelete,
 		Importer: &schema.ResourceImporter{

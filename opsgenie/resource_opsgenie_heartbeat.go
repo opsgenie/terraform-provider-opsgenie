@@ -3,16 +3,17 @@ package opsgenie
 import (
 	"context"
 	"fmt"
+	"regexp"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/heartbeat"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"regexp"
 )
 
 func resourceOpsgenieHeartbeat() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieHeartbeatCreate,
-		Read:   resourceOpsgenieHeartbeatRead,
+		Read:   handleNonExistentResource(resourceOpsgenieHeartbeatRead),
 		Update: resourceOpsgenieHeartbeatUpdate,
 		Delete: resourceOpsgenieHeartbeatDelete,
 		Importer: &schema.ResourceImporter{
