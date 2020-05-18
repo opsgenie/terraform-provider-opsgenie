@@ -1,4 +1,8 @@
-## 0.4.0 (Unreleased)
+## 0.3.3 (Unreleased)
+IMPROVEMENTS:
+
+* If resource deleted manually, Provider find out while reading resources then approach to re-creates resources 
+
 ## 0.3.2 (May 14, 2020)
 
 BUGFIX:
