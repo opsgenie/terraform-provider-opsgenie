@@ -13,7 +13,7 @@ import (
 func resourceOpsGenieUserContact() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsGenieUserContactCreate,
-		Read:   resourceOpsGenieUserContactRead,
+		Read:   handleNonExistentResource(resourceOpsGenieUserContactRead),
 		Update: resourceOpsGenieUserContactUpdate,
 		Delete: resourceOpsGenieUserContactDelete,
 		Importer: &schema.ResourceImporter{

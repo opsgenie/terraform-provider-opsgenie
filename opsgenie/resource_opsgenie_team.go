@@ -14,7 +14,7 @@ import (
 func resourceOpsGenieTeam() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsGenieTeamCreate,
-		Read:   resourceOpsGenieTeamRead,
+		Read:   handleNonExistentResource(resourceOpsGenieTeamRead),
 		Update: resourceOpsGenieTeamUpdate,
 		Delete: resourceOpsGenieTeamDelete,
 		Importer: &schema.ResourceImporter{
