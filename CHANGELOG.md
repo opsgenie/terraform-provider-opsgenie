@@ -1,4 +1,9 @@
-## 0.4.0 (Unreleased)
+## 0.3.4 (Unreleased)
+
+BUGFIX:
+
+* **Api Integration:** Read function fixes the Allow_Write_Access field. Also default behaviour of `true` implemented for this field.
+
 ## 0.3.3 (May 18, 2020)
 IMPROVEMENTS:
 
