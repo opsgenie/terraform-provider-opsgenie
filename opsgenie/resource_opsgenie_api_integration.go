@@ -32,6 +32,7 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 			"allow_write_access": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  true,
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -152,7 +153,7 @@ func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}
 	d.Set("id", result.Data["id"])
 	d.Set("responders", result.Data["responders"])
 	d.Set("type", result.Data["type"])
-	d.Set("allow_write_access", result.Data["allow_write_access"])
+	d.Set("allow_write_access", result.Data["allowWriteAccess"])
 	d.Set("enabled", result.Data["enabled"])
 	d.Set("suppress_notifications", result.Data["suppressNotifications"])
 
