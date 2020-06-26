@@ -178,6 +178,7 @@ github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.6 h1:jbPcx0GlwyDkFqFPVQQ5SXCHMVmftLo
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.6/go.mod h1:f0ezb0R/mrB9Hpm5RrIS6EX3ydjsR2nAB88nYYXZcNY=
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.7-0.20200406122459-ce3f70f22ab7 h1:+cTGQp1QRUWH+YGgh2b4sO/Y5g86PTpVEIpVFnEor6E=
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.0.7-0.20200406122459-ce3f70f22ab7/go.mod h1:VOkJ7STzYj+nXRhMcBTcmt8uZZ17KZKJdZtJpgHLbT8=
+github.com/opsgenie/opsgenie-go-sdk-v2 v1.1.1 h1:0y6RTB5SNcf0lhdVyJFPU/bTagUlToKpW4AGWMB7ZBw=
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
