@@ -175,7 +175,6 @@ resource "opsgenie_service" "test" {
   name  = "genietest-%s"
   team_id = "${opsgenie_team.test.id}"
 	description = "%s"
-	visibility = "%s"
 }
-`, randomTeam, randomService, randomDescription, string(service.TeamMembers))
+`, randomTeam, randomService, randomDescription)
 }
