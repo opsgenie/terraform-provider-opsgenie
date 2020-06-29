@@ -20,7 +20,7 @@ resource "opsgenie_team" "payment" {
 
 resource "opsgenie_service" "this" {
   name  = "Payment"
-  team_id = "$opsgenie_team.this.id"
+  team_id = "$opsgenie_team.payment.id"
 }
 ```
 
