@@ -3,7 +3,6 @@ package opsgenie
 import (
 	"context"
 	"log"
-	"reflect"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/service"
 
@@ -37,12 +36,6 @@ func resourceOpsGenieService() *schema.Resource {
 				Optional:     true,
 				ValidateFunc: validateOpsGenieServiceDescription,
 			},
-			"visibility": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Default:      string(service.TeamMembers),
-				ValidateFunc: validateOpsGenieServiceVisibility,
-			},
 		},
 	}
 }
@@ -55,13 +48,11 @@ func resourceOpsGenieServiceCreate(d *schema.ResourceData, meta interface{}) err
 	name := d.Get("name").(string)
 	teamId := d.Get("team_id").(string)
 	description := d.Get("description").(string)
-	visibility := d.Get("visibility").(string)
 
 	createRequest := &service.CreateRequest{
 		Name:        name,
 		TeamId:      teamId,
 		Description: description,
-		Visibility:  service.Visibility(visibility),
 	}
 
 	log.Printf("[INFO] Creating OpsGenie service '%s'", name)
@@ -94,7 +85,6 @@ func resourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) error
 	d.Set("name", res.Service.Name)
 	d.Set("team_id", res.Service.TeamId)
 	d.Set("description", res.Service.Description)
-	d.Set("visibility", res.Service.Visibility)
 
 	return nil
 }
@@ -106,7 +96,6 @@ func resourceOpsGenieServiceUpdate(d *schema.ResourceData, meta interface{}) err
 	}
 	name := d.Get("name").(string)
 	description := d.Get("description").(string)
-	visibility := d.Get("visibility").(string)
 
 	log.Printf("[INFO] Updating OpsGenie service '%s'", name)
 
@@ -114,7 +103,6 @@ func resourceOpsGenieServiceUpdate(d *schema.ResourceData, meta interface{}) err
 		Id:          d.Id(),
 		Name:        name,
 		Description: description,
-		Visibility:  service.Visibility(visibility),
 	}
 
 	_, err = client.Update(context.Background(), updateRequest)
@@ -168,22 +156,6 @@ func validateOpsGenieServiceDescription(v interface{}, k string) (ws []string, e
 
 	if len(value) >= 10000 {
 		errors = append(errors, fmt.Errorf("%q cannot be longer than 10000 characters: %q %d", k, value, len(value)))
-	}
-
-	return
-}
-
-func validateOpsGenieServiceVisibility(v interface{}, k string) (ws []string, errors []error) {
-	value := v.(string)
-
-	enum := map[string]struct{}{
-		string(service.TeamMembers):   {},
-		string(service.OpsgenieUsers): {},
-	}
-	enumKeys := reflect.ValueOf(enum).MapKeys()
-
-	if _, ok := enum[value]; !ok {
-		errors = append(errors, fmt.Errorf("%q is invalid: %q. Must be any of %q", k, value, enumKeys))
 	}
 
 	return
