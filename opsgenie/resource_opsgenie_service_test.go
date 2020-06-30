@@ -91,7 +91,6 @@ func TestAccOpsGenieService_complete(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOpsGenieServiceExists("opsgenie_service.test"),
 					resource.TestCheckResourceAttr("opsgenie_service.test", "description", randomDescription),
-					resource.TestCheckResourceAttr("opsgenie_service.test", "visibility", string(service.TeamMembers)),
 				),
 			},
 		},
@@ -174,7 +173,7 @@ resource "opsgenie_team" "test" {
 resource "opsgenie_service" "test" {
   name  = "genietest-%s"
   team_id = "${opsgenie_team.test.id}"
-	description = "%s"
+  description = "%s"
 }
 `, randomTeam, randomService, randomDescription)
 }
