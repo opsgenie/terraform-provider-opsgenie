@@ -547,8 +547,8 @@ type DeDuplicationAction struct {
 
 type DelayAction struct {
 	DelayOption DelayType `json:"delayOption,omitempty"`
-	UntilMinute int       `json:"untilMinute,omitempty"`
-	UntilHour   int       `json:"untilHour,omitempty"`
+	UntilMinute *int      `json:"untilMinute,omitempty"`
+	UntilHour   *int      `json:"untilHour,omitempty"`
 	Duration    *Duration `json:"duration,omitempty"`
 }
 
@@ -667,7 +667,7 @@ func ValidateDelayAction(action DelayAction) error {
 			return err
 		}
 	}
-	if action.DelayOption != ForDuration && ((action.UntilHour < 0 || action.UntilHour > 23) || (action.UntilMinute < 0 || action.UntilMinute > 59)) {
+	if action.DelayOption != ForDuration && ((*action.UntilHour < 0 || *action.UntilHour > 23) || (*action.UntilMinute < 0 || *action.UntilMinute > 59)) {
 		return errors.New("delayAction's UntilHour or UntilMinute is not valid")
 	}
 	return nil

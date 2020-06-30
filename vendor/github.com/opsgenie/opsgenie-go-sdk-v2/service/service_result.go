@@ -29,7 +29,7 @@ type DeleteResult struct {
 
 type GetResult struct {
 	client.ResultMetadata
-	Service Service
+	Service Service `json:"data"`
 }
 
 type ListResult struct {
