@@ -1,6 +1,8 @@
 ## 0.3.5 (Unreleased)
-New Feature
 
+IMPROVEMENTS:
+
+* **Service API:** New resource, now you can manage service resources using Terraform. (#115)
 ## 0.3.4 (May 20, 2020)
 
 BUGFIX:
