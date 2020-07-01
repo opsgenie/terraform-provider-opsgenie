@@ -37,14 +37,14 @@ func testAccDataSourceOpsGenieService(src, n string) resource.TestCheckFunc {
 		a := r.Primary.Attributes
 
 		if a["id"] == "" {
-			return fmt.Errorf("Expected to get a team ID from OpsGenie")
+			return fmt.Errorf("Expected to get a Service ID from OpsGenie")
 		}
 
 		testAtts := []string{"name", "team_id", "description"}
 
 		for _, att := range testAtts {
 			if a[att] != srcA[att] {
-				return fmt.Errorf("Expected the team %s to be: %s, but got: %s", att, srcA[att], a[att])
+				return fmt.Errorf("Expected the Service %s to be: %s, but got: %s", att, srcA[att], a[att])
 			}
 		}
 
@@ -83,6 +83,8 @@ resource "opsgenie_service" "test" {
 }
 data "opsgenie_service" "existingservice" {
   name = "${opsgenie_service.test.name}"
+  description = "This is our main service"
+  team_id = "${opsgenie_team.test.id}"
 }
 `, randomUserName, randomUserName, randomTeamName, randomServiceName)
 }

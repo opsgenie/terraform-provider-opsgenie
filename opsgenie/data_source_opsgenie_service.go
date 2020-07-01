@@ -5,6 +5,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/service"
 	"log"
+	"strconv"
+	"strings"
 )
 
 func dataSourceOpsGenieService() *schema.Resource {
@@ -42,16 +44,46 @@ func dataSourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) err
 
 	log.Printf("[INFO] Reading OpsGenie service '%s'", name)
 
-	res, err := client.Get(context.Background(), &service.GetRequest{
-		Id: d.Id(),
+	res, err := client.List(context.Background(), &service.ListRequest{
+		Limit:  10,
+		Offset: 0,
 	})
 	if err != nil {
 		return err
 	}
 
-	d.Set("name", res.Service.Name)
-	d.Set("team_id", res.Service.TeamId)
-	d.Set("description", res.Service.Description)
+	offsetString := ""
+	breakFlag := false
+	for {
+		log.Printf("[DEBUG] Searching for service name: '%s' in your account", name)
+		for _, srvObj := range res.Services {
+			if name == srvObj.Name {
+				log.Printf("[DEBUG] Found the service")
+				log.Printf("[DEBUG] Service ID: '%s'", srvObj.Id)
+				d.Set("name", srvObj.Name)
+				d.Set("team_id", srvObj.TeamId)
+				d.Set("description", srvObj.Description)
+				d.SetId(srvObj.Id)
+				breakFlag = true
+				break
+			}
+		}
 
+		if res.Paging.Next == "" || breakFlag {
+			break
+		}
+
+		offsetString = strings.Split(res.Paging.Next, string('&'))[2]
+		offsetString = strings.Split(offsetString, string('='))[1]
+		offset, _ := strconv.Atoi(offsetString)
+
+		res, err = client.List(context.Background(), &service.ListRequest{
+			Limit:  10,
+			Offset: offset,
+		})
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
