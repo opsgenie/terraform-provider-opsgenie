@@ -10,7 +10,6 @@ import (
 )
 
 func TestAccDataSourceOpsGenieService_Basic(t *testing.T) {
-	randomUserName := acctest.RandString(6)
 	randomTeamName := acctest.RandString(6)
 	randomServiceName := acctest.RandString(6)
 
@@ -18,7 +17,7 @@ func TestAccDataSourceOpsGenieService_Basic(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDataSourceOpsGenieServiceConfig(randomUserName, randomTeamName, randomServiceName),
+				Config: testAccDataSourceOpsGenieServiceConfig(randomTeamName, randomServiceName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccDataSourceOpsGenieService("opsgenie_service.test", "data.opsgenie_service.existingservice"),
 				),
@@ -52,29 +51,11 @@ func testAccDataSourceOpsGenieService(src, n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccDataSourceOpsGenieServiceConfig(randomUserName, randomTeamName, randomServiceName string) string {
+func testAccDataSourceOpsGenieServiceConfig(randomTeamName, randomServiceName string) string {
 	return fmt.Sprintf(`
-resource "opsgenie_user" "test" {
-  username  = "genietest-%s@opsgenie.com"
-  full_name = "Acceptance Test User"
-  role      = "User"
-}
-resource "opsgenie_user" "test2" {
-  username  = "genietest-2%s@opsgenie.com"
-  full_name = "Acceptance Test User"
-  role      = "User"
-}
 resource "opsgenie_team" "test" {
   name        = "genieteam-%s"
   description = "This team deals with all the things"
-  member {
-    id = "${opsgenie_user.test.id}"
-    role     = "admin"
-  }
-  member {
-    id = "${opsgenie_user.test2.id}"
-    role     = "admin"
-  }
 }
 resource "opsgenie_service" "test" {
   name = "genieservice-%s"
@@ -86,5 +67,5 @@ data "opsgenie_service" "existingservice" {
   description = "This is our main service"
   team_id = "${opsgenie_team.test.id}"
 }
-`, randomUserName, randomUserName, randomTeamName, randomServiceName)
+`, randomTeamName, randomServiceName)
 }

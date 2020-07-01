@@ -44,17 +44,19 @@ func dataSourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) err
 
 	log.Printf("[INFO] Reading OpsGenie service '%s'", name)
 
-	res, err := client.List(context.Background(), &service.ListRequest{
-		Limit:  10,
-		Offset: 0,
-	})
-	if err != nil {
-		return err
-	}
-
-	offsetString := ""
+	//offsetString := ""
 	breakFlag := false
+	offset := 0
+
 	for {
+		res, err := client.List(context.Background(), &service.ListRequest{
+			Limit:  100,
+			Offset: offset,
+		})
+		if err != nil {
+			return err
+		}
+
 		log.Printf("[DEBUG] Searching for service name: '%s' in your account", name)
 		for _, srvObj := range res.Services {
 			if name == srvObj.Name {
@@ -73,17 +75,9 @@ func dataSourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) err
 			break
 		}
 
-		offsetString = strings.Split(res.Paging.Next, string('&'))[2]
+		offsetString := strings.Split(res.Paging.Next, string('&'))[2]
 		offsetString = strings.Split(offsetString, string('='))[1]
-		offset, _ := strconv.Atoi(offsetString)
-
-		res, err = client.List(context.Background(), &service.ListRequest{
-			Limit:  10,
-			Offset: offset,
-		})
-		if err != nil {
-			return err
-		}
+		offset, _ = strconv.Atoi(offsetString)
 	}
 	return nil
 }
