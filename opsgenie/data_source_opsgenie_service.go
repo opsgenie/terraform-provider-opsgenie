@@ -2,6 +2,7 @@ package opsgenie
 
 import (
 	"context"
+	"errors"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/service"
 	"log"
@@ -46,11 +47,11 @@ func dataSourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) err
 
 	breakFlag := false
 	offset := 0
-	pageinationError := Error()
+	paginationError := errors.New("")
 
 	for {
 		res, err := client.List(context.Background(), &service.ListRequest{
-			Limit:  100,
+			Limit:  1,
 			Offset: offset,
 		})
 		if err != nil {
@@ -77,10 +78,10 @@ func dataSourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) err
 
 		offsetString := strings.Split(res.Paging.Next, string('&'))[2]
 		offsetString = strings.Split(offsetString, string('='))[1]
-		offset, pageinationError = strconv.Atoi(offsetString)
+		offset, paginationError = strconv.Atoi(offsetString)
 
-		if pageinationError != nil {
-			return pageinationError
+		if paginationError != nil {
+			return paginationError
 		}
 	}
 	return nil
