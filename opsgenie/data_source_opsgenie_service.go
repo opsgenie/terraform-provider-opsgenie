@@ -44,9 +44,9 @@ func dataSourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) err
 
 	log.Printf("[INFO] Reading OpsGenie service '%s'", name)
 
-	//offsetString := ""
 	breakFlag := false
 	offset := 0
+	pageinationError := Error()
 
 	for {
 		res, err := client.List(context.Background(), &service.ListRequest{
@@ -77,7 +77,11 @@ func dataSourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) err
 
 		offsetString := strings.Split(res.Paging.Next, string('&'))[2]
 		offsetString = strings.Split(offsetString, string('='))[1]
-		offset, _ = strconv.Atoi(offsetString)
+		offset, pageinationError = strconv.Atoi(offsetString)
+
+		if pageinationError != nil {
+			return pageinationError
+		}
 	}
 	return nil
 }
