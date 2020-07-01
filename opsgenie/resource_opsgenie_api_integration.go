@@ -165,6 +165,18 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 	if err != nil {
 		return err
 	}
+
+	// GET+PUT workaround since the Opsgenie Integration API does not support HTTP PATCH method
+	var userProperties integration.OtherFields
+	result, err := client.Get(context.Background(), &integration.GetRequest{
+		Id: d.Id(),
+	})
+	if err != nil {
+		log.Printf("Error occurred while performing GET for integration: %s", d.Id())
+		return err
+	}
+	userProperties = result.Data
+
 	name := d.Get("name").(string)
 	integrationType := d.Get("type").(string)
 	ignoreRespondersFromPayload := d.Get("ignore_responders_from_payload").(bool)
@@ -183,6 +195,7 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
 		Enabled:                     &enabled,
+		OtherFields:                 userProperties,
 	}
 
 	log.Printf("[INFO] Updating OpsGenie api based integration '%s'", name)
