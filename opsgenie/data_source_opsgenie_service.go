@@ -23,7 +23,7 @@ func dataSourceOpsGenieService() *schema.Resource {
 			},
 			"team_id": {
 				Type:         schema.TypeString,
-				Required:     true,
+				Optional:     true,
 				ValidateFunc: validateOpsGenieServiceTeamId,
 			},
 			"description": {

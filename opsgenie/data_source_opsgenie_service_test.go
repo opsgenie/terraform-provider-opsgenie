@@ -64,8 +64,6 @@ resource "opsgenie_service" "test" {
 }
 data "opsgenie_service" "existingservice" {
   name = "${opsgenie_service.test.name}"
-  description = "This is our main service"
-  team_id = "${opsgenie_team.test.id}"
 }
 `, randomTeamName, randomServiceName)
 }
