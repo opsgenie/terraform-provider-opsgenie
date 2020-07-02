@@ -167,7 +167,6 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 	}
 
 	// GET+PUT workaround since the Opsgenie Integration API does not support HTTP PATCH method
-	userProperties := integration.OtherFields{}
 	result, err := client.Get(context.Background(), &integration.GetRequest{
 		Id: d.Id(),
 	})
@@ -175,8 +174,15 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		log.Printf("Error occurred while performing GET for integration: %s", d.Id())
 		return err
 	}
-	userProperties = result.Data
+
+	userProperties := result.Data
 	userProperties["allowWriteAccess"] = d.Get("allow_write_access")
+
+	if readOnlyFields, found := userProperties["_readOnly"]; found {
+		for _, key := range readOnlyFields.([]interface{}) {
+			delete(userProperties, key.(string))
+		}
+	}
 
 	name := d.Get("name").(string)
 	integrationType := d.Get("type").(string)
