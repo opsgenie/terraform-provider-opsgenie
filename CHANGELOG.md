@@ -3,6 +3,11 @@
 IMPROVEMENTS:
 
 * **Service API:** New resource, now you can manage service resources using Terraform. (#115)
+
+BUGFIX:
+
+* **Api Integration:** Api integration update will no longer resets fields, which not managed via Terraform. (#119)
+
 ## 0.3.4 (May 20, 2020)
 
 BUGFIX:
