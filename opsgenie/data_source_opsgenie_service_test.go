@@ -62,8 +62,12 @@ resource "opsgenie_service" "test" {
   description = "This is our main service"
   team_id = "${opsgenie_team.test.id}"
 }
+resource "time_sleep" "wait_40_seconds" {
+  depends_on = [opsgenie_service.test]
+  create_duration = "40s"
+}
 data "opsgenie_service" "existingservice" {
-  name = "test"
+  name = "${opsgenie_service.test.name}"
 }
 `, randomTeamName, randomServiceName)
 }
