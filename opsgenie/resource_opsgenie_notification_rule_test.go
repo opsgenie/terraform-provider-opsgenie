@@ -4,16 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
-	"strings"
-	"testing"
-
 	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/notification"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
+	"log"
+	"strings"
+	"testing"
 )
 
 func init() {
@@ -160,15 +159,20 @@ resource "opsgenie_notification_rule" "test" {
   repeat {
     loop_after = 2
   }
-  timeRestriction {
+  time_restriction {
     type = "time-of-day"
     restriction {
-      startHour = 3
-      startMin = 15
-      endHour = 5
-      endMin = 30
+      start_hour = 3
+      start_min = 15
+      end_hour = 5
+      end_min = 30
     }
   }
+}
+
+resource "time_sleep" "wait_40_seconds" {
+  depends_on = [opsgenie_notification_rule.test]
+  create_duration = "40s"
 }
 
 `, randomName, randomName, randomName)
