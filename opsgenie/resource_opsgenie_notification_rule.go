@@ -99,6 +99,95 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"order": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"repeat": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"loop_after": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"enabled": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  true,
+						},
+					},
+				},
+			},
+			"time_restriction": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"restrictions": {
+							Type:     schema.TypeSet,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"start_day": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"end_day": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"start_hour": {
+										Type:     schema.TypeInt,
+										Required: true,
+									},
+									"start_min": {
+										Type:     schema.TypeInt,
+										Required: true,
+									},
+									"end_hour": {
+										Type:     schema.TypeInt,
+										Required: true,
+									},
+									"end_min": {
+										Type:     schema.TypeInt,
+										Required: true,
+									},
+								},
+							},
+						},
+						"restriction": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"start_hour": {
+										Type:     schema.TypeInt,
+										Required: true,
+									},
+									"start_min": {
+										Type:     schema.TypeInt,
+										Required: true,
+									},
+									"end_hour": {
+										Type:     schema.TypeInt,
+										Required: true,
+									},
+									"end_min": {
+										Type:     schema.TypeInt,
+										Required: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -110,16 +199,24 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 	}
 
 	enabled := d.Get("enabled").(bool)
+	timeRestriction := d.Get("time_restriction").([]interface{})
+
 	createRequest := &notification.CreateRuleRequest{
 		UserIdentifier:   d.Get("username").(string),
 		Name:             d.Get("name").(string),
 		ActionType:       notification.ActionType(d.Get("action_type").(string)),
 		NotificationTime: expandOpsGenieNotificationRuleNotificationTime(d.Get("notification_time").(*schema.Set)),
 		Enabled:          &enabled,
+		Order:            uint32(d.Get("order").(int)),
+		Repeat:           expandOpsGenieNotificationRuleRepeat(d),
 	}
 
 	if len(d.Get("steps").([]interface{})) > 0 {
 		createRequest.Steps = expandOpsGenieNotificationRuleSteps(d.Get("steps").([]interface{}))
+	}
+
+	if len(timeRestriction) > 0 {
+		createRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Creating Notification Rule '%s' for User: '%s'", d.Get("name").(string), d.Get("username").(string))
@@ -159,6 +256,8 @@ func resourceOpsGenieNotificationRuleRead(d *schema.ResourceData, meta interface
 	d.Set("action_type", rule.ActionType)
 	d.Set("notification_time", rule.NotificationTime)
 	d.Set("enabled", rule.Enabled)
+	d.Set("order", rule.Order)
+	d.Set("time_restriction", flattenOpsgenieNotificationRuleTimeRestriction(rule.TimeRestriction))
 
 	if rule.Steps != nil {
 		d.Set("steps", flattenOpsGenieNotificationRuleSteps(rule.Steps))
@@ -176,15 +275,23 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 	}
 
 	enabled := d.Get("enabled").(bool)
+	timeRestriction := d.Get("time_restriction").([]interface{})
+
 	updateRequest := &notification.UpdateRuleRequest{
 		UserIdentifier:   d.Get("username").(string),
 		RuleId:           d.Id(),
 		NotificationTime: expandOpsGenieNotificationRuleNotificationTime(d.Get("notification_time").(*schema.Set)),
 		Enabled:          &enabled,
+		Order:            uint32(d.Get("order").(int)),
+		Repeat:           expandOpsGenieNotificationRuleRepeat(d),
 	}
 
 	if len(d.Get("steps").([]interface{})) > 0 {
 		updateRequest.Steps = expandOpsGenieNotificationRuleSteps(d.Get("steps").([]interface{}))
+	}
+
+	if len(timeRestriction) > 0 {
+		updateRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Updating Notification Rule '%s' for User: '%s'", d.Get("name").(string), d.Get("username").(string))
@@ -285,4 +392,50 @@ func flattenOpsGenieNotificationRuleStepsContact(input og.Contact) []map[string]
 	element["method"] = input.MethodOfContact
 	output = append(output, element)
 	return output
+}
+
+func expandOpsGenieNotificationRuleRepeat(d *schema.ResourceData) *notification.Repeat {
+	input := d.Get("repeat").([]interface{})
+	repeat := notification.Repeat{}
+	for _, r := range input {
+		repeatMap := r.(map[string]interface{})
+		repeatEnabled := repeatMap["enabled"].(bool)
+		repeat.LoopAfter = uint32(repeatMap["loop_after"].(int))
+		repeat.Enabled = &repeatEnabled
+	}
+	return &repeat
+}
+
+func flattenOpsgenieNotificationRuleTimeRestriction(input *og.TimeRestriction) []map[string]interface{} {
+	rules := make([]map[string]interface{}, 0, 1)
+	out := make(map[string]interface{})
+	out["type"] = input.Type
+
+	if len(input.RestrictionList) > 0 {
+		restrictions := make([]map[string]interface{}, 0, len(input.RestrictionList))
+		for _, r := range input.RestrictionList {
+			restrictionMap := make(map[string]interface{})
+			restrictionMap["start_min"] = r.StartMin
+			restrictionMap["start_hour"] = r.StartHour
+			restrictionMap["start_day"] = r.StartDay
+			restrictionMap["end_min"] = r.EndMin
+			restrictionMap["end_hour"] = r.EndHour
+			restrictionMap["end_day"] = r.EndDay
+			restrictions = append(restrictions, restrictionMap)
+		}
+		return restrictions
+	} else {
+		restriction := make(map[string]interface{})
+		//IF RESTRICTION
+		restriction["end_day"] = input.Restriction.EndDay
+		restriction["end_hour"] = input.Restriction.EndHour
+		restriction["end_min"] = input.Restriction.EndMin
+		restriction["start_day"] = input.Restriction.StartDay
+		restriction["start_hour"] = input.Restriction.StartHour
+		restriction["start_min"] = input.Restriction.StartMin
+
+		//IF restrictions
+		rules = append(rules, restriction)
+		return rules
+	}
 }

@@ -44,6 +44,7 @@ func Provider() terraform.ResourceProvider {
 			"opsgenie_escalation": dataSourceOpsgenieEscalation(),
 			"opsgenie_schedule":   dataSourceOpsgenieSchedule(),
 			"opsgenie_heartbeat":  dataSourceOpsgenieHeartbeat(),
+			//"opsgenie_notification_rule": dataSourceOpsgenieNotificationRule(),
 		},
 
 		ConfigureFunc: providerConfigure,

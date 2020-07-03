@@ -155,6 +155,20 @@ resource "opsgenie_notification_rule" "test" {
       to = "genieuser-%s@opsgenie.com"
     }
   }
+  order = 0
+  enabled = true
+  repeat {
+    loop_after = 2
+  }
+  timeRestriction {
+    type = "time-of-day"
+    restriction {
+      startHour = 3
+      startMin = 15
+      endHour = 5
+      endMin = 30
+    }
+  }
 }
 
 `, randomName, randomName, randomName)
