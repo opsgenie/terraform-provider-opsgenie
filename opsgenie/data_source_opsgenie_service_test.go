@@ -63,7 +63,7 @@ resource "opsgenie_service" "test" {
   team_id = "${opsgenie_team.test.id}"
 }
 data "opsgenie_service" "existingservice" {
-  name = "${opsgenie_service.test.name}"
+  name = "test"
 }
 `, randomTeamName, randomServiceName)
 }
