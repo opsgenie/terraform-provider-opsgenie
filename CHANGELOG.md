@@ -1,4 +1,4 @@
-## 0.3.5 (Unreleased)
+## 0.3.5 (July 05, 2020)
 
 IMPROVEMENTS:
 
