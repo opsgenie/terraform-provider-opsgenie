@@ -142,38 +142,59 @@ resource "opsgenie_user" "test" {
   full_name = "Acceptance Test User"
   role      = "User"
 }
-
+resource "opsgenie_team" "test" {
+  name        = "genieteam-%s"
+  description = "This team deals with all the things"
+  member {
+    id        = opsgenie_user.test.id
+    role      = "admin"
+  }
+}
+resource "opsgenie_schedule" "test" {
+  name          = "genieschedule-%s"
+  description   = "schedule test"
+  timezone      = "Europe/Rome"
+  enabled       = false
+  owner_team_id = opsgenie_team.test.id
+}
 resource "opsgenie_notification_rule" "test" {
-  name = "genierule-%s"
-  username = opsgenie_user.test.username
-  action_type = "schedule-end"
+  name              = "genierule-%s"
+  username          = opsgenie_user.test.username
+  action_type       = "schedule-end"
   notification_time = ["just-before", "15-minutes-ago"]
+  enabled           = true
   steps {
     contact {
       method = "email"
-      to = "genieuser-%s@opsgenie.com"
+      to     = "genierule-%s@opsgenie.com"
     }
   }
-  order = 0
-  enabled = true
+  order    = 0
   repeat {
     loop_after = 2
   }
   time_restriction {
-    type = "time-of-day"
+    type  = "time-of-day"
     restriction {
-      start_hour = 3
-      start_min = 15
-      end_hour = 5
-      end_min = 30
+      start_hour  = 3
+      start_min   = 15
+      end_hour    = 5
+      end_min     = 30
+    }
+  }
+  schedules {
+    name  = opsgenie_schedule.test.name
+    type  = "schedule"
+  }
+  criteria {
+    type = "match-any-condition"
+    conditions {
+      field          = "message"
+      operation      = "contains"
+      expected_value = "expected1"
+      not            = false
     }
   }
 }
-
-resource "time_sleep" "wait_40_seconds" {
-  depends_on = [opsgenie_notification_rule.test]
-  create_duration = "40s"
-}
-
-`, randomName, randomName, randomName)
+`, randomName, randomName, randomName, randomName, randomName)
 }

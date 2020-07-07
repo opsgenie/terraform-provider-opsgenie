@@ -197,7 +197,7 @@ type CreateRuleRequest struct {
 	UserIdentifier   string
 	Name             string                 `json:"name"`
 	ActionType       ActionType             `json:"actionType"`
-	Criteria         *og.Filter             `json:"criteria,omitempty"`
+	Criteria         *og.Criteria           `json:"criteria,omitempty"`
 	NotificationTime []NotificationTimeType `json:"notificationTime,omitempty"`
 	TimeRestriction  *og.TimeRestriction    `json:"timeRestriction,omitempty"`
 	Schedules        []Schedule             `json:"schedules,omitempty"`
@@ -237,7 +237,7 @@ func (r *CreateRuleRequest) Validate() error {
 		}
 	}
 	if r.Criteria != nil {
-		err := og.ValidateFilter(*r.Criteria)
+		err := og.ValidateCriteria(*r.Criteria)
 		if err != nil {
 			return err
 		}
@@ -293,7 +293,7 @@ type UpdateRuleRequest struct {
 	client.BaseRequest
 	UserIdentifier   string
 	RuleId           string
-	Criteria         *og.Filter             `json:"criteria,omitempty"`
+	Criteria         *og.Criteria           `json:"criteria,omitempty"`
 	NotificationTime []NotificationTimeType `json:"notificationTime,omitempty"`
 	TimeRestriction  *og.TimeRestriction    `json:"timeRestriction,omitempty"`
 	Schedules        []Schedule             `json:"schedules,omitempty"`
@@ -326,7 +326,7 @@ func (r *UpdateRuleRequest) Validate() error {
 		}
 	}
 	if r.Criteria != nil {
-		err := og.ValidateFilter(*r.Criteria)
+		err := og.ValidateCriteria(*r.Criteria)
 		if err != nil {
 			return err
 		}
@@ -548,7 +548,7 @@ func validateSchedule(schedule Schedule) error {
 
 type Repeat struct {
 	LoopAfter uint32 `json:"loopAfter,omitempty"`
-	Enabled   *bool  `json:"loopAfter,omitempty"`
+	Enabled   *bool  `json:"enabled,omitempty"`
 }
 
 func validateStep(step *og.Step, actionType ActionType) error {

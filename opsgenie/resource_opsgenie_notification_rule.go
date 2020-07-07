@@ -188,6 +188,68 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 					},
 				},
 			},
+			"schedules": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"name": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  true,
+						},
+					},
+				},
+			},
+			"criteria": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"conditions": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"field": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"key": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"not": {
+										Type:     schema.TypeBool,
+										Optional: true,
+										Default:  false,
+									},
+									"operation": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+									"expected_value": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"order": {
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -200,6 +262,7 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 
 	enabled := d.Get("enabled").(bool)
 	timeRestriction := d.Get("time_restriction").([]interface{})
+	criteria := d.Get("criteria").([]interface{})
 
 	createRequest := &notification.CreateRuleRequest{
 		UserIdentifier:   d.Get("username").(string),
@@ -209,6 +272,11 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 		Enabled:          &enabled,
 		Order:            uint32(d.Get("order").(int)),
 		Repeat:           expandOpsGenieNotificationRuleRepeat(d),
+		Criteria:         expandOpsgenieNotificationRuleCriteria(criteria),
+	}
+
+	if len(d.Get("schedules").([]interface{})) > 0 {
+		createRequest.Schedules = expandOpsGenieNotificationRuleSchedules(d.Get("schedules").([]interface{}))
 	}
 
 	if len(d.Get("steps").([]interface{})) > 0 {
@@ -258,6 +326,7 @@ func resourceOpsGenieNotificationRuleRead(d *schema.ResourceData, meta interface
 	d.Set("enabled", rule.Enabled)
 	d.Set("order", rule.Order)
 	d.Set("time_restriction", flattenOpsgenieNotificationRuleTimeRestriction(rule.TimeRestriction))
+	d.Set("schedules", rule.Schedules)
 
 	if rule.Steps != nil {
 		d.Set("steps", flattenOpsGenieNotificationRuleSteps(rule.Steps))
@@ -276,6 +345,7 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 
 	enabled := d.Get("enabled").(bool)
 	timeRestriction := d.Get("time_restriction").([]interface{})
+	criteria := d.Get("criteria").([]interface{})
 
 	updateRequest := &notification.UpdateRuleRequest{
 		UserIdentifier:   d.Get("username").(string),
@@ -284,6 +354,11 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 		Enabled:          &enabled,
 		Order:            uint32(d.Get("order").(int)),
 		Repeat:           expandOpsGenieNotificationRuleRepeat(d),
+		Criteria:         expandOpsgenieNotificationRuleCriteria(criteria),
+	}
+
+	if len(d.Get("schedules").([]interface{})) > 0 {
+		updateRequest.Schedules = expandOpsGenieNotificationRuleSchedules(d.Get("schedules").([]interface{}))
 	}
 
 	if len(d.Get("steps").([]interface{})) > 0 {
@@ -438,4 +513,54 @@ func flattenOpsgenieNotificationRuleTimeRestriction(input *og.TimeRestriction) [
 		rules = append(rules, restriction)
 		return rules
 	}
+}
+
+func expandOpsGenieNotificationRuleSchedules(input []interface{}) []notification.Schedule {
+	output := make([]notification.Schedule, 0)
+	if input != nil {
+		for _, v := range input {
+			scheduleMap := v.(map[string]interface{})
+			scheduleName := scheduleMap["name"]
+			scheduleType := scheduleMap["type"]
+			output = append(output, notification.Schedule{
+				TypeOfSchedule: scheduleType.(string),
+				Name:           scheduleName.(string)})
+		}
+	}
+	return output
+}
+
+func expandOpsgenieNotificationRuleCriteria(input []interface{}) *og.Criteria {
+	criteria := og.Criteria{}
+	for _, r := range input {
+		inputMap := r.(map[string]interface{})
+		criteriaType := inputMap["type"].(string)
+		conditions := expandOpsgenieNotificationRuleCriteriaConditions(inputMap["conditions"].([]interface{}))
+		criteria.Conditions = conditions
+		criteria.CriteriaType = og.ConditionMatchType(criteriaType)
+	}
+	return &criteria
+}
+
+func expandOpsgenieNotificationRuleCriteriaConditions(input []interface{}) []og.Condition {
+	conditions := make([]og.Condition, 0, len(input))
+	if input != nil {
+		for _, v := range input {
+			inputMap := v.(map[string]interface{})
+			condition := og.Condition{}
+			condition.Field = og.ConditionFieldType(inputMap["field"].(string))
+			isNot := inputMap["not"].(bool)
+			condition.IsNot = &isNot
+			condition.Operation = og.ConditionOperation(inputMap["operation"].(string))
+			condition.ExpectedValue = inputMap["expected_value"].(string)
+			key := inputMap["key"].(string)
+			if key != "" {
+				condition.Key = inputMap["key"].(string)
+			}
+			order := inputMap["order"].(int)
+			condition.Order = &order
+			conditions = append(conditions, condition)
+		}
+	}
+	return conditions
 }
