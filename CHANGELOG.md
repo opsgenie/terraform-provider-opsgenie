@@ -1,4 +1,10 @@
-## 0.4.0 (Unreleased)
+## 0.3.6 (Unreleased)
+
+IMPROVEMENTS:
+
+* **Data Source: Service API:** New datasource, now you can manage service which created without using Terraform. (#118)
+
+
 ## 0.3.5 (July 05, 2020)
 
 IMPROVEMENTS:
