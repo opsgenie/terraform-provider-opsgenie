@@ -333,6 +333,7 @@ func flattenOpsgenieCriteria(input og.Criteria) []map[string]interface{} {
 		conditionMap["expected_value"] = r.ExpectedValue
 		conditionMap["operation"] = r.Operation
 		conditionMap["field"] = r.Field
+		conditionMap["not"] = r.IsNot
 		conditions = append(conditions, conditionMap)
 	}
 	out["conditions"] = conditions
