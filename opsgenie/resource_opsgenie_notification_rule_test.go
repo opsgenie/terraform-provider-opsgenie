@@ -166,7 +166,7 @@ resource "opsgenie_notification_rule" "test" {
   steps {
     contact {
       method = "email"
-      to     = "genierule-%s@opsgenie.com"
+      to     = "genieuser-%s@opsgenie.com"
     }
   }
   order    = 0
