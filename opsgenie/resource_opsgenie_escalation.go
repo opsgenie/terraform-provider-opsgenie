@@ -15,7 +15,7 @@ import (
 func resourceOpsgenieEscalation() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieEscalationCreate,
-		Read:   resourceOpsgenieEscalationRead,
+		Read:   handleNonExistentResource(resourceOpsgenieEscalationRead),
 		Update: resourceOpsgenieEscalationUpdate,
 		Delete: resourceOpsgenieEscalationDelete,
 		Importer: &schema.ResourceImporter{

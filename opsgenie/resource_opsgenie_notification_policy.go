@@ -33,7 +33,7 @@ var (
 func resourceOpsGenieNotificationPolicy() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsGenieNotificationPolicyCreate,
-		Read:   resourceOpsGenieNotificationPolicyRead,
+		Read:   handleNonExistentResource(resourceOpsGenieNotificationPolicyRead),
 		Update: resourceOpsGenieNotificationPolicyUpdate,
 		Delete: resourceOpsGenieNotificationPolicyDelete,
 		Importer: &schema.ResourceImporter{

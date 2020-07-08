@@ -2,8 +2,9 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"log"
+
+	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
@@ -12,7 +13,7 @@ import (
 func resourceOpsgenieEmailIntegration() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieEmailIntegrationCreate,
-		Read:   resourceOpsgenieEmailIntegrationRead,
+		Read:   handleNonExistentResource(resourceOpsgenieEmailIntegrationRead),
 		Update: resourceOpsgenieEmailIntegrationUpdate,
 		Delete: resourceOpsgenieEmailIntegrationDelete,
 		Importer: &schema.ResourceImporter{

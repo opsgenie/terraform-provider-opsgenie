@@ -15,7 +15,7 @@ import (
 func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsGenieTeamRoutingRuleCreate,
-		Read:   resourceOpsGenieTeamRoutingRuleRead,
+		Read:   handleNonExistentResource(resourceOpsGenieTeamRoutingRuleRead),
 		Update: resourceOpsGenieTeamRoutingRuleUpdate,
 		Delete: resourceOpsGenieTeamRoutingRuleDelete,
 		Importer: &schema.ResourceImporter{

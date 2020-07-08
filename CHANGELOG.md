@@ -1,4 +1,26 @@
-## 0.3.2 (Unreleased)
+## 0.4.0 (Unreleased)
+## 0.3.5 (July 05, 2020)
+
+IMPROVEMENTS:
+
+* **Service API:** New resource, now you can manage service resources using Terraform. (#115)
+
+BUGFIX:
+
+* **Api Integration:** Api integration update will no longer resets fields, which not managed via Terraform. (#119)
+
+## 0.3.4 (May 20, 2020)
+
+BUGFIX:
+
+* **Api Integration:** Read function fixes the Allow_Write_Access field. Also default behaviour of `true` implemented for this field.
+
+## 0.3.3 (May 18, 2020)
+IMPROVEMENTS:
+
+* If resource deleted manually, Provider find out while reading resources then approach to re-creates resources 
+
+## 0.3.2 (May 14, 2020)
 
 BUGFIX:
 

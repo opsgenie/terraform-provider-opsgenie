@@ -14,7 +14,7 @@ import (
 func resourceOpsgenieMaintenance() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieMaintenanceCreate,
-		Read:   resourceOpsgenieMaintenanceRead,
+		Read:   handleNonExistentResource(resourceOpsgenieMaintenanceRead),
 		Update: resourceOpsgenieMaintenanceUpdate,
 		Delete: resourceOpsgenieMaintenanceDelete,
 		Importer: &schema.ResourceImporter{

@@ -12,7 +12,7 @@ import (
 func resourceOpsgenieApiIntegration() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieApiIntegrationCreate,
-		Read:   resourceOpsgenieApiIntegrationRead,
+		Read:   handleNonExistentResource(resourceOpsgenieApiIntegrationRead),
 		Update: resourceOpsgenieApiIntegrationUpdate,
 		Delete: resourceOpsgenieApiIntegrationDelete,
 		Importer: &schema.ResourceImporter{
@@ -32,6 +32,7 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 			"allow_write_access": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  true,
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -152,7 +153,7 @@ func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}
 	d.Set("id", result.Data["id"])
 	d.Set("responders", result.Data["responders"])
 	d.Set("type", result.Data["type"])
-	d.Set("allow_write_access", result.Data["allow_write_access"])
+	d.Set("allow_write_access", result.Data["allowWriteAccess"])
 	d.Set("enabled", result.Data["enabled"])
 	d.Set("suppress_notifications", result.Data["suppressNotifications"])
 
@@ -164,6 +165,25 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 	if err != nil {
 		return err
 	}
+
+	// GET+PUT workaround since the Opsgenie Integration API does not support HTTP PATCH method
+	result, err := client.Get(context.Background(), &integration.GetRequest{
+		Id: d.Id(),
+	})
+	if err != nil {
+		log.Printf("Error occurred while performing GET for integration: %s", d.Id())
+		return err
+	}
+
+	userProperties := result.Data
+	userProperties["allowWriteAccess"] = d.Get("allow_write_access")
+
+	if readOnlyFields, found := userProperties["_readOnly"]; found {
+		for _, key := range readOnlyFields.([]interface{}) {
+			delete(userProperties, key.(string))
+		}
+	}
+
 	name := d.Get("name").(string)
 	integrationType := d.Get("type").(string)
 	ignoreRespondersFromPayload := d.Get("ignore_responders_from_payload").(bool)
@@ -182,6 +202,7 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
 		Enabled:                     &enabled,
+		OtherFields:                 userProperties,
 	}
 
 	log.Printf("[INFO] Updating OpsGenie api based integration '%s'", name)
