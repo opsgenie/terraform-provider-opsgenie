@@ -193,6 +193,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 			"alias": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "{{alias}}",
 			},
 			"alert_description": {
 				Type:     schema.TypeString,
@@ -201,10 +202,12 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 			"entity": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "{{entity}}",
 			},
 			"source": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "{{source}}",
 			},
 			"ignore_original_actions": {
 				Type:     schema.TypeBool,
