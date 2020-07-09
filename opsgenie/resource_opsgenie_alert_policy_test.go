@@ -76,7 +76,6 @@ func testSweepAlertPolicy(region string) error {
 }
 
 func TestAccOpsGenieAlertPolicy_basic(t *testing.T) {
-	//teamName := acctest.RandString(6)
 	alertPolicyName := acctest.RandString(6)
 
 	config := testAccOpsGenieAlertPolicy_basic(alertPolicyName)
@@ -105,7 +104,6 @@ func testCheckOpsGenieAlertPolicyDestroy(s *terraform.State) error {
 			continue
 		}
 		req := policy.GetAlertPolicyRequest{
-			//TeamId: rs.Primary.Attributes["team_id"],
 			Id: rs.Primary.Attributes["id"],
 		}
 		_, err := client.GetAlertPolicy(context.Background(), &req)

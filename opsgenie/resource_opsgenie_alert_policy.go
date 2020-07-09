@@ -290,7 +290,6 @@ func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{})
 		return err
 	}
 
-	//suppress := d.Get("suppress").(bool)
 	message := d.Get("message").(string)
 	continue_policy := d.Get("continue_policy").(bool)
 	alias := d.Get("alias").(string)
@@ -298,30 +297,24 @@ func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{})
 	entity := d.Get("entity").(string)
 	source := d.Get("source").(string)
 	ignore_original_actions := d.Get("ignore_original_actions").(bool)
-	//actions := d.Get("actions").([]string)
 	ignore_original_details := d.Get("ignore_original_details").(bool)
-	//details := d.Get("details").([]string)
 	ignore_original_responders := d.Get("ignore_original_responders").(bool)
 	ignore_original_tags := d.Get("ignore_original_tags").(bool)
-	//tags := d.Get("tags").([]string)
 	priority := d.Get("priority").(string)
 
 	createRequest := &policy.CreateAlertPolicyRequest{
-		MainFields:            *expandOpsGenieAlertPolicyRequestMainFields(d),
-		Message:               message,
-		Continue:              &continue_policy,
-		Alias:                 alias,
-		AlertDescription:      alert_description,
-		Entity:                entity,
-		Source:                source,
-		IgnoreOriginalDetails: &ignore_original_actions,
-		//Actions:                  flattenOpsgenieAlertPolicyActions(d),
-		IgnoreOriginalActions: &ignore_original_details,
-		//Details:                  flattenOpsgenieAlertPolicyDetailsCreate(d),
+		MainFields:               *expandOpsGenieAlertPolicyRequestMainFields(d),
+		Message:                  message,
+		Continue:                 &continue_policy,
+		Alias:                    alias,
+		AlertDescription:         alert_description,
+		Entity:                   entity,
+		Source:                   source,
+		IgnoreOriginalDetails:    &ignore_original_actions,
+		IgnoreOriginalActions:    &ignore_original_details,
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
-		//Tags:                     flattenOpsgenieAlertPolicyTags(d),
-		Priority: alert.Priority(priority),
+		Priority:                 alert.Priority(priority),
 	}
 
 	if len(d.Get("responders").([]interface{})) > 0 {
@@ -340,19 +333,6 @@ func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{})
 		createRequest.Tags = flattenOpsgenieAlertPolicyTags(d)
 	}
 
-	//if len(d.Get("auto_close_action").([]interface{})) > 0 {
-	//	createRequest.AutoCloseAction = expandOpsGenieAlertPolicyAutoCloseAction(d.Get("auto_close_action").([]interface{}))
-	//}
-	//if len(d.Get("auto_restart_action").([]interface{})) > 0 {
-	//	createRequest.AutoRestartAction = expandOpsGenieAlertPolicyAutoRestartAction(d.Get("auto_restart_action").([]interface{}))
-	//}
-	//if len(d.Get("de_duplication_action").([]interface{})) > 0 {
-	//	createRequest.DeDuplicationAction = expandOpsGenieAlertPolicyDeDuplicationAction(d.Get("de_duplication_action").([]interface{}))
-	//}
-	//if len(d.Get("delay_action").([]interface{})) > 0 {
-	//	createRequest.DelayAction = expandOpsGenieAlertPolicyDelayAction(d.Get("delay_action").([]interface{}))
-	//}
-
 	log.Printf("[INFO] Creating Alert Policy '%s'", d.Get("name").(string))
 	result, err := client.CreateAlertPolicy(context.Background(), createRequest)
 	if err != nil {
@@ -361,7 +341,6 @@ func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{})
 
 	d.SetId(result.Id)
 
-	//return nil
 	return resourceOpsGenieAlertPolicyRead(d, meta)
 }
 
@@ -403,7 +382,6 @@ func resourceOpsGenieAlertPolicyRead(d *schema.ResourceData, meta interface{}) e
 	d.Set("ignore_original_responders", policy.IgnoreOriginalResponders)
 	d.Set("ignore_original_tags", policy.IgnoreOriginalTags)
 	d.Set("tags", policy.Tags)
-	// priority and responders
 
 	if policy.Responders != nil {
 		d.Set("responders", flattenOpsGenieAlertPolicyResponders(policy.Responders))
@@ -450,22 +428,19 @@ func resourceOpsGenieAlertPolicyUpdate(d *schema.ResourceData, meta interface{})
 	priority := d.Get("priority").(string)
 
 	updateRequest := &policy.UpdateAlertPolicyRequest{
-		Id:                    d.Id(),
-		MainFields:            *expandOpsGenieAlertPolicyRequestMainFields(d),
-		Message:               message,
-		Continue:              &continue_policy,
-		Alias:                 alias,
-		AlertDescription:      alert_description,
-		Entity:                entity,
-		Source:                source,
-		IgnoreOriginalDetails: &ignore_original_actions,
-		//Actions:                  flattenOpsgenieAlertPolicyActions(d),
-		IgnoreOriginalActions: &ignore_original_details,
-		//Details:                  flattenOpsgenieAlertPolicyDetailsUpdate(d),
+		Id:                       d.Id(),
+		MainFields:               *expandOpsGenieAlertPolicyRequestMainFields(d),
+		Message:                  message,
+		Continue:                 &continue_policy,
+		Alias:                    alias,
+		AlertDescription:         alert_description,
+		Entity:                   entity,
+		Source:                   source,
+		IgnoreOriginalDetails:    &ignore_original_actions,
+		IgnoreOriginalActions:    &ignore_original_details,
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
-		//Tags:                     flattenOpsgenieAlertPolicyTags(d),
-		Priority: alert.Priority(priority),
+		Priority:                 alert.Priority(priority),
 	}
 
 	if len(d.Get("responders").([]interface{})) > 0 {
@@ -530,7 +505,6 @@ func expandOpsGenieAlertPolicyRequestMainFields(d *schema.ResourceData) *policy.
 }
 
 func expandOpsGenieAlertPolicyResponders(input []interface{}) *[]alert.Responder {
-	//input := d.Get("responders").([]interface{})
 	responders := make([]alert.Responder, 0, len(input))
 
 	if input == nil {
@@ -556,86 +530,6 @@ func expandOpsGenieAlertPolicyResponders(input []interface{}) *[]alert.Responder
 	return &responders
 }
 
-//
-//func expandOpsGenieAlertPolicyAutoCloseAction(input []interface{}) *policy.AutoCloseAction {
-//
-//	action := policy.AutoCloseAction{}
-//	if input == nil {
-//		return &action
-//	}
-//	for _, v := range input {
-//		config := v.(map[string]interface{})
-//		action.Duration = expandOpsGenieAlertPolicyDuration(config["duration"].([]interface{}))
-//	}
-//
-//	return &action
-//}
-//
-//func expandOpsGenieAlertPolicyAutoRestartAction(input []interface{}) *policy.AutoRestartAction {
-//
-//	action := policy.AutoRestartAction{}
-//	if input == nil {
-//		return &action
-//	}
-//	for _, v := range input {
-//		config := v.(map[string]interface{})
-//		action.Duration = expandOpsGenieAlertPolicyDuration(config["duration"].([]interface{}))
-//		action.MaxRepeatCount = config["max_repeat_count"].(int)
-//	}
-//
-//	return &action
-//}
-//
-//func expandOpsGenieAlertPolicyDeDuplicationAction(input []interface{}) *policy.DeDuplicationAction {
-//
-//	action := policy.DeDuplicationAction{}
-//	if input == nil {
-//		return &action
-//	}
-//	for _, v := range input {
-//		config := v.(map[string]interface{})
-//		action.DeDuplicationActionType = policy.DeDuplicationActionType(config["de_duplication_action_type"].(string))
-//		action.Count = config["count"].(int)
-//		if len(config["duration"].([]interface{})) > 0 {
-//			action.Duration = expandOpsGenieAlertPolicyDuration(config["duration"].([]interface{}))
-//		}
-//	}
-//
-//	return &action
-//}
-//
-//func expandOpsGenieAlertPolicyDelayAction(input []interface{}) *policy.DelayAction {
-//
-//	action := policy.DelayAction{}
-//	if input == nil {
-//		return &action
-//	}
-//	for _, v := range input {
-//		config := v.(map[string]interface{})
-//		action.DelayOption = policy.DelayType(config["delay_option"].(string))
-//		untilMinute := config["until_minute"].(int)
-//		action.UntilMinute = &untilMinute
-//		untilHour := config["until_hour"].(int)
-//		action.UntilHour = &untilHour
-//		if len(config["duration"].([]interface{})) > 0 {
-//			action.Duration = expandOpsGenieAlertPolicyDuration(config["duration"].([]interface{}))
-//		}
-//	}
-//
-//	return &action
-//}
-//
-//func expandOpsGenieAlertPolicyDuration(input []interface{}) *policy.Duration {
-//	duration := policy.Duration{}
-//
-//	for _, v := range input {
-//		config := v.(map[string]interface{})
-//		duration.TimeAmount = config["time_amount"].(int)
-//		duration.TimeUnit = og.TimeUnit(config["time_unit"].(string))
-//	}
-//	return &duration
-//}
-//
 func expandOpsGenieAlertPolicyFilter(input []interface{}) *og.Filter {
 	filter := og.Filter{}
 
@@ -730,10 +624,6 @@ func flattenOpsGenieAlertPolicyDuration(input *policy.Duration) []map[string]int
 
 func flattenOpsGenieAlertPolicyResponders(input *[]alert.Responder) []map[string]interface{} {
 	output := make([]map[string]interface{}, 0, len(*input))
-	//element := make(map[string]interface{})
-	//if input.Type != nil {
-	//	element["type"] = flattenOpsGenieAlertPolicyResponderType(input.Duration)
-	//}
 	for _, v := range *input {
 		element := make(map[string]interface{})
 		element["name"] = v.Name
