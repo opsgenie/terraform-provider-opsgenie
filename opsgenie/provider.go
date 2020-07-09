@@ -36,6 +36,7 @@ func Provider() terraform.ResourceProvider {
 			"opsgenie_schedule_rotation":   resourceOpsgenieScheduleRotation(),
 			"opsgenie_maintenance":         resourceOpsgenieMaintenance(),
 			"opsgenie_heartbeat":           resourceOpsgenieHeartbeat(),
+			"opsgenie_alert_policy":        resourceOpsGenieAlertPolicy(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
