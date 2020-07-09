@@ -220,7 +220,6 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				//Set: schema.HashString,
 			},
 			"ignore_original_details": {
 				Type:     schema.TypeBool,
@@ -233,7 +232,6 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				//Set: schema.HashString,
 			},
 			"ignore_original_responders": {
 				Type:     schema.TypeBool,
@@ -276,7 +274,6 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-				//Set: schema.HashString,
 			},
 			"priority": {
 				Type:         schema.TypeString,
@@ -422,12 +419,9 @@ func resourceOpsGenieAlertPolicyUpdate(d *schema.ResourceData, meta interface{})
 	entity := d.Get("entity").(string)
 	source := d.Get("source").(string)
 	ignore_original_actions := d.Get("ignore_original_actions").(bool)
-	//actions := d.Get("actions").([]string)
 	ignore_original_details := d.Get("ignore_original_details").(bool)
-	//details := d.Get("details").(map[string]interface{})
 	ignore_original_responders := d.Get("ignore_original_responders").(bool)
 	ignore_original_tags := d.Get("ignore_original_tags").(bool)
-	//tags := d.Get("tags").([]string)
 	priority := d.Get("priority").(string)
 
 	updateRequest := &policy.UpdateAlertPolicyRequest{
