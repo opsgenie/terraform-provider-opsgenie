@@ -77,8 +77,7 @@ func testSweepAlertPolicy(region string) error {
 
 func TestAccOpsGenieAlertPolicy_basic(t *testing.T) {
 	alertPolicyName1 := acctest.RandString(6)
-	alertPolicyName2 := acctest.RandString(6)
-	config := testAccOpsGenieAlertPolicy_basic(alertPolicyName1, alertPolicyName2)
+	config := testAccOpsGenieAlertPolicy_basic(alertPolicyName1)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -88,6 +87,26 @@ func TestAccOpsGenieAlertPolicy_basic(t *testing.T) {
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOpsGenieAlertPolicyExists("opsgenie_alert_policy.test"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccOpsGenieAlertPolicy_complete(t *testing.T) {
+	randomTeam := acctest.RandString(6)
+	randomAlertPolicyName := acctest.RandString(6)
+
+	config := testAccOpsGenieAlertPolicy_complete(randomTeam, randomAlertPolicyName)
+
+	resource.Test(t, resource.TestCase{
+		Providers:    testAccProviders,
+		CheckDestroy: testCheckOpsGenieAlertPolicyDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOpsGenieAlertPolicyExists("opsgenie_alert_policy.test2"),
 				),
 			},
 		},
@@ -147,7 +166,7 @@ func testCheckOpsGenieAlertPolicyExists(name string) resource.TestCheckFunc {
 	}
 }
 
-func testAccOpsGenieAlertPolicy_basic(alertPolicyName1, alertPolicyName2 string) string {
+func testAccOpsGenieAlertPolicy_basic(alertPolicyName1 string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_alert_policy" "test" {
   name               = "genie-alert-policy-%s"
@@ -174,39 +193,54 @@ resource "opsgenie_alert_policy" "test" {
     }
   }
 }
-resource "opsgenie_alert_policy" "test2" {
-  name               = "genie-alert-policy-%s"
-  policy_description = "Perfect Alert policy for the team."
-  message = "This is a test message"
-  filter {}
-  time_restriction {
-    type = "weekday-and-time-of-day"
-    restrictions {
-      end_day    = "monday"
-      end_hour   = 7
-      end_min    = 0
-      start_day  = "sunday"
-      start_hour = 21
-      start_min  = 0
-    }
-    restrictions {
-      end_day    = "tuesday"
-      end_hour   = 7
-      end_min    = 0
-      start_day  = "monday"
-      start_hour = 22
-      start_min  = 0
-    }
-  }
-  continue_policy = true
-  alias = "alias"
-  entity = "test"
-  source = "new source"
-  ignore_original_actions = false
-  ignore_original_responders = false
-  ignore_original_tags = false
-  priority = "P3"
+`, alertPolicyName1)
 }
 
-`, alertPolicyName1, alertPolicyName2)
+func testAccOpsGenieAlertPolicy_complete(randomTeam, randomAlertPolicyName string) string {
+
+	return fmt.Sprintf(`
+	resource "opsgenie_team" "test" {
+	  name        = "genieteam-%s"
+	  description = "This team deals with all the things"
+	}
+	resource "opsgenie_alert_policy" "test2" {
+	  name               = "genie-alert-policy-%s"
+	  policy_description = "Perfect Alert policy for the team."
+	  message = "This is a test message"
+	  team_id = "${opsgenie_team.test.id}"
+	  filter {}
+	  time_restriction {
+		type = "weekday-and-time-of-day"
+		restrictions {
+		  end_day    = "monday"
+		  end_hour   = 7
+		  end_min    = 0
+		  start_day  = "sunday"
+		  start_hour = 21
+		  start_min  = 0
+		}
+		restrictions {
+		  end_day    = "tuesday"
+		  end_hour   = 7
+		  end_min    = 0
+		  start_day  = "monday"
+		  start_hour = 22
+		  start_min  = 0
+		}
+	  }
+	  continue_policy = true
+	  alias = "alias"
+	  entity = "test"
+	  source = "new source"
+	  ignore_original_actions = false
+	  ignore_original_responders = false
+	  ignore_original_tags = false
+	  priority = "P3"
+	  responders {
+		type = "team"
+		id = "${opsgenie_team.test.id}"
+	  }
+	}
+	`, randomTeam, randomAlertPolicyName)
+
 }

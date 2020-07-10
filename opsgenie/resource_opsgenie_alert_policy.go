@@ -318,7 +318,7 @@ func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{})
 	}
 
 	if len(d.Get("responders").([]interface{})) > 0 {
-		createRequest.Responders = expandOpsGenieAlertPolicyResponders(d.Get("Responders").([]interface{}))
+		createRequest.Responders = expandOpsGenieAlertPolicyResponders(d)
 	}
 
 	if len(d.Get("actions").([]interface{})) > 0 {
@@ -441,7 +441,7 @@ func resourceOpsGenieAlertPolicyUpdate(d *schema.ResourceData, meta interface{})
 	}
 
 	if len(d.Get("responders").([]interface{})) > 0 {
-		updateRequest.Responders = expandOpsGenieAlertPolicyResponders(d.Get("Responders").([]interface{}))
+		updateRequest.Responders = expandOpsGenieAlertPolicyResponders(d)
 	}
 
 	if len(d.Get("actions").([]interface{})) > 0 {
@@ -501,7 +501,8 @@ func expandOpsGenieAlertPolicyRequestMainFields(d *schema.ResourceData) *policy.
 	return &fields
 }
 
-func expandOpsGenieAlertPolicyResponders(input []interface{}) *[]alert.Responder {
+func expandOpsGenieAlertPolicyResponders(d *schema.ResourceData) *[]alert.Responder {
+	input := d.Get("responders").([]interface{})
 	responders := make([]alert.Responder, 0, len(input))
 
 	if input == nil {
