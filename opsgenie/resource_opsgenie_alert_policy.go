@@ -478,10 +478,20 @@ func resourceOpsGenieAlertPolicyDelete(d *schema.ResourceData, meta interface{})
 	if err != nil {
 		return err
 	}
-	deleteRequest := &policy.DeletePolicyRequest{
-		Id:     d.Id(),
-		TeamId: d.Get("team_id").(string),
-		Type:   "alert",
+
+	deleteRequest := &policy.DeletePolicyRequest{}
+	if d.Get("team_id").(string) == "" {
+		deleteRequest = &policy.DeletePolicyRequest{
+			Id:   d.Id(),
+			Type: "alert",
+		}
+	} else {
+		deleteRequest = &policy.DeletePolicyRequest{
+			Id:     d.Id(),
+			TeamId: d.Get("team_id").(string),
+			Type:   "alert",
+		}
+
 	}
 
 	_, err = client.DeletePolicy(context.Background(), deleteRequest)
@@ -497,7 +507,9 @@ func expandOpsGenieAlertPolicyRequestMainFields(d *schema.ResourceData) *policy.
 		Name:              d.Get("name").(string),
 		Enabled:           &enabled,
 		PolicyDescription: d.Get("policy_description").(string),
-		TeamId:            d.Get("team_id").(string),
+	}
+	if d.Get("team_id").(string) != "" {
+		fields.TeamId = d.Get("team_id").(string)
 	}
 	if len(d.Get("filter").([]interface{})) > 0 {
 		fields.Filter = expandOpsGenieAlertPolicyFilter(d.Get("filter").([]interface{}))
