@@ -1,4 +1,9 @@
-## 0.4.0 (Unreleased)
+## 0.3.7 (Unreleased)
+
+IMPROVEMENTS:
+
+* **Alert Policy API:** New resorce, now you can manage alert policies.
+
 ## 0.3.6 (July 08, 2020)
 
 IMPROVEMENTS:
