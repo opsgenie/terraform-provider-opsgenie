@@ -353,10 +353,17 @@ func resourceOpsGenieAlertPolicyRead(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] Reading OpsGenie Alert Policy '%s'", name)
 
-	policy, err := client.GetAlertPolicy(context.Background(), &policy.GetAlertPolicyRequest{
-		Id:     d.Id(),
-		TeamId: d.Get("team_id").(string),
-	})
+	policyRes := &policy.GetAlertPolicyResult{}
+	if d.Get("team_id").(string) == "" {
+		policyRes, err = client.GetAlertPolicy(context.Background(), &policy.GetAlertPolicyRequest{
+			Id: d.Id(),
+		})
+	} else {
+		policyRes, err = client.GetAlertPolicy(context.Background(), &policy.GetAlertPolicyRequest{
+			Id:     d.Id(),
+			TeamId: d.Get("team_id").(string),
+		})
+	}
 	if err != nil {
 		x := err.(*ogClient.ApiError)
 		if x.StatusCode == 404 {
@@ -365,39 +372,39 @@ func resourceOpsGenieAlertPolicyRead(d *schema.ResourceData, meta interface{}) e
 			return nil
 		}
 	}
-	d.Set("name", policy.Name)
-	d.Set("enabled", policy.Enabled)
-	d.Set("policy_description", policy.PolicyDescription)
+	d.Set("name", policyRes.Name)
+	d.Set("enabled", policyRes.Enabled)
+	d.Set("policy_description", policyRes.PolicyDescription)
 
-	d.Set("message", policy.Message)
-	d.Set("continue_policy", policy.Continue)
-	d.Set("alias", policy.Alias)
-	d.Set("alert_description", policy.AlertDescription)
-	d.Set("entity", policy.Entity)
-	d.Set("source", policy.Source)
-	d.Set("ignore_original_actions", policy.IgnoreOriginalActions)
-	d.Set("actions", policy.Actions)
-	d.Set("ignore_original_details", policy.IgnoreOriginalDetails)
-	d.Set("details", policy.Details)
-	d.Set("ignore_original_responders", policy.IgnoreOriginalResponders)
-	d.Set("ignore_original_tags", policy.IgnoreOriginalTags)
-	d.Set("tags", policy.Tags)
+	d.Set("message", policyRes.Message)
+	d.Set("continue_policy", policyRes.Continue)
+	d.Set("alias", policyRes.Alias)
+	d.Set("alert_description", policyRes.AlertDescription)
+	d.Set("entity", policyRes.Entity)
+	d.Set("source", policyRes.Source)
+	d.Set("ignore_original_actions", policyRes.IgnoreOriginalActions)
+	d.Set("actions", policyRes.Actions)
+	d.Set("ignore_original_details", policyRes.IgnoreOriginalDetails)
+	d.Set("details", policyRes.Details)
+	d.Set("ignore_original_responders", policyRes.IgnoreOriginalResponders)
+	d.Set("ignore_original_tags", policyRes.IgnoreOriginalTags)
+	d.Set("tags", policyRes.Tags)
 
-	if policy.Responders != nil {
-		d.Set("responders", flattenOpsGenieAlertPolicyResponders(policy.Responders))
+	if policyRes.Responders != nil {
+		d.Set("responders", flattenOpsGenieAlertPolicyResponders(policyRes.Responders))
 	} else {
 		d.Set("responders", nil)
 	}
 
-	if policy.MainFields.Filter != nil {
-		d.Set("filter", flattenOpsGenieAlertPolicyFilter(policy.MainFields.Filter))
+	if policyRes.MainFields.Filter != nil {
+		d.Set("filter", flattenOpsGenieAlertPolicyFilter(policyRes.MainFields.Filter))
 	} else {
 		d.Set("filter", nil)
 	}
 
-	if policy.MainFields.TimeRestriction != nil {
+	if policyRes.MainFields.TimeRestriction != nil {
 		log.Printf("[DEBUG] 'policy.MainFields.TimeRestriction' is not 'nil'.")
-		d.Set("time_restriction", flattenOpsgenieAlertPolicyTimeRestriction(policy.MainFields.TimeRestriction))
+		d.Set("time_restriction", flattenOpsgenieAlertPolicyTimeRestriction(policyRes.MainFields.TimeRestriction))
 	} else {
 		log.Printf("[DEBUG] 'policy.MainFields.TimeRestriction' is 'nil'.")
 		d.Set("time_restriction", nil)
