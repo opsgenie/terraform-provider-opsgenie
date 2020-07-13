@@ -3,6 +3,7 @@ package opsgenie
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"log"
 	"strings"
 
@@ -76,8 +77,9 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 						},
 
 						"conditions": {
@@ -273,7 +275,6 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		Criteria:            expandOpsgenieCriteria(criteria),
 		Notify:              expandOpsgenieNotify(notify),
 	}
-
 	if len(timeRestriction) > 0 {
 		updateRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
 	}
