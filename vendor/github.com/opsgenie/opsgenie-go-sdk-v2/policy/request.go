@@ -256,6 +256,12 @@ func (r *UpdateAlertPolicyRequest) ResourcePath() string {
 	return "/v2/policies/" + r.Id
 }
 
+func (r *UpdateAlertPolicyRequest) RequestParams() map[string]string {
+        params := make(map[string]string)
+        params["teamId"] = r.TeamId
+        return params
+}
+
 func (r *UpdateAlertPolicyRequest) Method() string {
 	return http.MethodPut
 }
