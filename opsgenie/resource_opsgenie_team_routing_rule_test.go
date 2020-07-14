@@ -163,7 +163,13 @@ resource "opsgenie_team_routing_rule" "test" {
   order    = 0
   timezone = "America/Los_Angeles"
   criteria {
-    type = "match-any-condition"
+    type = "match-all-conditions"
+    conditions {
+      field          = "message"
+      operation      = "contains"
+      expected_value = "unexpected1"
+      not            = true
+    }
     conditions {
       field          = "message"
       operation      = "contains"
@@ -186,7 +192,6 @@ resource "opsgenie_team_routing_rule" "test" {
     name = "${opsgenie_schedule.test.name}"
     type = "schedule"
   }
-
 }
 `, scheduleName, teamName, routingRuleName)
 }
