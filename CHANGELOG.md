@@ -1,4 +1,9 @@
-## 0.4.0 (Unreleased)
+## 0.3.8 (Unreleased)
+
+BUGFIX:
+
+* **Team Routing Rule:** Fixed not field and edited condition validation (#125)
+
 ## 0.3.7 (July 13, 2020)
 
 IMPROVEMENTS:
@@ -10,7 +15,6 @@ IMPROVEMENTS:
 IMPROVEMENTS:
 
 * **Data Source: Service API:** New datasource, now you can manage service which created without using Terraform. (#118)
-
 
 ## 0.3.5 (July 05, 2020)
 
