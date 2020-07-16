@@ -26,9 +26,9 @@ func resourceOpsGenieServiceIncidentRule() *schema.Resource {
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				idParts := strings.Split(d.Id(), "/")
 				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-					return nil, fmt.Errorf("Unexpected format of ID (%q), expected team_id/notification_policy_id", d.Id())
+					return nil, fmt.Errorf("Unexpected format of ID (%q), expected service_id/service_incident_rule_id", d.Id())
 				}
-				d.Set("team_id", idParts[0])
+				d.Set("service_id", idParts[0])
 				d.SetId(idParts[1])
 				return []*schema.ResourceData{d}, nil
 			},
@@ -163,7 +163,6 @@ func resourceOpsGenieServiceIncidentRuleCreate(d *schema.ResourceData, meta inte
 		ServiceId: service_id,
 	}
 
-	//if len(d.Get("conditions").([]interface{})) > 0 {
 	incident_rule := d.Get("incident_rule").([]interface{})
 	for _, v := range incident_rule {
 		config := v.(map[string]interface{})
@@ -171,7 +170,6 @@ func resourceOpsGenieServiceIncidentRuleCreate(d *schema.ResourceData, meta inte
 		createRequest.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].([]interface{}))
 		createRequest.IncidentProperties = expandOpsGenieServiceIncidentRuleIncidentProperties(config["incident_properties"].([]interface{}))
 	}
-	//}
 
 	log.Printf("[INFO] Creating OpsGenie Service Incident Rule for service '%s'", d.Get("service_id").(string))
 	result, err := client.CreateIncidentRule(context.Background(), createRequest)
@@ -229,7 +227,6 @@ func resourceOpsGenieServiceIncidentRuleUpdate(d *schema.ResourceData, meta inte
 		IncidentRuleId: incident_rule_id,
 	}
 
-	//if len(d.Get("conditions").([]interface{})) > 0 || len(d.Get("incident_properties").([]interface{})) > 0 {
 	incident_rule := d.Get("incident_rule").([]interface{})
 	for _, v := range incident_rule {
 		config := v.(map[string]interface{})
@@ -237,7 +234,6 @@ func resourceOpsGenieServiceIncidentRuleUpdate(d *schema.ResourceData, meta inte
 		updateRequest.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].([]interface{}))
 		updateRequest.IncidentProperties = expandOpsGenieServiceIncidentRuleIncidentProperties(config["incident_properties"].([]interface{}))
 	}
-	//}
 
 	log.Printf("[INFO] Updating Service Incident Rule for service: '%s' for rule ID: '%s'", service_id, incident_rule_id)
 	_, err = client.UpdateIncidentRule(context.Background(), updateRequest)
@@ -349,7 +345,6 @@ func expandOpsGenieServiceIncidentRuleStakeholderProperties(input []interface{})
 }
 
 func flattenOpsgenieServiceIncidentRuleRequestTags(input *schema.Set) []string {
-	//input := input_map.Get("tags").(*schema.Set)
 	tags := make([]string, len(input.List()))
 	if input == nil {
 		return tags
@@ -362,7 +357,6 @@ func flattenOpsgenieServiceIncidentRuleRequestTags(input *schema.Set) []string {
 }
 
 func flattenOpsgenieServiceIncidentRuleRequestDetails(input *schema.Set) map[string]string {
-	//input := input_map.Get("details").(*schema.Set)
 	details := make(map[string]string)
 
 	if input == nil {

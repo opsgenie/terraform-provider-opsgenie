@@ -78,9 +78,8 @@ func TestAccOpsGenieServiceIncidentRule_basic(t *testing.T) {
 func TestAccOpsGenieServiceIncidentRule_complete(t *testing.T) {
 	randomTeam := acctest.RandString(6)
 	randomService := acctest.RandString(6)
-	randomDescription := acctest.RandString(20)
 
-	config := testAccOpsGenieServiceIncidentRule_complete(randomTeam, randomService, randomDescription)
+	config := testAccOpsGenieServiceIncidentRule_complete(randomTeam, randomService)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -142,7 +141,6 @@ func testCheckOpsGenieServiceIncidentRuleExists(name string) resource.TestCheckF
 		if err != nil {
 			return fmt.Errorf("Bad: Service ID %q does not exist", service_id)
 		} else {
-			fmt.Println("SUNNY Error is NIL, moving forward")
 			for _, v := range incident_rule_res.IncidentRule {
 				fmt.Printf("checking service incident rule id %s", v.Id)
 				if v.Id == service_incident_rule_id {
@@ -170,25 +168,11 @@ resource "opsgenie_service" "test" {
 resource "opsgenie_service_incident_rule" "test" {
   service_id = opsgenie_service.test.id
   incident_rule {
-	condition_match_type = "match-any-condition"
-	conditions {
-		field = "message"
-		not =  false
-		operation = "contains"
-		expected_value = "expected1"
-	}
-	conditions {
-		field = "message"
-		not =  false
-		operation = "contains"
-		expected_value = "expected2"
-	}
 	incident_properties {
 		message = "This is a test message"
 		priority = "P3"
 		stakeholder_properties {
 			message = "Message for stakeholders"
-			enable = "true"
 		}
 	}
   }
@@ -196,7 +180,7 @@ resource "opsgenie_service_incident_rule" "test" {
 `, randomTeam, randomService)
 }
 
-func testAccOpsGenieServiceIncidentRule_complete(randomTeam, randomService, randomDescription string) string {
+func testAccOpsGenieServiceIncidentRule_complete(randomTeam, randomService string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_team" "test" {
   name        = "genieteam-%s"

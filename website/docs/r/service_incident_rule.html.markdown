@@ -108,3 +108,8 @@ The following attributes are exported:
 
 * `id` - The ID of the Opsgenie Service Incident Policy.
 
+## Import
+
+Service Incident Rule can be imported using the `service_id/service_incident_rule_id`, e.g.
+
+`$ terraform import opsgenie_service_incident_rule.this 812be1a1-32c8-4666-a7fb-03ecc385106c/b84ed86f-6ce3-4388-91ac-7638ac0a8052`
