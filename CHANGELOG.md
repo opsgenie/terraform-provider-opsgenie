@@ -1,5 +1,9 @@
 ## 0.3.8 (Unreleased)
 
+IMPROVEMENTS:
+
+* **Service Incident Rule Api :** New resource, now you can manage incident rules via Terraform. (#130)
+
 BUGFIX:
 
 * **Team Routing Rule:** Fixed not field and edited condition validation (#125)
@@ -8,7 +12,7 @@ BUGFIX:
 
 IMPROVEMENTS:
 
-* **Alert Policy API:** New resorce, now you can manage alert policies.
+* **Alert Policy API:** New resource, now you can manage alert policies.
 
 ## 0.3.6 (July 08, 2020)
 
