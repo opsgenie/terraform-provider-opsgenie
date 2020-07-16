@@ -23,6 +23,7 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
+
 			"opsgenie_team":                  resourceOpsGenieTeam(),
 			"opsgenie_team_routing_rule":     resourceOpsGenieTeamRoutingRule(),
 			"opsgenie_user":                  resourceOpsGenieUser(),
