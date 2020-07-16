@@ -1,4 +1,4 @@
-## 0.3.8 (Unreleased)
+## 0.3.8 (July 16, 2020)
 
 IMPROVEMENTS:
 
