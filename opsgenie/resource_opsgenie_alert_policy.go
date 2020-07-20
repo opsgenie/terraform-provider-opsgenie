@@ -214,24 +214,10 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
-			"actions": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 			"ignore_original_details": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
-			},
-			"details": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
 			},
 			"ignore_original_responders": {
 				Type:     schema.TypeBool,
@@ -269,7 +255,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Default:  false,
 			},
 			"tags": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -315,22 +301,11 @@ func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{})
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
 		Priority:                 alert.Priority(priority),
+		Tags:                     flattenOpsgenieAlertPolicyTags(d),
 	}
 
 	if len(d.Get("responders").([]interface{})) > 0 {
 		createRequest.Responders = expandOpsGenieAlertPolicyResponders(d)
-	}
-
-	if len(d.Get("actions").([]interface{})) > 0 {
-		createRequest.Actions = flattenOpsgenieAlertPolicyActions(d)
-	}
-
-	if len(d.Get("details").([]interface{})) > 0 {
-		createRequest.Details = flattenOpsgenieAlertPolicyDetailsCreate(d)
-	}
-
-	if len(d.Get("tags").([]interface{})) > 0 {
-		createRequest.Tags = flattenOpsgenieAlertPolicyTags(d)
 	}
 
 	log.Printf("[INFO] Creating Alert Policy '%s'", d.Get("name").(string))
@@ -383,9 +358,7 @@ func resourceOpsGenieAlertPolicyRead(d *schema.ResourceData, meta interface{}) e
 	d.Set("entity", policyRes.Entity)
 	d.Set("source", policyRes.Source)
 	d.Set("ignore_original_actions", policyRes.IgnoreOriginalActions)
-	d.Set("actions", policyRes.Actions)
 	d.Set("ignore_original_details", policyRes.IgnoreOriginalDetails)
-	d.Set("details", policyRes.Details)
 	d.Set("ignore_original_responders", policyRes.IgnoreOriginalResponders)
 	d.Set("ignore_original_tags", policyRes.IgnoreOriginalTags)
 	d.Set("tags", policyRes.Tags)
@@ -445,22 +418,11 @@ func resourceOpsGenieAlertPolicyUpdate(d *schema.ResourceData, meta interface{})
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
 		Priority:                 alert.Priority(priority),
+		Tags:                     flattenOpsgenieAlertPolicyTags(d),
 	}
 
 	if len(d.Get("responders").([]interface{})) > 0 {
 		updateRequest.Responders = expandOpsGenieAlertPolicyResponders(d)
-	}
-
-	if len(d.Get("actions").([]interface{})) > 0 {
-		updateRequest.Actions = flattenOpsgenieAlertPolicyActions(d)
-	}
-
-	if len(d.Get("details").([]interface{})) > 0 {
-		updateRequest.Details = flattenOpsgenieAlertPolicyDetailsUpdate(d)
-	}
-
-	if len(d.Get("tags").([]interface{})) > 0 {
-		updateRequest.Tags = flattenOpsgenieAlertPolicyTags(d)
 	}
 
 	log.Printf("[INFO] Updating Alert Policy '%s'", d.Get("name").(string))
@@ -628,15 +590,6 @@ func expandOpsGenieAlertPolicyTimeRestriction(d []interface{}) *og.TimeRestricti
 		}
 	}
 	return &timeRestriction
-}
-
-func flattenOpsGenieAlertPolicyDuration(input *policy.Duration) []map[string]interface{} {
-	output := make([]map[string]interface{}, 0, 1)
-	element := make(map[string]interface{})
-	element["time_amount"] = input.TimeAmount
-	element["time_unit"] = input.TimeUnit
-	output = append(output, element)
-	return output
 }
 
 func flattenOpsGenieAlertPolicyResponders(input *[]alert.Responder) []map[string]interface{} {
