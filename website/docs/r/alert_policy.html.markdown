@@ -76,11 +76,7 @@ The following arguments are supported:
 
 * `ignore_original_actions` - (Optional) If set to true, policy will ignore the original actions of the alert. Default value is false
 
-* `actions` - (Optional) Actions as a list of strings to add to the alerts original actions value. If ignoreOriginalActions field is set to true, this will replace the original actions.
-
 * `ignore_original_details` - (Optional) If set to true, policy will ignore the original details of the alert. Default value is false
-
-* `details` - (Optional) Map of key-value pairs to use as custom properties of the alert details. If ignoreOriginalDetails field is set to true, this will replace the original details.
 
 * `ignore_original_responders` - (Optional) If set to true, policy will ignore the original responders of the alert. Default value is false
 
