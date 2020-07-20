@@ -13,7 +13,7 @@ Manages existing Service within Opsgenie.
 ## Example Usage
 
 ```hcl
-resource "opsgenie_service" "this" {
+data "opsgenie_service" "this" {
   name  = "Payment"
 }
 ```
