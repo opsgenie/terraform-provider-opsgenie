@@ -1,4 +1,9 @@
-## 0.4.0 (Unreleased)
+## 0.3.9 (Unreleased)
+
+BUGFIX:
+
+* **Alert Policy:** Fixed TF crash because of field type (#132)
+
 ## 0.3.8 (July 16, 2020)
 
 IMPROVEMENTS:
