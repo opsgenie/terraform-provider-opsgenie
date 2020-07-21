@@ -15,7 +15,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieIntegrationActionCreate,
 		Read:   handleNonExistentResource(resourceOpsgenieIntegrationActionRead),
-		Update: resourceOpsgenieIntegrationActionCreate,
+		Update: resourceOpsgenieIntegrationActionUpdate,
 		Delete: resourceOpsgenieIntegrationActionDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
@@ -28,11 +28,11 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 			"integration_type": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"email", "api"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"email", "api"}, true),
 			},
-			"actions": {
+			"create": {
 				Type:     schema.TypeList,
-				Required: true,
+				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
@@ -40,9 +40,14 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 							Required: true,
 						},
 						"type": {
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"create", "close", "acknowledge", "addNote"}, false),
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "create",
+						},
+						"order": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  1,
 						},
 						"filter": {
 							Type:     schema.TypeList,
@@ -158,6 +163,9 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 						"alert_actions": {
 							Type:     schema.TypeList,
 							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 						"responders": {
 							Type:     schema.TypeList,
@@ -186,6 +194,258 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 						"tags": {
 							Type:     schema.TypeList,
 							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
+			"close": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "close",
+						},
+						"order": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  1,
+						},
+						"filter": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"type": {
+										Type:         schema.TypeString,
+										Required:     true,
+										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
+									},
+									"conditions": {
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"field": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"key": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"not": {
+													Type:     schema.TypeBool,
+													Optional: true,
+													Default:  false,
+												},
+												"operation": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"expected_value": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"order": {
+													Type:     schema.TypeInt,
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"user": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{user}}",
+						},
+						"note": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{note}}",
+						},
+						"alias": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{alias}}",
+						},
+					},
+				},
+			},
+			"acknowledge": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "acknowledge",
+						},
+						"order": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  1,
+						},
+						"filter": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"type": {
+										Type:         schema.TypeString,
+										Required:     true,
+										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
+									},
+									"conditions": {
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"field": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"key": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"not": {
+													Type:     schema.TypeBool,
+													Optional: true,
+													Default:  false,
+												},
+												"operation": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"expected_value": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"order": {
+													Type:     schema.TypeInt,
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"user": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{user}}",
+						},
+						"note": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{note}}",
+						},
+						"alias": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{alias}}",
+						},
+					},
+				},
+			},
+			"add_note": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "add_note",
+						},
+						"order": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  1,
+						},
+						"filter": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"type": {
+										Type:         schema.TypeString,
+										Required:     true,
+										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
+									},
+									"conditions": {
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"field": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"key": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"not": {
+													Type:     schema.TypeBool,
+													Optional: true,
+													Default:  false,
+												},
+												"operation": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"expected_value": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"order": {
+													Type:     schema.TypeInt,
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						"user": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{user}}",
+						},
+						"note": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{note}}",
+						},
+						"alias": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "{{alias}}",
 						},
 					},
 				},
@@ -194,15 +454,38 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 	}
 }
 
-func expandOpsgenieFilter(input []interface{}) *og.Filter {
+func flattenOpsgenieFilter(input integration.FilterResult) []map[string]interface{} {
+	rules := make([]map[string]interface{}, 0, 1)
+	out := make(map[string]interface{})
+	out["type"] = input.ConditionMatchType
+	conditions := make([]map[string]interface{}, 0, len(input.Conditions))
+	for _, r := range input.Conditions {
+		conditionMap := make(map[string]interface{})
+		conditionMap["order"] = r.Order
+		if r.Key != "" {
+			conditionMap["key"] = r.Key
+		}
+		conditionMap["expected_value"] = r.ExpectedValue
+		conditionMap["operation"] = r.Operation
+		conditionMap["field"] = r.Field
+		conditionMap["not"] = r.IsNot
+		conditions = append(conditions, conditionMap)
+	}
+	out["conditions"] = conditions
+	rules = append(rules, out)
+	return rules
+}
+
+func expandOpsgenieFilter(input []interface{}) og.Filter {
 	filter := og.Filter{}
 	for _, r := range input {
 		inputMap := r.(map[string]interface{})
 		conditions := expandOpsgenieConditions(inputMap["conditions"].([]interface{}))
 		filter.Conditions = conditions
-		filter.ConditionMatchType = inputMap["type"].(og.ConditionMatchType)
+		filter.ConditionMatchType = og.ConditionMatchType(inputMap["type"].(string))
 	}
-	return &filter
+	log.Printf("[expandOpsgenieFilter] %v", filter)
+	return filter
 }
 
 func expandOpsgenieActionResponders(input []interface{}) []integration.Responder {
@@ -225,51 +508,147 @@ func expandOpsgenieActionResponders(input []interface{}) []integration.Responder
 	return responders
 }
 
-func expandOpsgenieActions(input []interface{}) *map[integration.ActionType]([]integration.IntegrationAction) {
+func convertInterfaceSliceToString(input []interface{}) []string {
+	result := make([]string, 0)
+	for _, item := range input {
+		result = append(result, item.(string))
+	}
+	return result
+}
 
-	actionMap := map[integration.ActionType][]integration.IntegrationAction{
-		integration.Create:      make([]integration.IntegrationAction, 0),
-		integration.Close:       make([]integration.IntegrationAction, 0),
-		integration.Acknowledge: make([]integration.IntegrationAction, 0),
-		integration.AddNote:     make([]integration.IntegrationAction, 0),
+func expandOpsgenieIntegrationActions(input interface{}) []integration.IntegrationAction {
+
+	actions := make([]integration.IntegrationAction, 0)
+
+	if input == nil {
+		return actions
 	}
 
-	for _, v := range input {
+	for _, v := range input.([]interface{}) {
 		inputMap := v.(map[string]interface{})
 		action := integration.IntegrationAction{}
 
-		appendAttachment := inputMap["append_attachments"].(bool)
-		ignoreAlertActionsFromPayload := inputMap["ignore_alert_actions_from_payload"].(bool)
-		ignoreRespondersFromPayload := inputMap["ignore_responders_from_payload"].(bool)
-		ignoreTagsFromPayload := inputMap["ignore_tags_from_payload"].(bool)
-		ignoreExtraPropertiesFromPayload := inputMap["ignore_extra_properties_from_payload"].(bool)
+		action.Type = integration.ActionType(inputMap["type"].(string))
+		action.Name = inputMap["name"].(string)
+		action.Alias = inputMap["alias"].(string)
+		action.Order = inputMap["order"].(int)
+		action.User = inputMap["user"].(string)
+		action.Note = inputMap["note"].(string)
+		filters := expandOpsgenieFilter(inputMap["filter"].([]interface{}))
+		action.Filter = &filters
 
-		action.Type = inputMap["Type"].(integration.ActionType)
-		action.Name = inputMap["Name"].(string)
-		action.Alias = inputMap["Alias"].(string)
-		action.Order = inputMap["Order"].(int)
-		action.User = inputMap["User"].(string)
-		action.Note = inputMap["Note"].(string)
-		action.Source = inputMap["Source"].(string)
-		action.Message = inputMap["Message"].(string)
-		action.Description = inputMap["Description"].(string)
-		action.Entity = inputMap["Entity"].(string)
-		action.AlertActions = inputMap["AlertActions"].([]string)
-		action.Tags = inputMap["Tags"].([]string)
-		action.ExtraProperties = inputMap["ExtraProperties"].(map[string]string)
-		action.AppendAttachments = &appendAttachment
-		action.IgnoreTagsFromPayload = &ignoreTagsFromPayload
-		action.IgnoreRespondersFromPayload = &ignoreRespondersFromPayload
-		action.IgnoreAlertActionsFromPayload = &ignoreAlertActionsFromPayload
-		action.IgnoreExtraPropertiesFromPayload = &ignoreExtraPropertiesFromPayload
+		log.Printf("[TAGS] %s", inputMap["tags"])
 
-		action.Filter = expandOpsgenieFilter(inputMap["Filter"].([]interface{}))
-		action.Responders = expandOpsgenieActionResponders(inputMap["Responders"].([]interface{}))
+		if action.Type == integration.Create {
+			action.Source = inputMap["source"].(string)
+			action.Message = inputMap["message"].(string)
+			action.Description = inputMap["description"].(string)
+			action.Entity = inputMap["entity"].(string)
+			action.AlertActions = convertInterfaceSliceToString(inputMap["alert_actions"].([]interface{}))
+			action.Tags = convertInterfaceSliceToString(inputMap["tags"].([]interface{}))
+			if extraProperties := inputMap["extra_properties"]; extraProperties != nil {
+				action.ExtraProperties = extraProperties.(map[string]string)
+			}
 
-		actions := actionMap[action.Type]
+			appendAttachment := inputMap["append_attachments"].(bool)
+			ignoreAlertActionsFromPayload := inputMap["ignore_alert_actions_from_payload"].(bool)
+			ignoreRespondersFromPayload := inputMap["ignore_responders_from_payload"].(bool)
+			ignoreTagsFromPayload := inputMap["ignore_tags_from_payload"].(bool)
+			ignoreExtraPropertiesFromPayload := inputMap["ignore_extra_properties_from_payload"].(bool)
+
+			action.AppendAttachments = &appendAttachment
+			action.IgnoreTagsFromPayload = &ignoreTagsFromPayload
+			action.IgnoreRespondersFromPayload = &ignoreRespondersFromPayload
+			action.IgnoreAlertActionsFromPayload = &ignoreAlertActionsFromPayload
+			action.IgnoreExtraPropertiesFromPayload = &ignoreExtraPropertiesFromPayload
+			action.Responders = expandOpsgenieActionResponders(inputMap["responders"].([]interface{}))
+		}
+
 		actions = append(actions, action)
 	}
-	return &actionMap
+	return actions
+}
+
+func flattenOpsgenieIntegrationCloseActions(input []integration.CloseAction) []map[string]interface{} {
+	actions := make([]map[string]interface{}, 0)
+	for _, action := range input {
+		actionMap := make(map[string]interface{})
+		actionMap["type"] = integration.Close
+		actionMap["name"] = action.Name
+		actionMap["alias"] = action.Alias
+		actionMap["order"] = action.Order
+		actionMap["note"] = action.Note
+		actionMap["user"] = action.User
+		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
+
+		actions = append(actions, actionMap)
+	}
+	return actions
+}
+
+func flattenOpsgenieIntegrationAcknowledgeActions(input []integration.AcknowledgeAction) []map[string]interface{} {
+	actions := make([]map[string]interface{}, 0)
+	for _, action := range input {
+		actionMap := make(map[string]interface{})
+		actionMap["type"] = integration.Acknowledge
+		actionMap["name"] = action.Name
+		actionMap["alias"] = action.Alias
+		actionMap["order"] = action.Order
+		actionMap["note"] = action.Note
+		actionMap["user"] = action.User
+		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
+
+		actions = append(actions, actionMap)
+	}
+	return actions
+}
+
+func flattenOpsgenieIntegrationAddNoteActions(input []integration.AddNoteAction) []map[string]interface{} {
+	actions := make([]map[string]interface{}, 0)
+	for _, action := range input {
+		actionMap := make(map[string]interface{})
+		actionMap["type"] = integration.AddNote
+		actionMap["name"] = action.Name
+		actionMap["alias"] = action.Alias
+		actionMap["order"] = action.Order
+		actionMap["note"] = action.Note
+		actionMap["user"] = action.User
+		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
+
+		actions = append(actions, actionMap)
+	}
+	return actions
+}
+
+func flattenOpsgenieIntegrationCreateActions(input []integration.CreateAction) []map[string]interface{} {
+
+	actions := make([]map[string]interface{}, 0)
+	for _, action := range input {
+		actionMap := make(map[string]interface{})
+		actionMap["type"] = integration.Create
+		actionMap["name"] = action.Name
+		actionMap["alias"] = action.Alias
+		actionMap["order"] = action.Order
+		actionMap["note"] = action.Note
+		actionMap["user"] = action.User
+		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
+		actionMap["source"] = action.Source
+		actionMap["message"] = action.Message
+		actionMap["description"] = action.Description
+		actionMap["entity"] = action.Entity
+		actionMap["append_attachments"] = action.AppendAttachments
+		actionMap["alert_actions"] = action.AlertActions
+		actionMap["ignore_alert_actions_from_payload"] = action.IgnoreAlertActionsFromPayload
+		actionMap["ignore_responders_from_payload"] = action.IgnoreRespondersFromPayload
+		actionMap["ignore_tags_from_payload"] = action.IgnoreTagsFromPayload
+		actionMap["ignore_extra_properties_from_payload"] = action.IgnoreExtraPropertiesFromPayload
+		actionMap["responders"] = action.Responders
+		actionMap["tags"] = action.Tags
+		actionMap["extra_properties"] = action.ExtraProperties
+
+		actions = append(actions, actionMap)
+	}
+	return actions
 }
 
 func resourceOpsgenieIntegrationActionCreate(d *schema.ResourceData, meta interface{}) error {
@@ -279,60 +658,27 @@ func resourceOpsgenieIntegrationActionCreate(d *schema.ResourceData, meta interf
 	}
 	integrationId := d.Get("integration_id").(string)
 	//integrationType := d.Get("type").(string)
-	integrationActions := d.Get("actions").([]interface{})
-
-	actionMap := *expandOpsgenieActions(integrationActions)
 
 	updateRequest := &integration.UpdateAllIntegrationActionsRequest{
 		Id:          integrationId,
-		Create:      actionMap[integration.Create],
-		Close:       actionMap[integration.Close],
-		Acknowledge: actionMap[integration.Acknowledge],
-		AddNote:     actionMap[integration.AddNote],
+		Create:      expandOpsgenieIntegrationActions(d.Get("create")),
+		Close:       expandOpsgenieIntegrationActions(d.Get("close")),
+		Acknowledge: expandOpsgenieIntegrationActions(d.Get("acknowledge")),
+		AddNote:     expandOpsgenieIntegrationActions(d.Get("add_note")),
 	}
 
-	//log.Printf("[INFO] Creating OpsGenie api integration '%s'", name)
+	log.Printf("[INFO] Creating OpsGenie integration actions for '%s'", integrationId)
 
 	result, err := client.UpdateAllActions(context.Background(), updateRequest)
 	if err != nil {
 		return err
 	}
 
+	d.SetId(result.Parent.Id)
 	d.Set("integration_id", result.Parent.Id)
+	log.Printf("[Create] %v", result)
+
 	return resourceOpsgenieIntegrationActionRead(d, meta)
-}
-
-func flattenOpsgenieIntegrationActions(result *integration.ActionsResult) []integration.IntegrationAction {
-
-	actions := make([]integration.IntegrationAction, 0)
-
-	for _, action := range result.Create {
-		//actions = append(actions, integration.IntegrationAction(action))
-		actions = append(actions, integration.IntegrationAction{
-			Type:  integration.Create,
-			Name:  action.Name,
-			Alias: action.Alias,
-			Order: action.Order,
-			User:  action.User,
-			Note:  action.Note,
-			//Filter:                           action.Filter,
-			Source:                           action.Source,
-			Message:                          action.Message,
-			Description:                      action.Description,
-			Entity:                           action.Entity,
-			AppendAttachments:                &action.AppendAttachments,
-			AlertActions:                     action.AlertActions,
-			IgnoreAlertActionsFromPayload:    &action.IgnoreAlertActionsFromPayload,
-			IgnoreRespondersFromPayload:      &action.IgnoreRespondersFromPayload,
-			IgnoreTagsFromPayload:            &action.IgnoreTagsFromPayload,
-			IgnoreExtraPropertiesFromPayload: &action.IgnoreExtraPropertiesFromPayload,
-			Responders:                       action.Responders,
-			Tags:                             action.Tags,
-			ExtraProperties:                  action.ExtraProperties,
-		})
-	}
-
-	return actions
 }
 
 func resourceOpsgenieIntegrationActionRead(d *schema.ResourceData, meta interface{}) error {
@@ -349,12 +695,20 @@ func resourceOpsgenieIntegrationActionRead(d *schema.ResourceData, meta interfac
 		return err
 	}
 
+	d.SetId(result.Parent.Id)
 	d.Set("integration_id", result.Parent.Id)
 	d.Set("integration_type", result.Parent.Type)
-	actions := flattenOpsgenieIntegrationActions(result)
-	d.Set("actions", actions)
+
+	d.Set("create", flattenOpsgenieIntegrationCreateActions(result.Create))
+	d.Set("close", flattenOpsgenieIntegrationCloseActions(result.Close))
+	d.Set("acknowledge", flattenOpsgenieIntegrationAcknowledgeActions(result.Acknowledge))
+	d.Set("add_note", flattenOpsgenieIntegrationAddNoteActions(result.AddNote))
 
 	return nil
+}
+
+func resourceOpsgenieIntegrationActionUpdate(d *schema.ResourceData, meta interface{}) error {
+	return resourceOpsgenieIntegrationActionCreate(d, meta)
 }
 
 func resourceOpsgenieIntegrationActionDelete(d *schema.ResourceData, meta interface{}) error {
@@ -363,12 +717,15 @@ func resourceOpsgenieIntegrationActionDelete(d *schema.ResourceData, meta interf
 	if err != nil {
 		return err
 	}
+
+	emptyActions := make([]integration.IntegrationAction, 0)
+
 	deleteRequest := &integration.UpdateAllIntegrationActionsRequest{
 		Id:          d.Get("integration_id").(string),
-		Create:      nil,
-		Close:       nil,
-		Acknowledge: nil,
-		AddNote:     nil,
+		Create:      emptyActions,
+		Close:       emptyActions,
+		Acknowledge: emptyActions,
+		AddNote:     emptyActions,
 	}
 
 	_, err = client.UpdateAllActions(context.Background(), deleteRequest)
