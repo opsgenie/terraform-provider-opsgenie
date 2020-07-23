@@ -475,9 +475,22 @@ func flattenOpsgenieFilter(input integration.FilterResult) []map[string]interfac
 	rules = append(rules, out)
 	return rules
 }
+//
+//func validateOpsgenieIntegrationActionFilters(integrationType string, inputs ...*[]integration.IntegrationAction) []error {
+//	errors := make([]error, 0)
+//	for _, actionList := range inputs {
+//		for _, action := range *actionList {
+//			for _, condition := range action.Filter.Conditions {
+//				condition.Field
+//			}
+//		}
+//	}
+//
+//	return
+//}
 
-func expandOpsgenieFilter(input []interface{}) og.Filter {
-	filter := og.Filter{}
+func expandOpsgenieFilter(input []interface{}) integration.Filter {
+	filter := integration.Filter{}
 	for _, r := range input {
 		inputMap := r.(map[string]interface{})
 		conditions := expandOpsgenieConditions(inputMap["conditions"].([]interface{}))
@@ -657,7 +670,7 @@ func resourceOpsgenieIntegrationActionCreate(d *schema.ResourceData, meta interf
 		return err
 	}
 	integrationId := d.Get("integration_id").(string)
-	//integrationType := d.Get("type").(string)
+	integrationType := d.Get("type").(string)
 
 	updateRequest := &integration.UpdateAllIntegrationActionsRequest{
 		Id:          integrationId,
@@ -667,8 +680,12 @@ func resourceOpsgenieIntegrationActionCreate(d *schema.ResourceData, meta interf
 		AddNote:     expandOpsgenieIntegrationActions(d.Get("add_note")),
 	}
 
-	log.Printf("[INFO] Creating OpsGenie integration actions for '%s'", integrationId)
+	//err = validateOpsgenieIntegrationActionFilters(integrationType, &updateRequest.Create, &updateRequest.Close, &updateRequest.Acknowledge, &updateRequest.AddNote)
+	//if err != nil {
+	//	return err
+	//}
 
+	log.Printf("[INFO] Creating OpsGenie integration actions for '%s'", integrationId)
 	result, err := client.UpdateAllActions(context.Background(), updateRequest)
 	if err != nil {
 		return err
