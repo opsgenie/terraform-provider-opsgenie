@@ -25,11 +25,6 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"integration_type": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"email", "api"}, true),
-			},
 			"create": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -454,51 +449,12 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 	}
 }
 
-func flattenOpsgenieFilter(input integration.FilterResult) []map[string]interface{} {
-	rules := make([]map[string]interface{}, 0, 1)
-	out := make(map[string]interface{})
-	out["type"] = input.ConditionMatchType
-	conditions := make([]map[string]interface{}, 0, len(input.Conditions))
-	for _, r := range input.Conditions {
-		conditionMap := make(map[string]interface{})
-		conditionMap["order"] = r.Order
-		if r.Key != "" {
-			conditionMap["key"] = r.Key
-		}
-		conditionMap["expected_value"] = r.ExpectedValue
-		conditionMap["operation"] = r.Operation
-		conditionMap["field"] = r.Field
-		conditionMap["not"] = r.IsNot
-		conditions = append(conditions, conditionMap)
+func convertInterfaceSliceToString(input []interface{}) []string {
+	result := make([]string, 0)
+	for _, item := range input {
+		result = append(result, item.(string))
 	}
-	out["conditions"] = conditions
-	rules = append(rules, out)
-	return rules
-}
-//
-//func validateOpsgenieIntegrationActionFilters(integrationType string, inputs ...*[]integration.IntegrationAction) []error {
-//	errors := make([]error, 0)
-//	for _, actionList := range inputs {
-//		for _, action := range *actionList {
-//			for _, condition := range action.Filter.Conditions {
-//				condition.Field
-//			}
-//		}
-//	}
-//
-//	return
-//}
-
-func expandOpsgenieFilter(input []interface{}) integration.Filter {
-	filter := integration.Filter{}
-	for _, r := range input {
-		inputMap := r.(map[string]interface{})
-		conditions := expandOpsgenieConditions(inputMap["conditions"].([]interface{}))
-		filter.Conditions = conditions
-		filter.ConditionMatchType = og.ConditionMatchType(inputMap["type"].(string))
-	}
-	log.Printf("[expandOpsgenieFilter] %v", filter)
-	return filter
+	return result
 }
 
 func expandOpsgenieActionResponders(input []interface{}) []integration.Responder {
@@ -521,12 +477,15 @@ func expandOpsgenieActionResponders(input []interface{}) []integration.Responder
 	return responders
 }
 
-func convertInterfaceSliceToString(input []interface{}) []string {
-	result := make([]string, 0)
-	for _, item := range input {
-		result = append(result, item.(string))
+func expandOpsgenieFilter(input []interface{}) integration.Filter {
+	filter := integration.Filter{}
+	for _, r := range input {
+		inputMap := r.(map[string]interface{})
+		conditions := expandOpsgenieConditions(inputMap["conditions"].([]interface{}))
+		filter.Conditions = conditions
+		filter.ConditionMatchType = og.ConditionMatchType(inputMap["type"].(string))
 	}
-	return result
+	return filter
 }
 
 func expandOpsgenieIntegrationActions(input interface{}) []integration.IntegrationAction {
@@ -549,8 +508,6 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 		action.Note = inputMap["note"].(string)
 		filters := expandOpsgenieFilter(inputMap["filter"].([]interface{}))
 		action.Filter = &filters
-
-		log.Printf("[TAGS] %s", inputMap["tags"])
 
 		if action.Type == integration.Create {
 			action.Source = inputMap["source"].(string)
@@ -580,6 +537,28 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 		actions = append(actions, action)
 	}
 	return actions
+}
+
+func flattenOpsgenieFilter(input integration.FilterResult) []map[string]interface{} {
+	rules := make([]map[string]interface{}, 0, 1)
+	out := make(map[string]interface{})
+	out["type"] = input.ConditionMatchType
+	conditions := make([]map[string]interface{}, 0, len(input.Conditions))
+	for _, r := range input.Conditions {
+		conditionMap := make(map[string]interface{})
+		conditionMap["order"] = r.Order
+		if r.Key != "" {
+			conditionMap["key"] = r.Key
+		}
+		conditionMap["expected_value"] = r.ExpectedValue
+		conditionMap["operation"] = r.Operation
+		conditionMap["field"] = r.Field
+		conditionMap["not"] = r.IsNot
+		conditions = append(conditions, conditionMap)
+	}
+	out["conditions"] = conditions
+	rules = append(rules, out)
+	return rules
 }
 
 func flattenOpsgenieIntegrationCloseActions(input []integration.CloseAction) []map[string]interface{} {
@@ -655,7 +634,17 @@ func flattenOpsgenieIntegrationCreateActions(input []integration.CreateAction) [
 		actionMap["ignore_responders_from_payload"] = action.IgnoreRespondersFromPayload
 		actionMap["ignore_tags_from_payload"] = action.IgnoreTagsFromPayload
 		actionMap["ignore_extra_properties_from_payload"] = action.IgnoreExtraPropertiesFromPayload
-		actionMap["responders"] = action.Responders
+
+		responders := make([]map[string]string, 0)
+		for _, responder := range action.Responders {
+			responders = append(responders, map[string]string{
+				"type":     string(responder.Type),
+				"name":     responder.Name,
+				"id":       responder.Id,
+				"username": responder.Username,
+			})
+		}
+		actionMap["responders"] = responders
 		actionMap["tags"] = action.Tags
 		actionMap["extra_properties"] = action.ExtraProperties
 
@@ -669,9 +658,8 @@ func resourceOpsgenieIntegrationActionCreate(d *schema.ResourceData, meta interf
 	if err != nil {
 		return err
 	}
-	integrationId := d.Get("integration_id").(string)
-	integrationType := d.Get("type").(string)
 
+	integrationId := d.Get("integration_id").(string)
 	updateRequest := &integration.UpdateAllIntegrationActionsRequest{
 		Id:          integrationId,
 		Create:      expandOpsgenieIntegrationActions(d.Get("create")),
@@ -679,11 +667,6 @@ func resourceOpsgenieIntegrationActionCreate(d *schema.ResourceData, meta interf
 		Acknowledge: expandOpsgenieIntegrationActions(d.Get("acknowledge")),
 		AddNote:     expandOpsgenieIntegrationActions(d.Get("add_note")),
 	}
-
-	//err = validateOpsgenieIntegrationActionFilters(integrationType, &updateRequest.Create, &updateRequest.Close, &updateRequest.Acknowledge, &updateRequest.AddNote)
-	//if err != nil {
-	//	return err
-	//}
 
 	log.Printf("[INFO] Creating OpsGenie integration actions for '%s'", integrationId)
 	result, err := client.UpdateAllActions(context.Background(), updateRequest)
@@ -693,7 +676,6 @@ func resourceOpsgenieIntegrationActionCreate(d *schema.ResourceData, meta interf
 
 	d.SetId(result.Parent.Id)
 	d.Set("integration_id", result.Parent.Id)
-	log.Printf("[Create] %v", result)
 
 	return resourceOpsgenieIntegrationActionRead(d, meta)
 }
@@ -714,8 +696,6 @@ func resourceOpsgenieIntegrationActionRead(d *schema.ResourceData, meta interfac
 
 	d.SetId(result.Parent.Id)
 	d.Set("integration_id", result.Parent.Id)
-	d.Set("integration_type", result.Parent.Type)
-
 	d.Set("create", flattenOpsgenieIntegrationCreateActions(result.Create))
 	d.Set("close", flattenOpsgenieIntegrationCloseActions(result.Close))
 	d.Set("acknowledge", flattenOpsgenieIntegrationAcknowledgeActions(result.Acknowledge))
@@ -729,25 +709,26 @@ func resourceOpsgenieIntegrationActionUpdate(d *schema.ResourceData, meta interf
 }
 
 func resourceOpsgenieIntegrationActionDelete(d *schema.ResourceData, meta interface{}) error {
-	log.Printf("[INFO] Deleting OpsGenie api integration '%s'", d.Get("name").(string))
+	log.Printf("[INFO] Deleting OpsGenie api integration actions for '%s'", d.Get("integration_id").(string))
 	client, err := integration.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
 	}
 
-	emptyActions := make([]integration.IntegrationAction, 0)
-
 	deleteRequest := &integration.UpdateAllIntegrationActionsRequest{
 		Id:          d.Get("integration_id").(string),
-		Create:      emptyActions,
-		Close:       emptyActions,
-		Acknowledge: emptyActions,
-		AddNote:     emptyActions,
+		Create:      []integration.IntegrationAction{},
+		Close:       []integration.IntegrationAction{},
+		Acknowledge: []integration.IntegrationAction{},
+		AddNote:     []integration.IntegrationAction{},
 	}
 
 	_, err = client.UpdateAllActions(context.Background(), deleteRequest)
 	if err != nil {
-		return err
+		apiError := err.(*ogClient.ApiError)
+		if apiError.StatusCode != 404 {
+			return err
+		}
 	}
 
 	return nil

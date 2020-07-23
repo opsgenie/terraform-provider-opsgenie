@@ -2,6 +2,7 @@ package opsgenie
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -12,7 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
-	"github.com/pkg/errors"
 )
 
 func init() {
@@ -40,13 +40,17 @@ func testSweepIntegrationAction(region string) error {
 
 	for _, u := range resp.Integrations {
 		if strings.HasPrefix(u.Name, "genieintegration-") {
-			log.Printf("Destroying integration %s", u.Name)
+			log.Printf("Destroying integration actions for id: %s", u.Name)
 
-			deleteRequest := integration.DeleteIntegrationRequest{
-				Id: u.Id,
+			deleteRequest := integration.UpdateAllIntegrationActionsRequest{
+				Id:          u.Id,
+				Create:      []integration.IntegrationAction{},
+				Close:       []integration.IntegrationAction{},
+				Acknowledge: []integration.IntegrationAction{},
+				AddNote:     []integration.IntegrationAction{},
 			}
 
-			if _, err := client.Delete(context.Background(), &deleteRequest); err != nil {
+			if _, err := client.UpdateAllActions(context.Background(), &deleteRequest); err != nil {
 				return err
 			}
 		}
@@ -74,15 +78,9 @@ func TestAccOpsGenieIntegrationAction_basic(t *testing.T) {
 }
 
 func TestAccOpsGenieIntegrationAction_complete(t *testing.T) {
-	randomUsername := acctest.RandString(6)
-	randomTeam := acctest.RandString(6)
-	randomTeam2 := acctest.RandString(6)
-	randomSchedule := acctest.RandString(6)
-	randomEscalation := acctest.RandString(6)
-	randomIntegration := acctest.RandString(6)
-	randomIntegration2 := acctest.RandString(6)
+	rString := acctest.RandString(6)
 
-	config := testAccOpsGenieIntegrationAction_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2)
+	config := testAccOpsGenieIntegrationAction_complete(rString)
 
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
@@ -91,7 +89,8 @@ func TestAccOpsGenieIntegrationAction_complete(t *testing.T) {
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
-					testCheckOpsGenieIntegrationActionExists("opsgenie_integration_action.test"),
+					testCheckOpsGenieIntegrationActionExists("opsgenie_integration_action.test_email"),
+					testCheckOpsGenieIntegrationActionExists("opsgenie_integration_action.test_api"),
 				),
 			},
 		},
@@ -115,6 +114,7 @@ func testCheckOpsGenieIntegrationActionDestroy(s *terraform.State) error {
 		_, err := client.GetActions(context.Background(), &req)
 		if err != nil {
 			x := err.(*ogClient.ApiError)
+			log.Print(x)
 			if x.StatusCode != 404 {
 				return errors.New(fmt.Sprintf("Api Integration still exists: %s", x.Error()))
 			}
@@ -139,11 +139,11 @@ func testCheckOpsGenieIntegrationActionExists(name string) resource.TestCheckFun
 		}
 		Id := rs.Primary.Attributes["id"]
 
-		req := integration.GetRequest{
+		req := integration.GetIntegrationActionsRequest{
 			Id: Id,
 		}
 
-		_, err = client.Get(context.Background(), &req)
+		_, err = client.GetActions(context.Background(), &req)
 		if err != nil {
 			return fmt.Errorf("Bad: ApiIntegration with id %q does not exist", Id)
 		}
@@ -153,120 +153,90 @@ func testCheckOpsGenieIntegrationActionExists(name string) resource.TestCheckFun
 
 func testAccOpsGenieIntegrationAction_basic(rString string) string {
 	return fmt.Sprintf(`
-resource "opsgenie_api_integration" "test" {
-  type = "API"
-  name = "genieintegration-%s"
-}
-
 resource "opsgenie_integration_action" "test" {
   integration_id = opsgenie_api_integration.test.id
-  integration_type = opsgenie_api_integration.test.type
   close {
     name = "Test close action"
     filter {
-      type = "match-all"
+      type = "match-all-conditions"
       conditions {
         field = "priority"
-		operation = "equals"
-		expected_value = "P5"
+        operation = "equals"
+        expected_value = "P5"
       }
     }
   }
 }
+resource "opsgenie_api_integration" "test" {
+  type = "API"
+  name = "genieintegration-%s"
+}
 `, rString)
 }
 
-func testAccOpsGenieIntegrationAction_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2 string) string {
+func testAccOpsGenieIntegrationAction_complete(rString string) string {
 	return fmt.Sprintf(`
-resource "opsgenie_user" "test" {
-  username  = "genietest-%s@opsgenie.com"
-  full_name = "Acceptance Test User"
-  role      = "User"
-}
-resource "opsgenie_team" "test" {
-  name        = "genieteam-%s"
-  description = "This team deals with all the things"
-}
-resource "opsgenie_team" "test2" {
-  name        = "genieteam2-%s"
-  description = "This team deals with all the things"
-}
-resource "opsgenie_schedule" "test" {
-  name = "genieschedule-%s"
-  description = "schedule test"
-  timezone = "Europe/Rome"
-  enabled = false
-}
-
-resource "opsgenie_escalation" "test" {
- name ="genieescalation-%s"
- rules {
-  condition =   "if-not-acked"
-    notify_type  =   "default"
-    recipient {
-      type  = "user"
-      id  = "${opsgenie_user.test.id}"
-		}
-    delay = 1
-	}
+resource "opsgenie_email_integration" "test" {
+  name = "genieintegration-email-%s"
+  email_username="example"
+  ignore_responders_from_payload = true
+  suppress_notifications = true
 }
 resource "opsgenie_api_integration" "test" {
+  name = "genieintegration-api-%s"
   type = "API"
-
-  name = "genieintegration-%s"
-  responders {
-    type ="user"
-    id = "${opsgenie_user.test.id}"
-  }
-  responders {
-    type ="schedule"
-    id = "${opsgenie_schedule.test.id}"
-  }
-  responders {
-    type ="escalation"
-    id = "${opsgenie_escalation.test.id}"
-  }
-  responders {
-    type ="team"
-    id = "${opsgenie_team.test2.id}"
-  }
-  enabled = true
   allow_write_access = false
   ignore_responders_from_payload = true
   suppress_notifications = true
-  owner_team_id = "${opsgenie_team.test.id}"
 }
-resource "opsgenie_api_integration" "test2" {
-	name          = "genieintegration-prometheus-%s"
-	type          = "Prometheus"
-	owner_team_id = "${opsgenie_team.test.id}"
-	enabled       = true
-}
-resource "opsgenie_integration_action" "test" {
-	integration_id = opsgenie_api_integration.test.id
-	integration_type = opsgenie_api_integration.test.type
-
-	close {
-		name = "auto-close low priority alerts"
-		filter {
-			type = "match-any-condition"
-			conditions {
-				field = "priority"
-				operation = "equals"
-				expected_value = "P5"
-			}
-			conditions {
-				field = "priority"
-				operation = "equals"
-				expected_value = "P4"
-			}
-		}
+resource "opsgenie_integration_action" "test_email" {
+  integration_id = opsgenie_email_integration.test.id
+  create {
+    name = "Filter high prio alerts"
+    filter {
+      type = "match-any-condition"
+      conditions {
+        field = "source"
+        operation = "equals"
+        expected_value = "notifier@opsgenie.com"
+      }
+      conditions {
+        field = "source"
+        operation = "equals"
+        expected_value = "alert@opsgenie.com"
+      }
     }
-
-    create {
-		
-    }
-
+  }
 }
-`, randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2)
+resource "opsgenie_integration_action" "test_api" {
+  integration_id = opsgenie_api_integration.test.id
+  create {
+    name = "Filter high prio alerts"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "priority"
+        operation = "greater_than"
+        expected_value = "P2"
+      }
+      conditions {
+        field = "message"
+        operation = "contains"
+        expected_value = "critical"
+      }
+    }
+  }
+  acknowledge {
+    name = "Ack P5 alerts"
+    filter {
+      type = "match-any-condition"
+      conditions {
+        field = "priority"
+        operation = "equals"
+        expected_value = "P5"
+      }
+    }
+  }
+}
+`, rString, rString)
 }
