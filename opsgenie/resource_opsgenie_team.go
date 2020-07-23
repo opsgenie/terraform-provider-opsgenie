@@ -211,9 +211,9 @@ func expandOpsGenieTeamMembers(d *schema.ResourceData) []team.Member {
 
 func validateOpsGenieTeamName(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if !regexp.MustCompile(`^[a-zA-Z 0-9_-]+$`).MatchString(value) {
+	if !regexp.MustCompile(`^[a-zA-Z 0-9_.-]+$`).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
-			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
+			"only alpha numeric characters, dots and underscores are allowed in %q: %q", k, value))
 	}
 
 	if len(value) >= 100 {
