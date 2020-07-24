@@ -114,9 +114,3 @@ The following arguments are common and supported for all actions:
 The following attributes are exported:
 
 * `id` - The ID of the Opsgenie API Integration.
-
-## Import
-
-API Integrations can be imported using the `id`, e.g.
-
-`$ terraform import opsgenie_integration_action.defaultintegration 812be1a1-32c8-4666-a7fb-03ecc385106c`
