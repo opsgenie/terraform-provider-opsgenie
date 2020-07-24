@@ -175,6 +175,15 @@ resource "opsgenie_api_integration" "test" {
 
 func testAccOpsGenieIntegrationAction_complete(rString string) string {
 	return fmt.Sprintf(`
+resource "opsgenie_user" "test" {
+  username  = "genietest-%s@opsgenie.com"
+  full_name = "genietest-%s"
+  role      = "User"
+}
+resource "opsgenie_team" "test" {
+  name        = "genieteam-%s"
+  description = "This team deals with all the things"
+}
 resource "opsgenie_api_integration" "test" {
   name = "genieintegration-api-%s"
   type = "API"
@@ -183,25 +192,50 @@ resource "opsgenie_api_integration" "test" {
   suppress_notifications = true
 }
 resource "opsgenie_integration_action" "test_api" {
-  integration_id = opsgenie_api_integration.test.id
+  integration_id = "${opsgenie_api_integration.test.id}"
   create {
-    name = "Filter high prio alerts"
+    name = "Create high priority alerts"
+    tags = ["CRITICAL", "SEV-0"]
+    user = "Acceptance test user"
+    note = "{{note}}"
+	alias = "{{alias}}"
+	source = "{{source}}"
+	message = "{{message}}"
+	description = "{{description}}"
+	entity = "{{entity}}"
+	alert_actions = ["Check error rate"]
+    
     filter {
-      type = "match-any-condition"
+      type = "match-all-conditions"
       conditions {
         field = "priority"
         operation = "equals"
         expected_value = "P1"
       }
-      conditions {
-        field = "message"
-        operation = "contains"
-        expected_value = "critical"
-      }
+    }
+    responders {
+      id = "${opsgenie_team.test.id}"
+      type = "team"
     }
   }
-  acknowledge {
-    name = "Ack P5 alerts"
+  create {
+    name = "Create medium priority alerts"
+    tags = ["SEVERE", "SEV-1"]
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "priority"
+        operation = "equals"
+        expected_value = "P2"
+      }
+    }
+    responders {
+      id = "${opsgenie_user.test.id}"
+      type = "user"
+    }
+  }
+  close {
+    name = "Low priority alerts"
     filter {
       type = "match-any-condition"
       conditions {
@@ -211,6 +245,29 @@ resource "opsgenie_integration_action" "test_api" {
       }
     }
   }
+  acknowledge {
+    name = "Auto-ack test alerts"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "message"
+        operation = "contains"
+        expected_value = "TEST"
+      }
+      conditions {
+        field = "priority"
+        operation = "equals"
+        expected_value = "P5"
+      }
+    }
+  }
+  add_note {
+    name = "Add note to all alerts"
+    note = "Created from test integration"
+    filter {
+      type = "match-all"
+    }
+  }
 }
-`, rString)
+`, rString, rString, rString, rString)
 }

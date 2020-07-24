@@ -8,7 +8,7 @@ description: |-
 
 # opsgenie_integration_action
 
-Manages an API Integration within Opsgenie. The action types that are supported are:
+Manages advanced actions for Integrations within Opsgenie. The actions that are supported are:
 * create
 * close
 * acknowledge
@@ -23,26 +23,27 @@ resource "opsgenie_integration_action" "test_action" {
 
   create {
     name = "create action"
-    user = "{{user}}"
+    tags = ["CRITICAL", "SEV-0"]
+    user = "Example-service"
     note = "{{note}}"
-    alias = "{{alias}}"
-    source = "{{source]}"
-    message = "{{message}}"
-    description = "{{description}}"
-    entity = "{{entity}}"
-
-    responders {
-      type = "escalation"
-      id = "${opsgenie_escalation.test.id}"
-    }
-
+	alias = "{{alias}}"
+	source = "{{source}}"
+	message = "{{message}}"
+	description = "{{description}}"
+	entity = "{{entity}}"
+	alert_actions = ["Runbook ID#342"]
+    
     filter {
-      type = "match-all"
+      type = "match-all-conditions"
       conditions {
-        field = "message"
-        operation = "contains"
-        expected_value = "ERROR"
+        field = "priority"
+        operation = "equals"
+        expected_value = "P1"
       }
+    }
+    responders {
+      id = "${opsgenie_team.test.id}"
+      type = "team"
     }
   }
 
@@ -88,7 +89,7 @@ The following arguments are common and supported for all actions:
 
 * `description` - (Optional)  Detailed description of the alert, anything that may not have fit in the `message` field.
 
-* `entity` - (Optional) The entity that the alert is related to.
+* `entity` - (Optional) The entity the alert is related to.
 
 * `extra_properties` - (Optional) Set of user defined properties specified as a map.
 
@@ -106,8 +107,8 @@ The following arguments are common and supported for all actions:
 
 `responders` is supported only in create action and supports the following:
 
-* `type` - (Required) The responder type.
 * `id` - (Required) The id of the responder.
+* `type` - (Required) The responder type - can be escalation, team or user.
 
 ## Attributes Reference
 

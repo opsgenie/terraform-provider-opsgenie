@@ -374,7 +374,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 						"type": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Default:  "add_note",
+							Default:  "AddNote",
 						},
 						"order": {
 							Type:     schema.TypeInt,
