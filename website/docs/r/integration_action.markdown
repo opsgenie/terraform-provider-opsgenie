@@ -47,14 +47,44 @@ resource "opsgenie_integration_action" "test_action" {
     }
   }
 
+  create {
+    name = "Create medium priority alerts"
+    tags = ["SEVERE", "SEV-1"]
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "priority"
+        operation = "equals"
+        expected_value = "P2"
+      }
+    }
+  }
+
   close {
-    name = "close action"
+    name = "Low priority alerts"
     filter {
       type = "match-any-condition"
       conditions {
         field = "priority"
         operation = "equals"
-        expected_value = "P4"
+        expected_value = "P5"
+      }
+      conditions {
+        field = "message"
+        operation = "contains"
+        expected_value = "DEBUG"
+      }
+    }
+  }
+
+  acknowledge {
+    name = "Auto-ack test alerts"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "message"
+        operation = "contains"
+        expected_value = "TEST"
       }
       conditions {
         field = "priority"
@@ -64,6 +94,13 @@ resource "opsgenie_integration_action" "test_action" {
     }
   }
 
+  add_note {
+    name = "Add note to all alerts"
+    note = "Created from test integration"
+    filter {
+      type = "match-all"
+    }
+  }
 }
 ```
 
