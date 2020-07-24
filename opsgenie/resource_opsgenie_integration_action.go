@@ -127,7 +127,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 						},
 						"append_attachments": {
 							Type:     schema.TypeBool,
-							Default:  false,
+							Default:  true,
 							Optional: true,
 						},
 						"ignore_alert_actions_from_payload": {
@@ -169,7 +169,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 								Schema: map[string]*schema.Schema{
 									"type": {
 										Type:     schema.TypeString,
-										Optional: true,
+										Required: true,
 									},
 									"name": {
 										Type:     schema.TypeString,
@@ -177,7 +177,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 									},
 									"id": {
 										Type:     schema.TypeString,
-										Optional: true,
+										Required: true,
 									},
 									"username": {
 										Type:     schema.TypeString,

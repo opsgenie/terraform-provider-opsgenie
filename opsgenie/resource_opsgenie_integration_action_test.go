@@ -89,7 +89,6 @@ func TestAccOpsGenieIntegrationAction_complete(t *testing.T) {
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
-					testCheckOpsGenieIntegrationActionExists("opsgenie_integration_action.test_email"),
 					testCheckOpsGenieIntegrationActionExists("opsgenie_integration_action.test_api"),
 				),
 			},
@@ -176,12 +175,6 @@ resource "opsgenie_api_integration" "test" {
 
 func testAccOpsGenieIntegrationAction_complete(rString string) string {
 	return fmt.Sprintf(`
-resource "opsgenie_email_integration" "test" {
-  name = "genieintegration-email-%s"
-  email_username="example"
-  ignore_responders_from_payload = true
-  suppress_notifications = true
-}
 resource "opsgenie_api_integration" "test" {
   name = "genieintegration-api-%s"
   type = "API"
@@ -189,35 +182,16 @@ resource "opsgenie_api_integration" "test" {
   ignore_responders_from_payload = true
   suppress_notifications = true
 }
-resource "opsgenie_integration_action" "test_email" {
-  integration_id = opsgenie_email_integration.test.id
-  create {
-    name = "Filter high prio alerts"
-    filter {
-      type = "match-any-condition"
-      conditions {
-        field = "source"
-        operation = "equals"
-        expected_value = "notifier@opsgenie.com"
-      }
-      conditions {
-        field = "source"
-        operation = "equals"
-        expected_value = "alert@opsgenie.com"
-      }
-    }
-  }
-}
 resource "opsgenie_integration_action" "test_api" {
   integration_id = opsgenie_api_integration.test.id
   create {
     name = "Filter high prio alerts"
     filter {
-      type = "match-all-conditions"
+      type = "match-any-condition"
       conditions {
         field = "priority"
-        operation = "greater_than"
-        expected_value = "P2"
+        operation = "equals"
+        expected_value = "P1"
       }
       conditions {
         field = "message"
@@ -238,5 +212,5 @@ resource "opsgenie_integration_action" "test_api" {
     }
   }
 }
-`, rString, rString)
+`, rString)
 }
