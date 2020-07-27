@@ -374,7 +374,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 						"type": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Default:  "AddNote",
+							Default:  "addNote",
 						},
 						"order": {
 							Type:     schema.TypeInt,
@@ -539,7 +539,7 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 	return actions
 }
 
-func flattenOpsgenieFilter(input integration.FilterResult) []map[string]interface{} {
+func flattenOpsgenieFilter(input *integration.Filter) []map[string]interface{} {
 	rules := make([]map[string]interface{}, 0, 1)
 	out := make(map[string]interface{})
 	out["type"] = input.ConditionMatchType
@@ -561,93 +561,43 @@ func flattenOpsgenieFilter(input integration.FilterResult) []map[string]interfac
 	return rules
 }
 
-func flattenOpsgenieIntegrationCloseActions(input []integration.CloseAction) []map[string]interface{} {
+func flattenOpsgenieIntegrationActions(input []integration.IntegrationAction) []map[string]interface{} {
+
 	actions := make([]map[string]interface{}, 0)
 	for _, action := range input {
 		actionMap := make(map[string]interface{})
-		actionMap["type"] = integration.Close
+		actionMap["type"] = action.Type
 		actionMap["name"] = action.Name
 		actionMap["alias"] = action.Alias
 		actionMap["order"] = action.Order
 		actionMap["note"] = action.Note
 		actionMap["user"] = action.User
 		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
+		if action.Type == "create" {
+			actionMap["source"] = action.Source
+			actionMap["message"] = action.Message
+			actionMap["description"] = action.Description
+			actionMap["entity"] = action.Entity
+			actionMap["append_attachments"] = action.AppendAttachments
+			actionMap["alert_actions"] = action.AlertActions
+			actionMap["ignore_alert_actions_from_payload"] = action.IgnoreAlertActionsFromPayload
+			actionMap["ignore_responders_from_payload"] = action.IgnoreRespondersFromPayload
+			actionMap["ignore_tags_from_payload"] = action.IgnoreTagsFromPayload
+			actionMap["ignore_extra_properties_from_payload"] = action.IgnoreExtraPropertiesFromPayload
 
-		actions = append(actions, actionMap)
-	}
-	return actions
-}
-
-func flattenOpsgenieIntegrationAcknowledgeActions(input []integration.AcknowledgeAction) []map[string]interface{} {
-	actions := make([]map[string]interface{}, 0)
-	for _, action := range input {
-		actionMap := make(map[string]interface{})
-		actionMap["type"] = integration.Acknowledge
-		actionMap["name"] = action.Name
-		actionMap["alias"] = action.Alias
-		actionMap["order"] = action.Order
-		actionMap["note"] = action.Note
-		actionMap["user"] = action.User
-		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
-
-		actions = append(actions, actionMap)
-	}
-	return actions
-}
-
-func flattenOpsgenieIntegrationAddNoteActions(input []integration.AddNoteAction) []map[string]interface{} {
-	actions := make([]map[string]interface{}, 0)
-	for _, action := range input {
-		actionMap := make(map[string]interface{})
-		actionMap["type"] = integration.AddNote
-		actionMap["name"] = action.Name
-		actionMap["alias"] = action.Alias
-		actionMap["order"] = action.Order
-		actionMap["note"] = action.Note
-		actionMap["user"] = action.User
-		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
-
-		actions = append(actions, actionMap)
-	}
-	return actions
-}
-
-func flattenOpsgenieIntegrationCreateActions(input []integration.CreateAction) []map[string]interface{} {
-
-	actions := make([]map[string]interface{}, 0)
-	for _, action := range input {
-		actionMap := make(map[string]interface{})
-		actionMap["type"] = integration.Create
-		actionMap["name"] = action.Name
-		actionMap["alias"] = action.Alias
-		actionMap["order"] = action.Order
-		actionMap["note"] = action.Note
-		actionMap["user"] = action.User
-		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
-		actionMap["source"] = action.Source
-		actionMap["message"] = action.Message
-		actionMap["description"] = action.Description
-		actionMap["entity"] = action.Entity
-		actionMap["append_attachments"] = action.AppendAttachments
-		actionMap["alert_actions"] = action.AlertActions
-		actionMap["ignore_alert_actions_from_payload"] = action.IgnoreAlertActionsFromPayload
-		actionMap["ignore_responders_from_payload"] = action.IgnoreRespondersFromPayload
-		actionMap["ignore_tags_from_payload"] = action.IgnoreTagsFromPayload
-		actionMap["ignore_extra_properties_from_payload"] = action.IgnoreExtraPropertiesFromPayload
-
-		responders := make([]map[string]string, 0)
-		for _, responder := range action.Responders {
-			responders = append(responders, map[string]string{
-				"type":     string(responder.Type),
-				"name":     responder.Name,
-				"id":       responder.Id,
-				"username": responder.Username,
-			})
+			responders := make([]map[string]string, 0)
+			for _, responder := range action.Responders {
+				responders = append(responders, map[string]string{
+					"type":     string(responder.Type),
+					"name":     responder.Name,
+					"id":       responder.Id,
+					"username": responder.Username,
+				})
+			}
+			actionMap["responders"] = responders
+			actionMap["tags"] = action.Tags
+			actionMap["extra_properties"] = action.ExtraProperties
 		}
-		actionMap["responders"] = responders
-		actionMap["tags"] = action.Tags
-		actionMap["extra_properties"] = action.ExtraProperties
-
 		actions = append(actions, actionMap)
 	}
 	return actions
@@ -696,10 +646,10 @@ func resourceOpsgenieIntegrationActionRead(d *schema.ResourceData, meta interfac
 
 	d.SetId(result.Parent.Id)
 	d.Set("integration_id", result.Parent.Id)
-	d.Set("create", flattenOpsgenieIntegrationCreateActions(result.Create))
-	d.Set("close", flattenOpsgenieIntegrationCloseActions(result.Close))
-	d.Set("acknowledge", flattenOpsgenieIntegrationAcknowledgeActions(result.Acknowledge))
-	d.Set("add_note", flattenOpsgenieIntegrationAddNoteActions(result.AddNote))
+	d.Set("create", flattenOpsgenieIntegrationActions(result.Create))
+	d.Set("close", flattenOpsgenieIntegrationActions(result.Close))
+	d.Set("acknowledge", flattenOpsgenieIntegrationActions(result.Acknowledge))
+	d.Set("add_note", flattenOpsgenieIntegrationActions(result.AddNote))
 
 	return nil
 }
