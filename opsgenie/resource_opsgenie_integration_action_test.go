@@ -191,6 +191,10 @@ resource "opsgenie_api_integration" "test" {
   ignore_responders_from_payload = true
   suppress_notifications = true
 }
+resource "opsgenie_email_integration" "test" {
+  name = "geniemailintegration-%s"
+  email_username = "geniemailintegration-%s"
+}
 resource "opsgenie_integration_action" "test_api" {
   integration_id = "${opsgenie_api_integration.test.id}"
   create {
@@ -269,5 +273,29 @@ resource "opsgenie_integration_action" "test_api" {
     }
   }
 }
-`, rString, rString, rString, rString)
+resource "opsgenie_integration_action" "test_email" {
+  integration_id = "${opsgenie_email_integration.test.id}"
+  create {
+    name = "Accept from source"
+    filter {
+      type = "match-any-condition"
+      conditions {
+        field = "from_address"
+        operation = "equals"
+        expected_value = "alerts@opsgenie.com"
+      }
+      conditions {
+        field = "from_name"
+        operation = "equals"
+        expected_value = "admin"
+      }
+      conditions {
+        field = "subject"
+        operation = "contains"
+        expected_value = "S1:"
+      }
+    }
+  }
+}
+`, rString, rString, rString, rString, rString, rString)
 }

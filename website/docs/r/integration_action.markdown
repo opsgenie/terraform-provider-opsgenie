@@ -8,7 +8,11 @@ description: |-
 
 # opsgenie_integration_action
 
-Manages advanced actions for Integrations within Opsgenie. The actions that are supported are:
+Manages advanced actions for Integrations within Opsgenie. This applies for the following resources:
+* opsgenie_api_integration
+* opsgenie_email_integration
+
+The actions that are supported are:
 * create
 * close
 * acknowledge
@@ -120,7 +124,9 @@ The following arguments are common and supported for all actions:
 
 * `note` - (Optional) Integer value that defines in which order the action will be performed.
 
-* `filter` - (Optional) Used to specify rules for matching alerts and the filter type.
+* `filter` - (Optional) Used to specify rules for matching alerts and the filter type. Please note that depending on the integration type the field names in the filter conditions are:
+  * For API integration: `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `recipients`, `teams`, `priority`.
+  * For Email integration: `from_address`, `from_name`, `conversationSubject`, `subject`
 
 ### Additional Arguments for Create Action
 
