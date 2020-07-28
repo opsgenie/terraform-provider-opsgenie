@@ -32,6 +32,7 @@ func Provider() terraform.ResourceProvider {
 			"opsgenie_escalation":            resourceOpsgenieEscalation(),
 			"opsgenie_api_integration":       resourceOpsgenieApiIntegration(),
 			"opsgenie_email_integration":     resourceOpsgenieEmailIntegration(),
+			"opsgenie_integration_action":    resourceOpsgenieIntegrationAction(),
 			"opsgenie_service":               resourceOpsGenieService(),
 			"opsgenie_schedule":              resourceOpsgenieSchedule(),
 			"opsgenie_schedule_rotation":     resourceOpsgenieScheduleRotation(),
