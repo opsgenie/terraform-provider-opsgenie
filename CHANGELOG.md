@@ -1,4 +1,13 @@
 ## 0.4.0 (Unreleased)
+
+IMPROVEMENTS:
+
+* **Integration Actions Api :** New resource, now you can manage integration actions via Terraform. (#139)
+
+BUGFIX:
+
+* **Team API :** Allow dot character (#137)
+
 ## 0.3.9 (July 20, 2020)
 
 BUGFIX:
