@@ -1,4 +1,4 @@
-module github.com/terraform-providers/terraform-provider-opsgenie
+module github.com/opsgenie/terraform-provider-opsgenie
 
 go 1.12
 
