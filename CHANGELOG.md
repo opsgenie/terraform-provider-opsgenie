@@ -1,6 +1,6 @@
 ## 0.4.1 (Unreleased)
 
---
+Opsgenie Provider repository changes
 
 ## 0.4.0 (July 28, 2020)
 
