@@ -87,7 +87,7 @@ func resourceOpsgenieHeartbeatCreate(d *schema.ResourceData, meta interface{}) e
 		IntervalUnit:  heartbeat.Unit(intervalUnit),
 		Enabled:       &enabled,
 		AlertMessage:  alertMessage,
-		AlertTag:      flattenTags(d),
+		AlertTag:      flattenTags(d, "alert_tags"),
 		AlertPriority: alertPriority,
 	}
 	if ownerTeamId != "" {
@@ -151,7 +151,7 @@ func resourceOpsgenieHeartbeatUpdate(d *schema.ResourceData, meta interface{}) e
 		IntervalUnit:  heartbeat.Unit(intervalUnit),
 		Enabled:       &enabled,
 		AlertMessage:  alertMessage,
-		AlertTag:      flattenTags(d),
+		AlertTag:      flattenTags(d, "alert_tags"),
 		AlertPriority: alertPriority,
 	}
 	if ownerTeamId != "" {
@@ -180,21 +180,6 @@ func resourceOpsgenieHeartbeatDelete(d *schema.ResourceData, meta interface{}) e
 	}
 
 	return nil
-}
-
-func flattenTags(d *schema.ResourceData) []string {
-	input := d.Get("alert_tags").(*schema.Set)
-	tags := make([]string, len(input.List()))
-
-	if input == nil {
-		return tags
-	}
-
-	for k, v := range input.List() {
-		tags[k] = v.(string)
-	}
-
-	return tags
 }
 
 func validateOpsgenieHeartbeat(v interface{}, k string) (ws []string, errors []error) {
