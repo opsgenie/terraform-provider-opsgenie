@@ -17,17 +17,17 @@ Requirements
 Building The Provider
 ---------------------
 
-Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-opsgenie`
+Clone repository to: `$GOPATH/src/github.com/opsgenie/terraform-provider-opsgenie`
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/terraform-providers; cd $GOPATH/src/github.com/terraform-providers
-$ git clone git@github.com:terraform-providers/terraform-provider-opsgenie
+$ mkdir -p $GOPATH/src/github.com/opsgenie; cd $GOPATH/src/github.com/opsgenie
+$ git clone git@github.com:opsgenie/terraform-provider-opsgenie
 ```
 
 Enter the provider directory and build the provider
 
 ```sh
-$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-opsgenie
+$ cd $GOPATH/src/github.com/opsgenie/terraform-provider-opsgenie
 $ make build
 ```
 
