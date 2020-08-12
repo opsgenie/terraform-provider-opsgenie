@@ -1,3 +1,8 @@
+## 0.4.2 (August 13, 2020)
+
+BUGFIX:
+* **Integration Actions :** allow extra_properties (#152)
+
 ## 0.4.1 (July 29, 2020)
 
 Opsgenie Provider repository changes

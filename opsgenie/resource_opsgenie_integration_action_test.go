@@ -208,7 +208,10 @@ resource "opsgenie_integration_action" "test_api" {
 	description = "{{description}}"
 	entity = "{{entity}}"
 	alert_actions = ["Check error rate"]
-    
+    extra_properties = map(
+      "Environment", "test-env",
+      "Region", "us-west-2"
+    )
     filter {
       type = "match-all-conditions"
       conditions {
@@ -224,6 +227,7 @@ resource "opsgenie_integration_action" "test_api" {
   }
   create {
     name = "Create medium priority alerts"
+	order = 2
     tags = ["SEVERE", "SEV-1"]
     filter {
       type = "match-all-conditions"
