@@ -26,6 +26,7 @@ func Provider() terraform.ResourceProvider {
 
 			"opsgenie_team":                  resourceOpsGenieTeam(),
 			"opsgenie_team_routing_rule":     resourceOpsGenieTeamRoutingRule(),
+			"opsgenie_team_membership":       resourceOpsGenieTeamMembership(),
 			"opsgenie_user":                  resourceOpsGenieUser(),
 			"opsgenie_user_contact":          resourceOpsGenieUserContact(),
 			"opsgenie_notification_policy":   resourceOpsGenieNotificationPolicy(),
