@@ -33,7 +33,6 @@ resource "opsgenie_team" "test" {
 
 resource "opsgenie_team_membership" "first" {
   user_id = opsgenie_user.first.id
-  role    = "user"
   team_id = opsgenie_team.test.id
 }
 
@@ -52,7 +51,7 @@ The following arguments are supported:
 
 * `role` - (Optional) The role for the user within the Team - can be either 'admin' or 'user', defaults to 'user' if not set.
 
-* `teamr_id` - (Required) The ID of a team the user should be member of.
+* `team_id` - (Required) The ID of a team the user should be member of.
 
 ## Attributes Reference
 
