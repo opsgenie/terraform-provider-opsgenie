@@ -136,15 +136,12 @@ func getUserRole(userID string, teamID string, input []team.Member) (string, err
 	for _, inputMember := range input {
 		if inputMember.User.ID == userID {
 			role = inputMember.Role
-			break
+			return role, nil
 		}
 	}
 
-	if len(role) == 0 {
-		return "", fmt.Errorf("did not found user %q in team %q", userID, teamID)
-	}
+	return "", fmt.Errorf("did not found user %q in team %q (%#v)", userID, teamID, input)
 
-	return role, nil
 }
 
 // format the strings into an id `a:b`
