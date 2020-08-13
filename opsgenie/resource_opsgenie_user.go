@@ -150,6 +150,8 @@ func expandOpsGenieUserDetails(d *schema.ResourceData) map[string][]string {
 }
 
 func resourceOpsGenieUserCreate(d *schema.ResourceData, meta interface{}) error {
+	//TODO OGS-1629: Atlassian systems reset full_name after a certain time after creating a new OpsGenie user.
+	// This may lead to unexpected behaviour, e.g. when running a subsequent "tf apply" or executing our acceptance tests
 
 	client, err := user.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
