@@ -6,7 +6,7 @@ description: |-
   Manages team memberships for users.
 ---
 
-# opsgenie\_team
+# opsgenie\_team\_membership
 
 Manages team memberships for users.
 

@@ -141,7 +141,6 @@ func getUserRole(userID string, teamID string, input []team.Member) (string, err
 	}
 
 	return "", fmt.Errorf("did not found user %q in team %q (%#v)", userID, teamID, input)
-
 }
 
 // format the strings into an id `a:b`
