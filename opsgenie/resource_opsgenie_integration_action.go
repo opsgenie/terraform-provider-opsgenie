@@ -44,6 +44,10 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 							Optional: true,
 							Default:  1,
 						},
+						"priority": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"filter": {
 							Type:     schema.TypeList,
 							Optional: true,
@@ -171,23 +175,23 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 										Type:     schema.TypeString,
 										Required: true,
 									},
-									"name": {
-										Type:     schema.TypeString,
-										Optional: true,
-									},
 									"id": {
 										Type:     schema.TypeString,
 										Required: true,
-									},
-									"username": {
-										Type:     schema.TypeString,
-										Optional: true,
 									},
 								},
 							},
 						},
 						"tags": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Set: schema.HashString,
+						},
+						"extra_properties": {
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
@@ -456,6 +460,13 @@ func convertInterfaceSliceToString(input []interface{}) []string {
 	}
 	return result
 }
+func convertInterfaceMapToString(input map[string]interface{}) map[string]string {
+	result := map[string]string{}
+	for k, v := range input {
+		result[k] = v.(string)
+	}
+	return result
+}
 
 func expandOpsgenieActionResponders(input []interface{}) []integration.Responder {
 
@@ -506,6 +517,9 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 		action.Order = inputMap["order"].(int)
 		action.User = inputMap["user"].(string)
 		action.Note = inputMap["note"].(string)
+		if priority := inputMap["priority"]; priority != nil {
+			action.Priority = priority.(string)
+		}
 		filters := expandOpsgenieFilter(inputMap["filter"].([]interface{}))
 		action.Filter = &filters
 
@@ -515,9 +529,9 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 			action.Description = inputMap["description"].(string)
 			action.Entity = inputMap["entity"].(string)
 			action.AlertActions = convertInterfaceSliceToString(inputMap["alert_actions"].([]interface{}))
-			action.Tags = convertInterfaceSliceToString(inputMap["tags"].([]interface{}))
+			action.Tags = flattenActionTags(inputMap["tags"].(*schema.Set))
 			if extraProperties := inputMap["extra_properties"]; extraProperties != nil {
-				action.ExtraProperties = extraProperties.(map[string]string)
+				action.ExtraProperties = convertInterfaceMapToString(extraProperties.(map[string]interface{}))
 			}
 
 			appendAttachment := inputMap["append_attachments"].(bool)
@@ -561,6 +575,17 @@ func flattenOpsgenieFilter(input *integration.Filter) []map[string]interface{} {
 	return rules
 }
 
+func flattenActionTags(input *schema.Set) []string {
+	tags := make([]string, len(input.List()))
+	if input == nil {
+		return tags
+	}
+	for k, v := range input.List() {
+		tags[k] = v.(string)
+	}
+	return tags
+}
+
 func flattenOpsgenieIntegrationActions(input []integration.IntegrationAction) []map[string]interface{} {
 
 	actions := make([]map[string]interface{}, 0)
@@ -575,6 +600,7 @@ func flattenOpsgenieIntegrationActions(input []integration.IntegrationAction) []
 		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
 		if action.Type == "create" {
 			actionMap["source"] = action.Source
+			actionMap["priority"] = action.Priority
 			actionMap["message"] = action.Message
 			actionMap["description"] = action.Description
 			actionMap["entity"] = action.Entity
@@ -588,10 +614,8 @@ func flattenOpsgenieIntegrationActions(input []integration.IntegrationAction) []
 			responders := make([]map[string]string, 0)
 			for _, responder := range action.Responders {
 				responders = append(responders, map[string]string{
-					"type":     string(responder.Type),
-					"name":     responder.Name,
-					"id":       responder.Id,
-					"username": responder.Username,
+					"type": string(responder.Type),
+					"id":   responder.Id,
 				})
 			}
 			actionMap["responders"] = responders
@@ -643,7 +667,6 @@ func resourceOpsgenieIntegrationActionRead(d *schema.ResourceData, meta interfac
 	if err != nil {
 		return err
 	}
-
 	d.SetId(result.Parent.Id)
 	d.Set("integration_id", result.Parent.Id)
 	d.Set("create", flattenOpsgenieIntegrationActions(result.Create))
