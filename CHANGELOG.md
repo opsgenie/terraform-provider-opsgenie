@@ -1,3 +1,8 @@
+## 0.4.3 (August 14, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** add priority for create action (#157)
+
 ## 0.4.2 (August 13, 2020)
 
 BUGFIX:
