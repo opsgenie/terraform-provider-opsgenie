@@ -54,6 +54,7 @@ resource "opsgenie_integration_action" "test_action" {
   create {
     name = "Create medium priority alerts"
     tags = ["SEVERE", "SEV-1"]
+    priority = "P3"
     filter {
       type = "match-all-conditions"
       conditions {
@@ -133,6 +134,8 @@ The following arguments are common and supported for all actions:
 * `description` - (Optional)  Detailed description of the alert, anything that may not have fit in the `message` field.
 
 * `entity` - (Optional) The entity the alert is related to.
+
+* `priority` - (Optional) Alert priority.
 
 * `extra_properties` - (Optional) Set of user defined properties specified as a map.
 
