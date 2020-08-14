@@ -22,7 +22,9 @@ jobs:
       -
         name: fmt check
         run: make fmtcheck
-
+      -
+        name: Test Website
+        run: make website-test
       -
         name: Test GoReleaser
         uses: goreleaser/goreleaser-action@v2
