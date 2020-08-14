@@ -6,7 +6,7 @@ PKG_NAME=opsgenie
 default: build
 
 build: fmtcheck
-	go install
+	goreleaser build --skip-validate --rm-dist
 
 test: fmtcheck
 	go test -i $(TEST) || exit 1
