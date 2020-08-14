@@ -257,8 +257,8 @@ func (r *GetIntegrationActionsRequest) Method() string {
 }
 
 type Filter struct {
-       ConditionMatchType og.ConditionMatchType `json:"conditionMatchType,omitempty"`
-       Conditions         []og.Condition        `json:"conditions,omitempty"`
+	ConditionMatchType og.ConditionMatchType `json:"conditionMatchType,omitempty"`
+	Conditions         []og.Condition        `json:"conditions,omitempty"`
 }
 
 type CreateIntegrationActionsRequest struct {
@@ -339,6 +339,7 @@ type IntegrationAction struct {
 	Message                          string            `json:"message,omitempty"`
 	Description                      string            `json:"description,omitempty"`
 	Entity                           string            `json:"entity,omitempty"`
+	Priority                         string            `json:"priority,omitempty"`
 	AppendAttachments                *bool             `json:"appendAttachments,omitempty"`
 	AlertActions                     []string          `json:"alertActions,omitempty"`
 	IgnoreAlertActionsFromPayload    *bool             `json:"ignoreAlertActionsFromPayload,omitempty"`

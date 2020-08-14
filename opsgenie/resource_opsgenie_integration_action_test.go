@@ -207,6 +207,7 @@ resource "opsgenie_integration_action" "test_api" {
 	message = "{{message}}"
 	description = "{{description}}"
 	entity = "{{entity}}"
+    priority = "P2"
 	alert_actions = ["Check error rate"]
     
     filter {

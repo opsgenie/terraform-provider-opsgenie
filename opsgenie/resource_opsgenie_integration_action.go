@@ -44,6 +44,10 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 							Optional: true,
 							Default:  1,
 						},
+						"priority": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"filter": {
 							Type:     schema.TypeList,
 							Optional: true,
@@ -506,6 +510,9 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 		action.Order = inputMap["order"].(int)
 		action.User = inputMap["user"].(string)
 		action.Note = inputMap["note"].(string)
+		if priority := inputMap["priority"]; priority != nil {
+			action.Priority = priority.(string)
+		}
 		filters := expandOpsgenieFilter(inputMap["filter"].([]interface{}))
 		action.Filter = &filters
 
@@ -575,6 +582,7 @@ func flattenOpsgenieIntegrationActions(input []integration.IntegrationAction) []
 		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
 		if action.Type == "create" {
 			actionMap["source"] = action.Source
+			actionMap["priority"] = action.Priority
 			actionMap["message"] = action.Message
 			actionMap["description"] = action.Description
 			actionMap["entity"] = action.Entity
