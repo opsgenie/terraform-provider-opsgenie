@@ -59,7 +59,7 @@ func resourceOpsGenieTeamMembershipCreate(d *schema.ResourceData, meta interface
 		User: team.User{
 			ID: userID,
 		},
-		Role: role, //TODO lowercase?
+		Role: role,
 	})
 	if err != nil {
 		return err
