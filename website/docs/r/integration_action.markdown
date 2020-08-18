@@ -126,7 +126,8 @@ The following arguments are common and supported for all actions:
 * `note` - (Optional) Integer value that defines in which order the action will be performed.
 
 * `filter` - (Optional) Used to specify rules for matching alerts and the filter type. Please note that depending on the integration type the field names in the filter conditions are:
-  * For API integration: `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `recipients`, `teams`, `priority`.
+  * For SNS integration: `actions`, `alias`, `entity`, `message`, `recipients`, `responders`, `subject`, `tags`, `teams`, `eventType`.
+  * For API integration: `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `recipients`, `teams`, `priority`, `eventType`.
   * For Email integration: `from_address`, `from_name`, `conversationSubject`, `subject`
 
 ### Additional Arguments for Create Action

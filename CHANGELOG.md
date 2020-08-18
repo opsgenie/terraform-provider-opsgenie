@@ -1,3 +1,8 @@
+## 0.4.4 (August 18, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** filter conditions set eventType as field (#148)
+
 ## 0.4.3 (August 14, 2020)
 
 IMPROVEMENTS:
