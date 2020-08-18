@@ -8,23 +8,29 @@ jobs:
   ci-test:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Unshallow
+
+      - name: Unshallow
         run: git fetch --prune --unshallow
-      -
-        name: Set up Go
+
+      - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.14
-      -
-        name: fmt check
+
+      - name: fmt check
         run: make fmtcheck
 
-      -
-        name: Test GoReleaser
+      - name: markdown-link-check
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          use-verbose-mode: 'yes'
+          folder-path: 'website/docs'
+          file-extension: '.markdown'
+
+      - name: Test GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
