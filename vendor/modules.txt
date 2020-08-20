@@ -215,7 +215,7 @@ github.com/mitchellh/mapstructure
 github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 github.com/oklog/run
-# github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.2-0.20200818092809-258635176b1d
+# github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.2-0.20200820123717-3bcc8ea32b68
 ## explicit
 github.com/opsgenie/opsgenie-go-sdk-v2/alert
 github.com/opsgenie/opsgenie-go-sdk-v2/client
