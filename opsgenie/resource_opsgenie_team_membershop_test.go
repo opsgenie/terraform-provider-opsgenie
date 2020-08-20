@@ -145,7 +145,7 @@ resource "opsgenie_team" "monkeys" {
   ignore_members = true
 }
 resource "opsgenie_user" "kong" {
-  username   = "kong-%s@inovex.de"
+  username   = "kong-%s@test.example.com"
   full_name  = "Chaos Kong"
   role       = "User"
 }
