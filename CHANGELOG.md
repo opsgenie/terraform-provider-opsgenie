@@ -1,3 +1,8 @@
+## 0.4.5 (August 20, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** Go-Sdk-v2 updated to support all custom field names.
+
 ## 0.4.4 (August 18, 2020)
 
 IMPROVEMENTS:
