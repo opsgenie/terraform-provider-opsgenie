@@ -179,6 +179,7 @@ resource "opsgenie_user" "test" {
   role      = "User"
   locale    = "en_GB"
   timezone = "Europe/Rome"
+  tags     = ["SME"]
 }
 `, rString)
 }
