@@ -48,6 +48,13 @@ func resourceOpsGenieUser() *schema.Resource {
 				Optional: true,
 				Default:  "America/New_York",
 			},
+			"tags": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
@@ -72,6 +79,7 @@ func resourceOpsGenieUserCreate(d *schema.ResourceData, meta interface{}) error 
 		},
 		Locale:   locale,
 		TimeZone: timeZone,
+		Tags:     flattenOpsgenieUserTags(d),
 	}
 
 	log.Printf("[INFO] Creating OpsGenie user '%s'", username)
@@ -106,6 +114,7 @@ func resourceOpsGenieUserRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("role", usr.Role.RoleName)
 	d.Set("locale", usr.Locale)
 	d.Set("timezone", usr.TimeZone)
+	d.Set("tags", usr.Tags)
 
 	return nil
 }
@@ -131,6 +140,7 @@ func resourceOpsGenieUserUpdate(d *schema.ResourceData, meta interface{}) error 
 		},
 		Locale:   locale,
 		TimeZone: timeZone,
+		Tags:     flattenOpsgenieUserTags(d),
 	}
 
 	_, err = client.Update(context.Background(), updateRequest)
@@ -190,4 +200,19 @@ func validateOpsGenieUserRole(v interface{}, k string) (ws []string, errors []er
 		errors = append(errors, fmt.Errorf("%q cannot be longer than 512 characters: %q %d", k, value, len(value)))
 	}
 	return
+}
+
+func flattenOpsgenieUserTags(d *schema.ResourceData) []string {
+	input := d.Get("tags").(*schema.Set)
+	tags := make([]string, len(input.List()))
+
+	if input == nil {
+		return tags
+	}
+
+	for k, v := range input.List() {
+		tags[k] = v.(string)
+	}
+
+	return tags
 }
