@@ -1,3 +1,8 @@
+## 0.4.6 (August 21, 2020)
+
+BUGFIX:
+* **Integration Actions :** allow integration action import(#151)
+
 ## 0.4.5 (August 20, 2020)
 
 IMPROVEMENTS:

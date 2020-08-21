@@ -662,7 +662,7 @@ func resourceOpsgenieIntegrationActionRead(d *schema.ResourceData, meta interfac
 
 	result, err := client.GetActions(context.Background(), &integration.GetIntegrationActionsRequest{
 		BaseRequest: ogClient.BaseRequest{},
-		Id:          d.Get("integration_id").(string),
+		Id:          d.Id(),
 	})
 	if err != nil {
 		return err
