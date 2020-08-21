@@ -19,6 +19,7 @@ resource "opsgenie_user" "test" {
   role      = "User"
   locale    = "en_US"
   timezone  = "America/New_York"
+  tags      = ["user","sme"]
 }
 ```
 
@@ -35,6 +36,8 @@ The following arguments are supported:
 * `locale` - (Optional) Location information for the user. Please look at [Supported Locale Ids](https://docs.opsgenie.com/docs/supported-locales) for available locales.
 
 * `timezone` - (Optional) Timezone information of the user. Please look at [Supported Timezone Ids](https://docs.opsgenie.com/docs/supported-timezone-ids) for available timezones.
+
+* `tags` - (Optional) List of tags to add to the user tags value as a list of strings
 
 ## Attributes Reference
 
