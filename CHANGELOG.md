@@ -1,3 +1,9 @@
+## 0.4.7 (August 26, 2020)
+
+IMPROVEMENTS:
+* **Team :** allow users to delete default resources while creating team.
+
+
 ## 0.4.6 (August 21, 2020)
 
 BUGFIX:
