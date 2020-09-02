@@ -1,4 +1,76 @@
-## 0.4.0 (Unreleased)
+## 0.4.7 (August 26, 2020)
+
+IMPROVEMENTS:
+* **Team :** allow users to delete default resources while creating team.
+
+
+## 0.4.6 (August 21, 2020)
+
+BUGFIX:
+* **Integration Actions :** allow integration action import(#151)
+
+## 0.4.5 (August 20, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** Go-Sdk-v2 updated to support all custom field names.
+
+## 0.4.4 (August 18, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** filter conditions set eventType as field (#148)
+
+## 0.4.3 (August 14, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** add priority for create action (#157)
+
+## 0.4.2 (August 13, 2020)
+
+BUGFIX:
+* **Integration Actions :** allow extra_properties (#152)
+
+## 0.4.1 (July 29, 2020)
+
+Opsgenie Provider repository changes
+
+## 0.4.0 (July 28, 2020)
+
+IMPROVEMENTS:
+
+* **Integration Actions Api :** New resource, now you can manage integration actions via Terraform. (#139)
+
+BUGFIX:
+
+* **Team API :** Allow dot character (#137)
+
+## 0.3.9 (July 20, 2020)
+
+BUGFIX:
+
+* **Alert Policy:** Fixed TF crash because of field type (#132)
+
+## 0.3.8 (July 16, 2020)
+
+IMPROVEMENTS:
+
+* **Service Incident Rule Api :** New resource, now you can manage incident rules via Terraform. (#130)
+
+BUGFIX:
+
+* **Team Routing Rule:** Fixed not field and edited condition validation (#125)
+
+## 0.3.7 (July 13, 2020)
+
+IMPROVEMENTS:
+
+* **Alert Policy API:** New resource, now you can manage alert policies.
+
+## 0.3.6 (July 08, 2020)
+
+IMPROVEMENTS:
+
+* **Data Source: Service API:** New datasource, now you can manage service which created without using Terraform. (#118)
+
 ## 0.3.5 (July 05, 2020)
 
 IMPROVEMENTS:

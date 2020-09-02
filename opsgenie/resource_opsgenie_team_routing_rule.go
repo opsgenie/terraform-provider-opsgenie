@@ -3,6 +3,7 @@ package opsgenie
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"log"
 	"strings"
 
@@ -76,8 +77,9 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 						},
 
 						"conditions": {
@@ -201,13 +203,18 @@ func resourceOpsGenieTeamRoutingRuleCreate(d *schema.ResourceData, meta interfac
 	criteria := d.Get("criteria").([]interface{})
 	notify := d.Get("notify").([]interface{})
 
+	expandedCriteria := expandOpsgenieCriteria(criteria)
+	if err := validateOpsgenieCriteria(expandedCriteria); err != nil {
+		return err
+	}
+
 	createRequest := &team.CreateRoutingRuleRequest{
 		TeamIdentifierType:  team.Id,
 		TeamIdentifierValue: teamId,
 		Name:                name,
 		Order:               &order,
 		Timezone:            timezone,
-		Criteria:            expandOpsgenieCriteria(criteria),
+		Criteria:            expandedCriteria,
 		Notify:              expandOpsgenieNotify(notify),
 	}
 
@@ -264,16 +271,20 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 	criteria := d.Get("criteria").([]interface{})
 	notify := d.Get("notify").([]interface{})
 
+	expandedCriteria := expandOpsgenieCriteria(criteria)
+	if err := validateOpsgenieCriteria(expandedCriteria); err != nil {
+		return err
+	}
+
 	updateRequest := &team.UpdateRoutingRuleRequest{
 		TeamIdentifierType:  team.Id,
 		TeamIdentifierValue: teamId,
 		RoutingRuleId:       d.Id(),
 		Name:                name,
 		Timezone:            timezone,
-		Criteria:            expandOpsgenieCriteria(criteria),
+		Criteria:            expandedCriteria,
 		Notify:              expandOpsgenieNotify(notify),
 	}
-
 	if len(timeRestriction) > 0 {
 		updateRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
 	}
@@ -333,6 +344,7 @@ func flattenOpsgenieCriteria(input og.Criteria) []map[string]interface{} {
 		conditionMap["expected_value"] = r.ExpectedValue
 		conditionMap["operation"] = r.Operation
 		conditionMap["field"] = r.Field
+		conditionMap["not"] = r.IsNot
 		conditions = append(conditions, conditionMap)
 	}
 	out["conditions"] = conditions
@@ -393,6 +405,13 @@ func expandOpsgenieNotify(input []interface{}) *team.Notify {
 	}
 	return &notify
 
+}
+
+func validateOpsgenieCriteria(criteria *og.Criteria) error {
+	if criteria.CriteriaType == "match-all" && len(criteria.Conditions) > 0 {
+		return fmt.Errorf("criteria cannot have conditions set when type is match-all: %v", criteria)
+	}
+	return nil
 }
 
 func expandOpsgenieCriteria(input []interface{}) *og.Criteria {

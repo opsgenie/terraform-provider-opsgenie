@@ -56,6 +56,6 @@ Only the arguments listed above are exposed as attributes.
 
 ## Import
 
-Heartbeat Integrations can be imported using the `id`, e.g.
+Heartbeat Integrations can be imported using the `name`, e.g.
 
-`$ terraform import opsgenie_heartbeat.test 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_heartbeat.test geniehearbeat-%s`

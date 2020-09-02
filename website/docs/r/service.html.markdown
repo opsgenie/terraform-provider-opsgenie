@@ -34,8 +34,6 @@ The following arguments are supported:
 
 * `description` - (Optional) Description field of the service that is generally used to provide a detailed information about the service.
 
-* `visibility` - (Optional) Teams and users that the service will become visible to. "TEAM\_MEMBERS" would mean that service is visible to only given team members; whereas "OPSGENIE\_USERS" mean that service is visible to all users of the given customers. Defaults to: "TEAM\_MEMBERS".
-
 ## Attributes Reference
 
 The following attributes are exported:
