@@ -7,5 +7,5 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk v1.15.0
 	github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.2-0.20200820123717-3bcc8ea32b68
 	github.com/pkg/errors v0.8.1
-	github.com/sirupsen/logrus v1.4.2
+	github.com/sirupsen/logrus v1.4.2 // indirect
 )
