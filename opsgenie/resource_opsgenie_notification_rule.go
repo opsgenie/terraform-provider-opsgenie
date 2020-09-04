@@ -102,6 +102,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 			"order": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"repeat": {
 				Type:     schema.TypeList,

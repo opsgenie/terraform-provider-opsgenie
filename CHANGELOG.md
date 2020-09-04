@@ -1,3 +1,8 @@
+## 0.4.8 (September 4, 2020)
+NEW RESOURCE:
+* Notification rule implemented (#121)
+
+
 ## 0.4.7 (August 26, 2020)
 
 IMPROVEMENTS:

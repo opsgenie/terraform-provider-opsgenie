@@ -169,7 +169,6 @@ resource "opsgenie_notification_rule" "test" {
       to     = "genieuser-%s@opsgenie.com"
     }
   }
-  order    = 0
   repeat {
     loop_after = 2
   }
