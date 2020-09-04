@@ -518,8 +518,8 @@ func expandOpsGenieNotificationPolicyDelayAction(input []interface{}) *policy.De
 		config := v.(map[string]interface{})
 		action.DelayOption = policy.DelayType(config["delay_option"].(string))
 		untilMinute := config["until_minute"].(int)
-		action.UntilMinute = &untilMinute
 		untilHour := config["until_hour"].(int)
+		action.UntilMinute = &untilMinute
 		action.UntilHour = &untilHour
 		if len(config["duration"].([]interface{})) > 0 {
 			action.Duration = expandOpsGenieNotificationPolicyDuration(config["duration"].([]interface{}))
