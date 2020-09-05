@@ -2,6 +2,10 @@ package opsgenie
 
 import (
 	"context"
+	"errors"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/escalation"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 	"log"
 
 	"fmt"
@@ -33,6 +37,11 @@ func resourceOpsGenieTeam() *schema.Resource {
 			"ignore_members": {
 				Type:     schema.TypeBool,
 				Optional: true,
+			},
+			"delete_default_resources": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
 			},
 			"member": {
 				Type:     schema.TypeList,
@@ -92,6 +101,24 @@ func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error 
 
 	d.SetId(getResponse.Id)
 
+	shouldDeleteDefaultResources := d.Get("delete_default_resources").(bool)
+
+	if shouldDeleteDefaultResources {
+		err = findAndUpdateDefaultRoutingRule(name, meta.(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+
+		err := findAndDeleteDefaultEscalation(name, meta.(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+
+		err = findAndDeleteDefaultSchedule(name, meta.(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+	}
 	return resourceOpsGenieTeamRead(d, meta)
 }
 
@@ -211,9 +238,9 @@ func expandOpsGenieTeamMembers(d *schema.ResourceData) []team.Member {
 
 func validateOpsGenieTeamName(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if !regexp.MustCompile(`^[a-zA-Z 0-9_-]+$`).MatchString(value) {
+	if !regexp.MustCompile(`^[a-zA-Z 0-9_.-]+$`).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
-			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
+			"only alpha numeric characters, dots and underscores are allowed in %q: %q", k, value))
 	}
 
 	if len(value) >= 100 {
@@ -221,4 +248,93 @@ func validateOpsGenieTeamName(v interface{}, k string) (ws []string, errors []er
 	}
 
 	return
+}
+
+func findAndDeleteDefaultSchedule(teamName string, config *client.Config) error {
+	scheduleClient, err := schedule.NewClient(config)
+	if err != nil {
+		return err
+	}
+	expand := true
+	res, err := scheduleClient.List(context.Background(), &schedule.ListRequest{
+		Expand: &expand,
+	})
+	if err != nil {
+		return err
+	}
+	for _, sched := range res.Schedule {
+		ownerTeam := sched.OwnerTeam
+		if ownerTeam != nil {
+			if ownerTeam.Name == teamName {
+				_, err = scheduleClient.Delete(context.Background(), &schedule.DeleteRequest{
+					IdentifierType:  schedule.Id,
+					IdentifierValue: sched.Id,
+				})
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+		}
+	}
+
+	return errors.New("Could not find any schedule name for this team")
+}
+
+func findAndDeleteDefaultEscalation(teamName string, config *client.Config) error {
+	escalationClient, err := escalation.NewClient(config)
+	if err != nil {
+		return err
+	}
+	res, err := escalationClient.List(context.Background())
+	if err != nil {
+		return err
+	}
+	for _, escal := range res.Escalations {
+		ownerTeam := escal.OwnerTeam
+		if ownerTeam != nil {
+			if ownerTeam.Name == teamName {
+				_, err = escalationClient.Delete(context.Background(), &escalation.DeleteRequest{
+					IdentifierType: escalation.Id,
+					Identifier:     escal.Id,
+				})
+				if err != nil {
+					return err
+				}
+				return nil
+			}
+		}
+	}
+
+	return errors.New("Could not find any escalation for this team")
+}
+
+func findAndUpdateDefaultRoutingRule(teamName string, config *client.Config) error {
+	teamClient, err := team.NewClient(config)
+	if err != nil {
+		return err
+	}
+	rules, err := teamClient.ListRoutingRules(context.Background(), &team.ListRoutingRulesRequest{
+		TeamIdentifierType:  team.Name,
+		TeamIdentifierValue: teamName,
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, rule := range rules.RoutingRules {
+		_, err := teamClient.UpdateRoutingRule(context.Background(), &team.UpdateRoutingRuleRequest{
+			TeamIdentifierType:  team.Name,
+			TeamIdentifierValue: teamName,
+			RoutingRuleId:       rule.Id,
+			Notify: &team.Notify{
+				Type: team.None,
+			},
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

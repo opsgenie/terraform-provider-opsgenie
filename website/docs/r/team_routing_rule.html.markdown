@@ -93,7 +93,7 @@ The following arguments are supported:
 
 * `type` - (Required) Type of the operation will be applied on conditions. Should be one of match-all, match-any-condition or match-all-conditions.
 
-* `conditions` - (Optional) List of conditions will be checked before applying team routing rule.
+* `conditions` - (Optional) List of conditions will be checked before applying team routing rule. This field declaration should be omitted if the criteria type is set to match-all.
 
 
 `conditions` supports the following:

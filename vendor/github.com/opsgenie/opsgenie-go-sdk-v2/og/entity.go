@@ -141,12 +141,6 @@ func ValidateConditions(conditions []Condition) error {
 			return errors.New("condition key is only valid for extra-properties field")
 		}
 		switch condition.Field {
-		case Message, Alias, Description, Source, Entity, Tags, Actions, Details, ExtraProperties, Recipients, Teams, Priority:
-			break
-		default:
-			return errors.New("condition field should be one of message, alias, description, source, entity, tags, actions, details, extra-properties, recipients, teams or priority")
-		}
-		switch condition.Field {
 		case Actions, Tags, Recipients:
 			if condition.Operation != Contains && condition.Operation != IsEmpty && condition.Operation != Matches {
 				return errors.New(string(condition.Operation) + " is not valid operation for " + string(condition.Field))
@@ -263,6 +257,7 @@ const (
 	Description     ConditionFieldType = "description"
 	Source          ConditionFieldType = "source"
 	Entity          ConditionFieldType = "entity"
+	EventType       ConditionFieldType = "eventType"
 	Tags            ConditionFieldType = "tags"
 	Actions         ConditionFieldType = "actions"
 	Details         ConditionFieldType = "details"
@@ -270,6 +265,10 @@ const (
 	Recipients      ConditionFieldType = "recipients"
 	Teams           ConditionFieldType = "teams"
 	Priority        ConditionFieldType = "priority"
+	ConversationSub ConditionFieldType = "conversationSubject"
+	FromAddress     ConditionFieldType = "from_address"
+	FromName        ConditionFieldType = "from_name"
+	Subject         ConditionFieldType = "subject"
 
 	Matches                ConditionOperation = "matches"
 	Contains               ConditionOperation = "contains"
