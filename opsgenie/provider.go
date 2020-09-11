@@ -40,6 +40,7 @@ func Provider() terraform.ResourceProvider {
 			"opsgenie_heartbeat":             resourceOpsgenieHeartbeat(),
 			"opsgenie_alert_policy":          resourceOpsGenieAlertPolicy(),
 			"opsgenie_service_incident_rule": resourceOpsGenieServiceIncidentRule(),
+			"opsgenie_incident_template":     resourceOpsgenieIncidentTemplate(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
