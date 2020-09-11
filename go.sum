@@ -169,8 +169,6 @@ github.com/mitchellh/reflectwalk v1.0.1 h1:FVzMWA5RllMAKIdUSC8mdWo3XtwoecrH79BY7
 github.com/mitchellh/reflectwalk v1.0.1/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
-github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.2-0.20200820123717-3bcc8ea32b68 h1:aeMcivVe6oeKG+2eIml82VULDUIRLXfqEDNmfjesf5o=
-github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.2-0.20200820123717-3bcc8ea32b68/go.mod h1:VOkJ7STzYj+nXRhMcBTcmt8uZZ17KZKJdZtJpgHLbT8=
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.2-0.20200911071451-adf7a1c79aac h1:SxtpD9CfTncbSkcNVYeqW46DXJqz5b7HH8/BB43D+h0=
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.2-0.20200911071451-adf7a1c79aac/go.mod h1:VOkJ7STzYj+nXRhMcBTcmt8uZZ17KZKJdZtJpgHLbT8=
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
