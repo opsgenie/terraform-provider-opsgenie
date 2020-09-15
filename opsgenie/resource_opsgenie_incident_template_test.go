@@ -15,8 +15,6 @@ import (
 	"github.com/opsgenie/opsgenie-go-sdk-v2/incident"
 )
 
-var randomName = acctest.RandString(6)
-
 func init() {
 	resource.AddTestSweepers("opsgenie_incident_template", &resource.Sweeper{
 		Name: "opsgenie_incident_template",
@@ -39,8 +37,7 @@ func testSweepIncidentTemplate(region string) error {
 	}
 	if result != nil {
 		for _, value := range result.IncidentTemplates["incidentTemplates"] {
-			incidentName := "Incident Template Name-" + randomName
-			if strings.HasPrefix(value.Name, incidentName) {
+			if strings.HasPrefix(value.Name, "Incident Template Name-") {
 				log.Printf("Destroying incident template %s", value.Name)
 				deleteRequest := incident.DeleteIncidentTemplateRequest{IncidentTemplateId: value.IncidentTemplateId}
 				if _, err := client.DeleteIncidentTemplate(context.Background(), &deleteRequest); err != nil {
@@ -53,7 +50,7 @@ func testSweepIncidentTemplate(region string) error {
 }
 
 func TestAccOpsGenieIncidentTemplate_basic(t *testing.T) {
-	config := testAccOpsGenieIncidentTemplate_basic(randomName)
+	config := testAccOpsGenieIncidentTemplate_basic(acctest.RandString(6))
 	resource.Test(t, resource.TestCase{
 		Providers:    testAccProviders,
 		CheckDestroy: testCheckOpsGenieIncidentTemplateDestroy,
@@ -81,8 +78,7 @@ func testCheckOpsGenieIncidentTemplateDestroy(s *terraform.State) error {
 		if err != nil {
 			if result != nil {
 				for _, value := range result.IncidentTemplates["incidentTemplates"] {
-					incidentName := "Incident Template Name-" + randomName
-					if strings.HasPrefix(value.Name, incidentName) {
+					if strings.HasPrefix(value.Name, "Incident Template Name-") {
 						x := err.(*ogClient.ApiError)
 						if x.StatusCode != 404 {
 							return errors.New(fmt.Sprintf("Incident template still exists: %s", x.Error()))
@@ -107,8 +103,7 @@ func testCheckOpsGenieIncidentTemplateExists() resource.TestCheckFunc {
 		if err != nil {
 			if result != nil {
 				for _, value := range result.IncidentTemplates["incidentTemplates"] {
-					incidentName := "Incident Template Name-" + randomName
-					if strings.HasPrefix(value.Name, incidentName) {
+					if strings.HasPrefix(value.Name, "Incident Template Name-") {
 						log.Printf("Incident template found.")
 					} else {
 						return fmt.Errorf("incident template does not exist (and it should)")
@@ -126,18 +121,9 @@ func testCheckOpsGenieIncidentTemplateExists() resource.TestCheckFunc {
 
 func testAccOpsGenieIncidentTemplate_basic(randomName string) string {
 	return fmt.Sprintf(`
-resource "opsgenie_user" "test" {
-  username  = "gtest_1-%s@opsgenie.com"
-  full_name = "Acceptance Test User"
-  role      = "User"
-}
 resource "opsgenie_team" "test" {
   name        = "gtest_1-%s"
   description = "This team deals with all the things"
-  member {
-    id        = opsgenie_user.test.id
-    role      = "admin"
-  }
 }
 resource "opsgenie_service" "test" {
   name  = "gtest_1-%s"
@@ -159,9 +145,8 @@ resource "opsgenie_incident_template" "test" {
     key2 = "value2"
   }
   impacted_services = [ 
-    opsgenie_service.test.id, 
-    "75fa8b15-d9a2-4c68-8d45-53b6540d0d09"
+    opsgenie_service.test.id
   ]
 }
-`, randomName, randomName, randomName, randomName)
+`, randomName, randomName, randomName)
 }

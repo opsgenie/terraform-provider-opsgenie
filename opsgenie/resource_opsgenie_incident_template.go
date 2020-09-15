@@ -2,13 +2,10 @@ package opsgenie
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"strings"
-
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/incident"
+	"log"
 )
 
 func resourceOpsgenieIncidentTemplate() *schema.Resource {
@@ -18,14 +15,7 @@ func resourceOpsgenieIncidentTemplate() *schema.Resource {
 		Update: resourceOpsgenieIncidentTemplateUpdate,
 		Delete: resourceOpsgenieIncidentTemplateDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-				idParts := strings.Split(d.Id(), "/")
-				if len(idParts) != 36 || idParts[1] == "" {
-					return nil, fmt.Errorf("unexpected format of ID (%q), expected incident_template_id", d.Id())
-				}
-				d.SetId(idParts[1])
-				return []*schema.ResourceData{d}, nil
-			},
+			State: schema.ImportStatePassthrough,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -124,24 +114,22 @@ func resourceOpsgenieIncidentTemplateRead(d *schema.ResourceData, meta interface
 		return err
 	}
 	if result != nil {
-		type element map[string]interface{}
-		var elementList []element
 		for _, value := range result.IncidentTemplates["incidentTemplates"] {
-			e1 := element{
-				"name":                  value.Name,
-				"id":                    value.IncidentTemplateId,
-				"message":               value.Message,
-				"tags":                  value.Tags,
-				"description":           value.Description,
-				"details":               value.Details,
-				"priority":              value.Priority,
-				"stakeholderProperties": value.StakeholderProperties,
-				"impactedServices":      value.ImpactedServices,
+			if d.Id() == value.IncidentTemplateId {
+				d.Set("name", value.Name)
+				d.Set("id", value.IncidentTemplateId)
+				d.Set("message", value.Message)
+				d.Set("tags", value.Tags)
+				d.Set("description", value.Description)
+				d.Set("details", value.Details)
+				d.Set("priority", value.Priority)
+				d.Set("stakeholderProperties", value.StakeholderProperties)
+				d.Set("impactedServices", value.ImpactedServices)
 			}
-			elementList = append(elementList, e1)
 		}
-		marshalJson, _ := json.Marshal(elementList)
-		d.Set("incidentTemplates", string(marshalJson))
+	} else {
+		d.SetId("")
+		log.Printf("[INFO] Incident Templates not found")
 	}
 	return nil
 }
