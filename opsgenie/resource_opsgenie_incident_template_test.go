@@ -37,12 +37,13 @@ func testSweepIncidentTemplate(region string) error {
 	}
 	if result != nil {
 		for _, value := range result.IncidentTemplates["incidentTemplates"] {
-			if strings.HasPrefix(value.Name, "Incident Template Name-") {
+			if strings.HasPrefix(value.Name, "genietest-incident-template-") {
 				log.Printf("Destroying incident template %s", value.Name)
 				deleteRequest := incident.DeleteIncidentTemplateRequest{IncidentTemplateId: value.IncidentTemplateId}
 				if _, err := client.DeleteIncidentTemplate(context.Background(), &deleteRequest); err != nil {
 					return err
 				}
+				break
 			}
 		}
 	}
@@ -75,15 +76,14 @@ func testCheckOpsGenieIncidentTemplateDestroy(s *terraform.State) error {
 			continue
 		}
 		result, err := client.GetIncidentTemplate(context.Background(), &incident.GetIncidentTemplateRequest{})
-		if err != nil {
-			if result != nil {
-				for _, value := range result.IncidentTemplates["incidentTemplates"] {
-					if strings.HasPrefix(value.Name, "Incident Template Name-") {
-						x := err.(*ogClient.ApiError)
-						if x.StatusCode != 404 {
-							return errors.New(fmt.Sprintf("Incident template still exists: %s", x.Error()))
-						}
+		if err != nil && result != nil {
+			for _, value := range result.IncidentTemplates["incidentTemplates"] {
+				if strings.HasPrefix(value.Name, "genietest-incident-template-") {
+					x := err.(*ogClient.ApiError)
+					if x.StatusCode != 404 {
+						return errors.New(fmt.Sprintf("Incident template still exists: %s", x.Error()))
 					}
+					break
 				}
 			}
 		} else {
@@ -102,12 +102,16 @@ func testCheckOpsGenieIncidentTemplateExists() resource.TestCheckFunc {
 		result, err := client.GetIncidentTemplate(context.Background(), &incident.GetIncidentTemplateRequest{})
 		if err != nil {
 			if result != nil {
+				incidentTemplateExists := false
 				for _, value := range result.IncidentTemplates["incidentTemplates"] {
-					if strings.HasPrefix(value.Name, "Incident Template Name-") {
+					if strings.HasPrefix(value.Name, "genietest-incident-template-") {
 						log.Printf("Incident template found.")
-					} else {
-						return fmt.Errorf("incident template does not exist (and it should)")
+						incidentTemplateExists = true
+						break
 					}
+				}
+				if !incidentTemplateExists {
+					return fmt.Errorf("incident template does not exist (and it should)")
 				}
 			} else {
 				return fmt.Errorf("incident template does not exist (and it should)")
@@ -122,15 +126,15 @@ func testCheckOpsGenieIncidentTemplateExists() resource.TestCheckFunc {
 func testAccOpsGenieIncidentTemplate_basic(randomName string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_team" "test" {
-  name        = "gtest_1-%s"
+  name        = "genietest-team-%s"
   description = "This team deals with all the things"
 }
 resource "opsgenie_service" "test" {
-  name  = "gtest_1-%s"
+  name  = "genietest-service-%s"
   team_id = opsgenie_team.test.id
 }
 resource "opsgenie_incident_template" "test" {
-  name = "Incident Template Name-%s"
+  name = "genietest-incident-template-%s"
   message = "Incident Message"
   priority = "P2"
   stakeholder_properties {

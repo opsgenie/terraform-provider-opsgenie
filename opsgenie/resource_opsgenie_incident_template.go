@@ -101,7 +101,7 @@ func resourceOpsgenieIncidentTemplateCreate(d *schema.ResourceData, meta interfa
 		return err
 	}
 	d.SetId(result.IncidentTemplateId)
-	return nil
+	return resourceOpsgenieIncidentTemplateRead(d, meta)
 }
 
 func resourceOpsgenieIncidentTemplateRead(d *schema.ResourceData, meta interface{}) error {
@@ -125,11 +125,12 @@ func resourceOpsgenieIncidentTemplateRead(d *schema.ResourceData, meta interface
 				d.Set("priority", value.Priority)
 				d.Set("stakeholderProperties", value.StakeholderProperties)
 				d.Set("impactedServices", value.ImpactedServices)
+				break
 			}
 		}
 	} else {
 		d.SetId("")
-		log.Printf("[INFO] Incident Templates not found")
+		log.Printf("[INFO] Incident template not found")
 	}
 	return nil
 }
