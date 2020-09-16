@@ -76,18 +76,17 @@ func testCheckOpsGenieIncidentTemplateDestroy(s *terraform.State) error {
 			continue
 		}
 		result, err := client.GetIncidentTemplate(context.Background(), &incident.GetIncidentTemplateRequest{})
-		if err != nil && result != nil {
+		if err != nil {
+			x := err.(*ogClient.ApiError)
+			if x.StatusCode != 404 {
+				return errors.New(fmt.Sprintf("Incident template still exists: %s", x.Error()))
+			}
+		} else if result != nil {
 			for _, value := range result.IncidentTemplates["incidentTemplates"] {
 				if strings.HasPrefix(value.Name, "genietest-incident-template-") {
-					x := err.(*ogClient.ApiError)
-					if x.StatusCode != 404 {
-						return errors.New(fmt.Sprintf("Incident template still exists: %s", x.Error()))
-					}
-					break
+					return fmt.Errorf("incident template still exists(it shouldn't exist)")
 				}
 			}
-		} else {
-			return err
 		}
 	}
 	return nil
