@@ -1,3 +1,8 @@
+## 0.4.9 (September 17, 2020)
+NEW RESOURCE:
+* Incident Template implemented (#178)
+
+
 ## 0.4.8 (September 4, 2020)
 NEW RESOURCE:
 * Notification rule implemented (#121)
