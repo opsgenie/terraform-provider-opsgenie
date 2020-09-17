@@ -99,26 +99,17 @@ func testCheckOpsGenieIncidentTemplateExists() resource.TestCheckFunc {
 			return err
 		}
 		result, err := client.GetIncidentTemplate(context.Background(), &incident.GetIncidentTemplateRequest{})
-		if err != nil {
-			if result != nil {
-				incidentTemplateExists := false
-				for _, value := range result.IncidentTemplates["incidentTemplates"] {
-					if strings.HasPrefix(value.Name, "genietest-incident-template-") {
-						log.Printf("Incident template found.")
-						incidentTemplateExists = true
-						break
-					}
+		if err != nil && result != nil {
+			for _, value := range result.IncidentTemplates["incidentTemplates"] {
+				if strings.HasPrefix(value.Name, "genietest-incident-template-") {
+					log.Printf("Incident template found.")
+					return nil
 				}
-				if !incidentTemplateExists {
-					return fmt.Errorf("incident template does not exist (and it should)")
-				}
-			} else {
-				return fmt.Errorf("incident template does not exist (and it should)")
 			}
+			return fmt.Errorf("incident template does not exist (and it should)")
 		} else {
 			return err
 		}
-		return nil
 	}
 }
 
