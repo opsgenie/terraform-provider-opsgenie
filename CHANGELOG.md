@@ -1,3 +1,7 @@
+## 0.5.0 (September 18, 2020)
+NEW RESOURCE:
+* Custom user role implemented (#161)
+
 ## 0.4.9 (September 17, 2020)
 NEW RESOURCE:
 * Incident Template implemented (#178)
