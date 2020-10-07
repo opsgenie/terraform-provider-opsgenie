@@ -219,6 +219,13 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"actions": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema {
+					Type: schema.TypeString,
+				},
+			},
 			"ignore_original_responders": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -301,6 +308,7 @@ func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{})
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
 		Priority:                 alert.Priority(priority),
+		Actions:                  flattenOpsgenieAlertPolicyActions(d),
 		Tags:                     flattenOpsgenieAlertPolicyTags(d),
 	}
 
@@ -361,6 +369,7 @@ func resourceOpsGenieAlertPolicyRead(d *schema.ResourceData, meta interface{}) e
 	d.Set("ignore_original_details", policyRes.IgnoreOriginalDetails)
 	d.Set("ignore_original_responders", policyRes.IgnoreOriginalResponders)
 	d.Set("ignore_original_tags", policyRes.IgnoreOriginalTags)
+	d.Set("actions", policyRes.Actions)
 	d.Set("tags", policyRes.Tags)
 
 	if policyRes.Responders != nil {
@@ -418,6 +427,7 @@ func resourceOpsGenieAlertPolicyUpdate(d *schema.ResourceData, meta interface{})
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
 		Priority:                 alert.Priority(priority),
+		Actions:                  flattenOpsgenieAlertPolicyActions(d),
 		Tags:                     flattenOpsgenieAlertPolicyTags(d),
 	}
 

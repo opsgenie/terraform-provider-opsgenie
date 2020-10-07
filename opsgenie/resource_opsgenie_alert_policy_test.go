@@ -241,6 +241,7 @@ func testAccOpsGenieAlertPolicy_complete(randomTeam, randomAlertPolicyName strin
 		id = "${opsgenie_team.test.id}"
 	  }
 	  tags = ["test"]
+	  actions = ["test_action"]
 	}
 	`, randomTeam, randomAlertPolicyName)
 
