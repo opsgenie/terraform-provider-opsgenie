@@ -222,7 +222,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 			"actions": {
 				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: &schema.Schema {
+				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
