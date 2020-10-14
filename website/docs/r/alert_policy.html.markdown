@@ -23,6 +23,8 @@ resource "opsgenie_alert_policy" "test" {
   name               = "example policy"
   team_id            = opsgenie_team.test.id
   policy_description = "This is sample policy"
+  message            = "{{message}}"
+
   filter {}
   time_restriction {
     type = "weekday-and-time-of-day"
@@ -64,7 +66,7 @@ The following arguments are supported:
 
 * `message` - (Required) Message of the alerts
 
-*`continue` - (Optional) It will trigger other modify policies if set to true. Default value is false
+*`continue_policy` - (Optional) It will trigger other modify policies if set to true. Default value is false
 
 * `alias` - (Optional) Alias of the alert. You can use {{alias}} to refer to the original alias. Default value is {{alias}}
 
@@ -83,6 +85,8 @@ The following arguments are supported:
 * `responders` - (Optional) Responders to add to the alerts original responders value as a list of teams, users or the reserved word none or all. If ignoreOriginalResponders field is set to true, this will replace the original responders. The possible values for responders are: user, team. This is a block, structure is documented below.
 
 * `ignore_original_tags` - (Optional) If set to true, policy will ignore the original tags of the alert. Default value is false
+
+* `actions` - (Optional) Actions to add to the alerts original actions value as a list of strings. If ignore_original_actions field is set to true, this will replace the original actions.
 
 * `tags` - (Optional) Tags to add to the alerts original tags value as a list of strings. If ignoreOriginalResponders field is set to true, this will replace the original responders.
 
