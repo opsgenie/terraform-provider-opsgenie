@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 )
@@ -22,7 +23,7 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validateOpsgenieIntegrationName,
+				ValidateFunc: validation.StringLenBetween(1, 250),
 			},
 			"enabled": {
 				Type:     schema.TypeBool,

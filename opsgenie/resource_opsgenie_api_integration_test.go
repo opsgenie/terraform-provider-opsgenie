@@ -73,6 +73,27 @@ func TestAccOpsGenieApiIntegration_basic(t *testing.T) {
 	})
 }
 
+func TestAccOpsGenieApiIntegration_limits(t *testing.T) {
+	randomLongName := acctest.RandString(245)
+	// include a backtick here as it's not possible to escape it in the multiline string
+	randomName := "`" + acctest.RandString(6)
+	config := testAccOpsGenieApiIntegration_limits(randomLongName, randomName)
+
+	resource.Test(t, resource.TestCase{
+		Providers:    testAccProviders,
+		CheckDestroy: testCheckOpsGenieApiIntegrationDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOpsGenieApiIntegrationExists("opsgenie_api_integration.test_length"),
+					testCheckOpsGenieApiIntegrationExists("opsgenie_api_integration.test_format"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccOpsGenieApiIntegration_complete(t *testing.T) {
 	randomUsername := acctest.RandString(6)
 	randomTeam := acctest.RandString(6)
@@ -158,6 +179,20 @@ resource "opsgenie_api_integration" "test" {
   name = "genieintegration-%s"
 }
 `, rString)
+}
+
+func testAccOpsGenieApiIntegration_limits(randomLongName, randomName string) string {
+	return fmt.Sprintf(`
+resource "opsgenie_api_integration" "test_length" {
+  type = "API"
+  name = "test-%s"
+}
+
+resource "opsgenie_api_integration" "test_format" {
+  type = "API"
+  name = "[] () {} 🚒 %s"
+}
+`, randomLongName, randomName)
 }
 
 func testAccOpsGenieApiIntegration_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2 string) string {
