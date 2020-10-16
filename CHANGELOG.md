@@ -1,6 +1,8 @@
 ## 0.5.1 (October 16, 2020)
 IMPROVEMENTS:
-* Added missing options to user resource (#179)
+* Added missing options to user resource (#179-#180)
+* Added actions to opsgenie_alert_policy (#186)
+
 
 ## 0.5.0 (September 18, 2020)
 NEW RESOURCE:
