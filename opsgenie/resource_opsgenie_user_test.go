@@ -179,6 +179,19 @@ resource "opsgenie_user" "test" {
   role      = "User"
   locale    = "en_GB"
   timezone = "Europe/Rome"
+  tags = ["sre", "opsgenie"]
+  skype_username = "sreskype"
+  user_address {
+      country = "Country"
+      state = "State"
+      city = "City"
+      line = "Line"
+      zipcode = "998877"
+  }
+  user_details = {
+    key1 = "val1,val2"
+    key2 = "val3,val4"
+  }
 }
 `, rString)
 }

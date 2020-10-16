@@ -19,6 +19,19 @@ resource "opsgenie_user" "test" {
   role      = "User"
   locale    = "en_US"
   timezone  = "America/New_York"
+  tags = ["sre", "opsgenie"]
+  skype_username = "skypename"
+  user_address {
+      country = "Country"
+      state = "State"
+      city = "City"
+      line = "Line"
+      zipcode = "998877"
+  }
+  user_details = {
+    key1 = "val1,val2"
+    key2 = "val3,val4"
+  }
 }
 ```
 
@@ -35,6 +48,14 @@ The following arguments are supported:
 * `locale` - (Optional) Location information for the user. Please look at [Supported Locale Ids](https://docs.opsgenie.com/docs/supported-locales) for available locales.
 
 * `timezone` - (Optional) Timezone information of the user. Please look at [Supported Timezone Ids](https://docs.opsgenie.com/docs/supported-timezone-ids) for available timezones.
+
+* `tags` - (Optional) A list of tags to be associated with the user.
+
+* `skype_username` - (Optional) Skype username of the user.
+
+* `user_details` - (Optional) Details about the user in form of key and list. of values.
+
+* `user_address` - (Optional) Address of the user.
 
 ## Attributes Reference
 
