@@ -48,8 +48,105 @@ func resourceOpsGenieUser() *schema.Resource {
 				Optional: true,
 				Default:  "America/New_York",
 			},
+			"tags": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Set: schema.HashString,
+			},
+			"user_address": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"country": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"state": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"city": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"line": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"zipcode": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+					},
+				},
+			},
+			"user_details": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"skype_username": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
+}
+
+func expandOpsGenieUsertags(input *schema.Set) []string {
+	output := make([]string, 0)
+
+	if input == nil {
+		return output
+	}
+
+	for _, v := range input.List() {
+		output = append(output, v.(string))
+	}
+	return output
+}
+
+func expandOpsGenieUserAddress(d *schema.ResourceData) map[string]string {
+	input := d.Get("user_address").([]interface{})
+	output := make(map[string]string)
+
+	if input == nil {
+		return output
+	}
+
+	for _, v := range input {
+		config := v.(map[string]interface{})
+
+		output["country"] = config["country"].(string)
+		output["state"] = config["state"].(string)
+		output["city"] = config["city"].(string)
+		output["line"] = config["line"].(string)
+		output["zipcode"] = config["zipcode"].(string)
+
+	}
+
+	return output
+}
+
+func expandOpsGenieUserDetails(d *schema.ResourceData) map[string][]string {
+	input := d.Get("user_details").(map[string]interface{})
+	output := make(map[string][]string)
+
+	if input == nil {
+		return output
+	}
+
+	for k, v := range input {
+		output[k] = strings.Split(v.(string), ",")
+	}
+
+	return output
 }
 
 func resourceOpsGenieUserCreate(d *schema.ResourceData, meta interface{}) error {
@@ -63,6 +160,10 @@ func resourceOpsGenieUserCreate(d *schema.ResourceData, meta interface{}) error 
 	role := d.Get("role").(string)
 	locale := d.Get("locale").(string)
 	timeZone := d.Get("timezone").(string)
+	tags := expandOpsGenieUsertags(d.Get("tags").(*schema.Set))
+	userAddress := expandOpsGenieUserAddress(d)
+	userDetails := expandOpsGenieUserDetails(d)
+	skypeUsername := d.Get("skype_username").(string)
 
 	createRequest := &user.CreateRequest{
 		Username: username,
@@ -72,6 +173,16 @@ func resourceOpsGenieUserCreate(d *schema.ResourceData, meta interface{}) error 
 		},
 		Locale:   locale,
 		TimeZone: timeZone,
+		Tags:     tags,
+		UserAddressRequest: &user.UserAddressRequest{
+			Country: userAddress["country"],
+			State:   userAddress["state"],
+			City:    userAddress["state"],
+			Line:    userAddress["line"],
+			ZipCode: userAddress["zipcode"],
+		},
+		Details:       userDetails,
+		SkypeUsername: skypeUsername,
 	}
 
 	log.Printf("[INFO] Creating OpsGenie user '%s'", username)
@@ -106,6 +217,10 @@ func resourceOpsGenieUserRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("role", usr.Role.RoleName)
 	d.Set("locale", usr.Locale)
 	d.Set("timezone", usr.TimeZone)
+	d.Set("tags", usr.Tags)
+	d.Set("user_address", usr.UserAddress)
+	d.Set("user_details", usr.Details)
+	d.Set("skype_username", usr.SkypeUsername)
 
 	return nil
 }
@@ -120,6 +235,10 @@ func resourceOpsGenieUserUpdate(d *schema.ResourceData, meta interface{}) error 
 	role := d.Get("role").(string)
 	locale := d.Get("locale").(string)
 	timeZone := d.Get("timezone").(string)
+	tags := expandOpsGenieUsertags(d.Get("tags").(*schema.Set))
+	userAddress := expandOpsGenieUserAddress(d)
+	userDetails := expandOpsGenieUserDetails(d)
+	skypeUsername := d.Get("skype_username").(string)
 
 	log.Printf("[INFO] Updating OpsGenie user '%s'", username)
 
@@ -131,6 +250,16 @@ func resourceOpsGenieUserUpdate(d *schema.ResourceData, meta interface{}) error 
 		},
 		Locale:   locale,
 		TimeZone: timeZone,
+		Tags:     tags,
+		UserAddressRequest: &user.UserAddressRequest{
+			Country: userAddress["country"],
+			State:   userAddress["state"],
+			City:    userAddress["state"],
+			Line:    userAddress["line"],
+			ZipCode: userAddress["zipcode"],
+		},
+		Details:       userDetails,
+		SkypeUsername: skypeUsername,
 	}
 
 	_, err = client.Update(context.Background(), updateRequest)

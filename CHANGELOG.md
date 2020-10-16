@@ -1,3 +1,7 @@
+## 0.5.1 (October 16, 2020)
+IMPROVEMENTS:
+* Added missing options to user resource (#179)
+
 ## 0.5.0 (September 18, 2020)
 NEW RESOURCE:
 * Custom user role implemented (#161)
