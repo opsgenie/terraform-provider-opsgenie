@@ -1,7 +1,8 @@
-## 0.5.2 (November ??, 2020)
+## 0.5.2 (November 19, 2020)
 BUGFIX:
 * Fix opsgenie_notification_rule: Fix for issue (#188) 
 * Update integration name restrictions (#187)
+* Docs update (#194)
 
 
 ## 0.5.1 (October 16, 2020)
