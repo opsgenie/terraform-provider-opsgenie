@@ -7,6 +7,7 @@ import (
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
@@ -23,7 +24,7 @@ func resourceOpsgenieEmailIntegration() *schema.Resource {
 			"name": {
 				Type:         schema.TypeString,
 				Required:     true,
-				ValidateFunc: validateOpsgenieIntegrationName,
+				ValidateFunc: validation.StringLenBetween(1, 250),
 			},
 			"email_username": {
 				Type:     schema.TypeString,

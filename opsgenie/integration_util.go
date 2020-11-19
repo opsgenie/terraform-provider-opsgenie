@@ -2,7 +2,6 @@ package opsgenie
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -29,20 +28,6 @@ func expandOpsgenieIntegrationResponders(d *schema.ResourceData) []integration.R
 	}
 
 	return responders
-}
-
-func validateOpsgenieIntegrationName(v interface{}, k string) (ws []string, errors []error) {
-	value := v.(string)
-	if !regexp.MustCompile(`^[a-zA-Z 0-9_-]+$`).MatchString(value) {
-		errors = append(errors, fmt.Errorf(
-			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
-	}
-
-	if len(value) >= 100 {
-		errors = append(errors, fmt.Errorf("%q cannot be longer than 100 characters: %q %d", k, value, len(value)))
-	}
-
-	return
 }
 
 func validateResponderType(v interface{}, k string) (ws []string, errors []error) {
