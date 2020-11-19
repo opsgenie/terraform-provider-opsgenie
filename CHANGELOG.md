@@ -1,3 +1,9 @@
+## 0.5.2 (November ??, 2020)
+BUGFIX:
+* Fix opsgenie_notification_rule: Fix for issue (#188) 
+* Update integration name restrictions (#187)
+
+
 ## 0.5.1 (October 16, 2020)
 IMPROVEMENTS:
 * Added missing options to user resource (#179-#180)
