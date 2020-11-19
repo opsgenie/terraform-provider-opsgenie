@@ -263,7 +263,6 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 
 	enabled := d.Get("enabled").(bool)
 	timeRestriction := d.Get("time_restriction").([]interface{})
-	criteria := d.Get("criteria").([]interface{})
 
 	createRequest := &notification.CreateRuleRequest{
 		UserIdentifier:   d.Get("username").(string),
@@ -272,8 +271,14 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 		NotificationTime: expandOpsGenieNotificationRuleNotificationTime(d.Get("notification_time").(*schema.Set)),
 		Enabled:          &enabled,
 		Order:            uint32(d.Get("order").(int)),
-		Repeat:           expandOpsGenieNotificationRuleRepeat(d),
-		Criteria:         expandOpsgenieNotificationRuleCriteria(criteria),
+	}
+
+	if len(d.Get("repeat").([]interface{})) > 0 {
+		createRequest.Repeat = expandOpsGenieNotificationRuleRepeat(d.Get("repeat").([]interface{}))
+	}
+
+	if len(d.Get("criteria").([]interface{})) > 0 {
+		createRequest.Criteria = expandOpsgenieNotificationRuleCriteria(d.Get("criteria").([]interface{}))
 	}
 
 	if len(d.Get("schedules").([]interface{})) > 0 {
@@ -326,8 +331,13 @@ func resourceOpsGenieNotificationRuleRead(d *schema.ResourceData, meta interface
 	d.Set("notification_time", rule.NotificationTime)
 	d.Set("enabled", rule.Enabled)
 	d.Set("order", rule.Order)
-	d.Set("time_restriction", flattenOpsgenieNotificationRuleTimeRestriction(rule.TimeRestriction))
 	d.Set("schedules", rule.Schedules)
+
+	if rule.TimeRestriction != nil {
+		d.Set("time_restriction", flattenOpsgenieNotificationRuleTimeRestriction(rule.TimeRestriction))
+	} else {
+		d.Set("time_restriction", nil)
+	}
 
 	if rule.Steps != nil {
 		d.Set("steps", flattenOpsGenieNotificationRuleSteps(rule.Steps))
@@ -346,7 +356,6 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 
 	enabled := d.Get("enabled").(bool)
 	timeRestriction := d.Get("time_restriction").([]interface{})
-	criteria := d.Get("criteria").([]interface{})
 
 	updateRequest := &notification.UpdateRuleRequest{
 		UserIdentifier:   d.Get("username").(string),
@@ -354,8 +363,14 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 		NotificationTime: expandOpsGenieNotificationRuleNotificationTime(d.Get("notification_time").(*schema.Set)),
 		Enabled:          &enabled,
 		Order:            uint32(d.Get("order").(int)),
-		Repeat:           expandOpsGenieNotificationRuleRepeat(d),
-		Criteria:         expandOpsgenieNotificationRuleCriteria(criteria),
+	}
+
+	if len(d.Get("repeat").([]interface{})) > 0 {
+		updateRequest.Repeat = expandOpsGenieNotificationRuleRepeat(d.Get("repeat").([]interface{}))
+	}
+
+	if len(d.Get("criteria").([]interface{})) > 0 {
+		updateRequest.Criteria = expandOpsgenieNotificationRuleCriteria(d.Get("criteria").([]interface{}))
 	}
 
 	if len(d.Get("schedules").([]interface{})) > 0 {
@@ -470,8 +485,7 @@ func flattenOpsGenieNotificationRuleStepsContact(input og.Contact) []map[string]
 	return output
 }
 
-func expandOpsGenieNotificationRuleRepeat(d *schema.ResourceData) *notification.Repeat {
-	input := d.Get("repeat").([]interface{})
+func expandOpsGenieNotificationRuleRepeat(input []interface{}) *notification.Repeat {
 	repeat := notification.Repeat{}
 	for _, r := range input {
 		repeatMap := r.(map[string]interface{})
