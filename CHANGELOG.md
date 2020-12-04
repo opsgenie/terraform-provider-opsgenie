@@ -1,3 +1,9 @@
+## 0.5.3 (December 4, 2020)
+BUGFIX:
+* GO SDK v2 version synced to support none & escalation in schedule rotations 
+* Docs update
+
+
 ## 0.5.2 (November 19, 2020)
 BUGFIX:
 * Fix opsgenie_notification_rule: Fix for issue (#188) 
