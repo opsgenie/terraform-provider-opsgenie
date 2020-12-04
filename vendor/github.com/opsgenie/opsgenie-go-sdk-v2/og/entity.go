@@ -70,8 +70,8 @@ func validateParticipants(rotation *Rotation) error {
 		if participant.Type == "" {
 			return errors.New("Participant type cannot be empty.")
 		}
-		if !(participant.Type == User || participant.Type == Team) {
-			return errors.New("Participant type should be one of these: 'User', 'Team'")
+		if !(participant.Type == User || participant.Type == Team || participant.Type == Escalation || participant.Type == None) {
+			return errors.New("Participant type should be one of these: 'User', 'Team', 'Escalation', 'None'")
 		}
 		if participant.Type == User && participant.Username == "" && participant.Id == "" {
 			return errors.New("For participant type user either username or id must be provided.")
@@ -79,6 +79,9 @@ func validateParticipants(rotation *Rotation) error {
 		if participant.Type == Team && participant.Name == "" && participant.Id == "" {
 			return errors.New("For participant type team either team name or id must be provided.")
 		}
+		if participant.Type == Escalation && participant.Name == "" && participant.Id == "" {
+			return errors.New("For participant type escalation either escalation name or id must be provided.")
+    }
 	}
 	return nil
 }
