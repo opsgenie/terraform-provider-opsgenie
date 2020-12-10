@@ -1,3 +1,8 @@
+## 0.5.4 (December 10, 2020)
+BUGFIX:
+* Able to set key in extra-properties field of condition for service incident rule (#204)
+
+
 ## 0.5.3 (December 4, 2020)
 BUGFIX:
 * GO SDK v2 version synced to support none & escalation in schedule rotations 

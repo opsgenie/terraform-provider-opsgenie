@@ -206,6 +206,13 @@ resource "opsgenie_service_incident_rule" "test2" {
 		operation = "contains"
 		expected_value = "expected2"
 	}
+	conditions {
+		field = "extra-properties"
+		not =  false
+		operation = "equals"
+		expected_value = "expected2"
+		key = "asd"
+	}
 	incident_properties {
 		message = "This is a test message"
 		priority = "P3"
