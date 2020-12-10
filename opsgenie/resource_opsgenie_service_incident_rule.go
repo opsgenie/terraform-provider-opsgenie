@@ -71,6 +71,11 @@ func resourceOpsGenieServiceIncidentRule() *schema.Resource {
 											"contains-value", "greater-than", "less-than", "is-empty", "equals-ignore-whitespace",
 										}, false),
 									},
+									"key": {
+										Type:        schema.TypeString,
+										Optional:    true,
+										Description: "If 'field' is set as 'extra-properties', key could be used for key-value pair",
+									},
 									"not": {
 										Type:        schema.TypeBool,
 										Optional:    true,
@@ -298,6 +303,10 @@ func expandOpsGenieServiceIncidentRuleConditions(input []interface{}) []og.Condi
 		condition.Operation = og.ConditionOperation(config["operation"].(string))
 		condition.IsNot = &not_value
 		condition.ExpectedValue = config["expected_value"].(string)
+		key := config["key"].(string)
+		if key != "" {
+			condition.Key = config["key"].(string)
+		}
 		conditions = append(conditions, condition)
 	}
 
@@ -377,6 +386,9 @@ func flattenOpsGenieServiceIncidentRuleConditions(input og.Condition) map[string
 	condition["operation"] = input.Operation
 	condition["not"] = &input.IsNot
 	condition["expected_value"] = input.ExpectedValue
+	if input.Key != "" {
+		condition["key"] = input.Key
+	}
 
 	return condition
 }
