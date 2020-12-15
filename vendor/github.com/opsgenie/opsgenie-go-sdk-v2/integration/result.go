@@ -29,6 +29,12 @@ type APIBasedIntegrationResult struct {
 	ApiKey string `json:"apiKey"`
 }
 
+type WebhookIntegrationResult struct {
+	client.ResultMetadata
+	GenericFields
+	ApiKey string `json:"apiKey"`
+}
+
 type EmailBasedIntegrationResult struct {
 	client.ResultMetadata
 	GenericFields

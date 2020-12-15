@@ -45,6 +45,15 @@ func (c *Client) CreateApiBased(context context.Context, request *APIBasedIntegr
 	return result, nil
 }
 
+func (c *Client) CreateWebhook(context context.Context, request *WebhookIntegrationRequest) (*WebhookIntegrationResult, error) {
+	result := &WebhookIntegrationResult{}
+	err := c.client.Exec(context, request, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *Client) CreateEmailBased(context context.Context, request *EmailBasedIntegrationRequest) (*EmailBasedIntegrationResult, error) {
 	result := &EmailBasedIntegrationResult{}
 	err := c.client.Exec(context, request, result)
@@ -67,6 +76,10 @@ func (c *Client) ForceUpdateAllFields(context context.Context, request *UpdateIn
 	request.OtherFields["suppressNotifications"] = request.SuppressNotifications
 	request.OtherFields["responders"] = request.Responders
 	request.OtherFields["emailUsername"] = request.EmailUsername
+	request.OtherFields["url"] = request.WebhookUrl
+	request.OtherFields["addAlertDescription"] = request.AddAlertDescription
+	request.OtherFields["addAlertDetails"] = request.AddAlertDetails
+	request.OtherFields["headers"] = request.Headers
 	err := c.client.Exec(context, request.OtherFields, result)
 	if err != nil {
 		return nil, err

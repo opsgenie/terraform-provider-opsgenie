@@ -132,9 +132,9 @@ The `restrictions` block supports:
 
 * `end_hour` - (Required) Ending hour of restriction on defined `end_day`
 
-* `start_minute` - (Required) Staring minute of restriction on defined `start_hour`
+* `start_min` - (Required) Staring minute of restriction on defined `start_hour`
 
-* `end_minute` - (Required) Ending minute of restriction on defined `end_hour`
+* `end_min` - (Required) Ending minute of restriction on defined `end_hour`
 
 The `restriction` block supports:
 
@@ -142,9 +142,9 @@ The `restriction` block supports:
 
 * `end_hour` - (Required) Ending hour of restriction.
 
-* `start_minute` - (Required) Staring minute of restriction on defined `start_hour`
+* `start_min` - (Required) Staring minute of restriction on defined `start_hour`
 
-* `end_minute` - (Required) Ending minute of restriction on defined `end_hour`
+* `end_min` - (Required) Ending minute of restriction on defined `end_hour`
 
 The `responders` block supports:
 

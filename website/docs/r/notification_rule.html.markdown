@@ -63,6 +63,27 @@ The `contact` block supports:
 
 * `to` - (Required) Address of a given method (eg. phone number for sms/voice or email address for email)
 
+The `filter` block supports:
+
+* `type` - (Required) Kind of matching filter  "match-all", "match-any-condition", "match-all-conditions"
+
+* `conditions` - (Optional) Defines the fields and values when the condition applies
+
+    `conditions` support the following:
+
+    * `field` - (Required) Possible values: "message", "alias", "description", "source", "entity", "tags", "actions", "details", "extra-properties", "recipients", "teams", "priority"
+
+    * `operation` - (Required) Possible values: "matches", "contains", "starts-with", "ends-with", "equals", "contains-key", "contains-value", "greater-than", "less-than", "is-empty", "equals-ignore-whitespace
+
+    * `key` - (Optional) If 'field' is set as 'extra-properties', key could be used for key-value pair
+
+    * `not` - (Optional) Indicates behaviour of the given operation. Default value is false
+
+    * `expected value` - (Optional) User defined value that will be compared with alert field according to the operation. Default value is empty string
+
+    * `order` - (Optional) Order of the condition in conditions list
+
+
 
 ## Attributes Reference
 
