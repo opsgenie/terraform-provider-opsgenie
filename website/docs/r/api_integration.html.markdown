@@ -43,6 +43,23 @@ resource "opsgenie_api_integration" "example-api-integration" {
   suppress_notifications         = true
   owner_team_id                  = "${opsgenie_team.team.id}"
 }
+
+resource "opsgenie_api_integration" "test3" {
+  name  = "webhook-int"
+  type  = "Webhook"
+
+  responders {
+    type = "user"
+    id   = "${opsgenie_user.user.id}"
+  }
+  enabled                 = false
+  allow_write_access      = false
+  suppress_notifications  = true
+  webhook_url             = "https://api.example.com/v1"
+  headers = {
+    header1 = value1
+  }
+}
 ```
 
 ## Argument Reference
@@ -64,6 +81,8 @@ The following arguments are supported:
 * `owner_team_id` - (Optional) Owner team id of the integration.
 
 * `responders` - (Optional)  User, schedule, teams or escalation names to calculate which users will receive the notifications of the alert.
+
+* `webhook_url` - (Optional) It is required if type is `Webhook`. This is the url Opsgenie will be sending request to.
 
 `responders` supports the following:
 
