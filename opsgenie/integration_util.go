@@ -46,6 +46,7 @@ func validateResponderType(v interface{}, k string) (ws []string, errors []error
 }
 
 const (
-	ApiIntegrationType   = "API"
-	EmailIntegrationType = "Email"
+	ApiIntegrationType     = "API"
+	EmailIntegrationType   = "Email"
+	WebhookIntegrationType = "Webhook"
 )

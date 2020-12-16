@@ -57,6 +57,10 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 				Computed:  true,
 				Sensitive: true,
 			},
+			"webhook_url": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"responders": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -74,11 +78,41 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 					},
 				},
 			},
+			"headers": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
 
 func resourceOpsgenieApiIntegrationCreate(d *schema.ResourceData, meta interface{}) error {
+	integrationType := d.Get("type").(string)
+	if integrationType == WebhookIntegrationType {
+		return createWebhookIntegration(d, meta)
+	}
+	return createApiIntegration(d, meta)
+}
+
+func expandOpsGenieWebhookHeaders(d *schema.ResourceData) map[string]string {
+	input := d.Get("headers").(map[string]interface{})
+	output := make(map[string]string)
+
+	if input == nil {
+		return output
+	}
+
+	for k, v := range input {
+		output[k] = v.(string)
+	}
+
+	return output
+}
+
+func createApiIntegration(d *schema.ResourceData, meta interface{}) error {
 	client, err := integration.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
@@ -103,6 +137,7 @@ func resourceOpsgenieApiIntegrationCreate(d *schema.ResourceData, meta interface
 		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
 	}
+
 	if ownerTeam != "" {
 		createRequest.OwnerTeam = &og.OwnerTeam{
 			Id: ownerTeam,
@@ -133,6 +168,59 @@ func resourceOpsgenieApiIntegrationCreate(d *schema.ResourceData, meta interface
 	return resourceOpsgenieApiIntegrationRead(d, meta)
 }
 
+func createWebhookIntegration(d *schema.ResourceData, meta interface{}) error {
+	client, err := integration.NewClient(meta.(*OpsgenieClient).client.Config)
+	if err != nil {
+		return err
+	}
+	name := d.Get("name").(string)
+	allowWriteAccess := d.Get("allow_write_access").(bool)
+	suppressNotifications := d.Get("suppress_notifications").(bool)
+	ownerTeam := d.Get("owner_team_id").(string)
+	integrationType := d.Get("type").(string)
+	webhookUrl := d.Get("webhook_url").(string)
+	enabled := d.Get("enabled").(bool)
+	headers := expandOpsGenieWebhookHeaders(d)
+
+	createRequest := &integration.WebhookIntegrationRequest{
+		Name:                  name,
+		Type:                  integrationType,
+		AllowWriteAccess:      &allowWriteAccess,
+		SuppressNotifications: &suppressNotifications,
+		Responders:            expandOpsgenieIntegrationResponders(d),
+		WebhookUrl:            webhookUrl,
+		Headers:               headers,
+	}
+
+	if ownerTeam != "" {
+		createRequest.OwnerTeam = &og.OwnerTeam{
+			Id: ownerTeam,
+		}
+	}
+
+	log.Printf("[INFO] Creating OpsGenie Webhook integration '%s'", name)
+
+	result, err := client.CreateWebhook(context.Background(), createRequest)
+	if err != nil {
+		return err
+	}
+
+	d.SetId(result.Id)
+	d.Set("api_key", result.ApiKey)
+
+	if enabled {
+		_, err = client.Enable(context.Background(), &integration.EnableIntegrationRequest{
+			Id: result.Id,
+		})
+		if err != nil {
+			return err
+		}
+		log.Printf("[INFO] Enabled OpsGenie Webhook integration '%s'", name)
+	}
+
+	return resourceOpsgenieApiIntegrationRead(d, meta)
+}
+
 func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}) error {
 	client, err := integration.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
@@ -157,6 +245,14 @@ func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}
 	d.Set("allow_write_access", result.Data["allowWriteAccess"])
 	d.Set("enabled", result.Data["enabled"])
 	d.Set("suppress_notifications", result.Data["suppressNotifications"])
+
+	if result.Data["url"] != nil {
+		d.Set("webhook_url", result.Data["url"])
+	}
+
+	if result.Data["headers"] != nil {
+		d.Set("headers", result.Data["headers"])
+	}
 
 	return nil
 }
@@ -187,9 +283,11 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 
 	name := d.Get("name").(string)
 	integrationType := d.Get("type").(string)
+	webhookUrl := d.Get("webhook_url").(string)
 	ignoreRespondersFromPayload := d.Get("ignore_responders_from_payload").(bool)
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	enabled := d.Get("enabled").(bool)
+	headers := expandOpsGenieWebhookHeaders(d)
 
 	if integrationType == "" {
 		integrationType = ApiIntegrationType
@@ -204,6 +302,8 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		Responders:                  expandOpsgenieIntegrationResponders(d),
 		Enabled:                     &enabled,
 		OtherFields:                 userProperties,
+		WebhookUrl:                  webhookUrl,
+		Headers:                     headers,
 	}
 
 	log.Printf("[INFO] Updating OpsGenie api based integration '%s'", name)

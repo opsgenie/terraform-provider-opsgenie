@@ -1,6 +1,6 @@
 module github.com/opsgenie/terraform-provider-opsgenie
 
-go 1.13
+go 1.14
 
 require (
 	github.com/hashicorp/go-retryablehttp v0.6.6
