@@ -1,3 +1,8 @@
+## 0.5.5 (December 16, 2020)
+Improvement:
+* Add support for webhook integration (#197)
+
+
 ## 0.5.4 (December 10, 2020)
 BUGFIX:
 * Able to set key in extra-properties field of condition for service incident rule (#204)
