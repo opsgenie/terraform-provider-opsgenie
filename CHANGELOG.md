@@ -1,3 +1,8 @@
+## 0.5.6 (December 24, 2020)
+IMPROVEMENTS:
+* **Integration Actions :** add custom priority for create action (#177)
+
+
 ## 0.5.5 (December 16, 2020)
 Improvement:
 * Add support for webhook integration (#197)
