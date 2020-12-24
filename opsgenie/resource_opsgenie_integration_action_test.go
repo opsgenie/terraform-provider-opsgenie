@@ -329,6 +329,17 @@ resource "opsgenie_integration_action" "test_api" {
       type = "user"
     }
   }
+  ignore {
+    name = "Ignore alerts with priority P5"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "priority"
+        operation = "equals"
+        expected_value = "P5"
+      }
+    }
+  }
   close {
     name = "Low priority alerts"
     filter {

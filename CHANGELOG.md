@@ -1,3 +1,8 @@
+## 0.5.7 (December 24, 2020)
+IMPROVEMENTS:
+* **Integration Actions :** add support for ignore action
+
+
 ## 0.5.6 (December 24, 2020)
 IMPROVEMENTS:
 * **Integration Actions :** add custom priority for create action (#177)

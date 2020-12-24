@@ -370,6 +370,7 @@ type UpdateAllIntegrationActionsRequest struct {
 	Close       []IntegrationAction `json:"close"`
 	Acknowledge []IntegrationAction `json:"acknowledge"`
 	AddNote     []IntegrationAction `json:"addNote"`
+	Ignore      []IntegrationAction `json:"ignore"`
 }
 
 type IntegrationAction struct {
@@ -474,11 +475,11 @@ func validateResponders(responders []Responder) error {
 
 func validateActionType(actionType ActionType) error {
 	switch actionType {
-	case Create, Close, Acknowledge, AddNote:
+	case Create, Close, Acknowledge, AddNote, Ignore:
 		return nil
 	}
 	return errors.New("Action type should be one of these: " +
-		"'Create','Close','Acknowledge','AddNote'")
+		"'Create','Close','Acknowledge','AddNote','Ignore'")
 }
 
 func validateConditionMatchType(matchType og.ConditionMatchType) error {
