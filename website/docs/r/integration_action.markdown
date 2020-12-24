@@ -17,6 +17,7 @@ The actions that are supported are:
 * close
 * acknowledge
 * add_note
+* ignore
 
 ## Example Usage
 
@@ -122,6 +123,18 @@ resource "opsgenie_integration_action" "test_action" {
     note = "Created from test integration"
     filter {
       type = "match-all"
+    }
+  }
+  
+  ignore {
+    name = "Ignore alerts with ignore tag"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "tags"
+        operation = "contains"
+        expected_value = "ignore"
+      }
     }
   }
 }
