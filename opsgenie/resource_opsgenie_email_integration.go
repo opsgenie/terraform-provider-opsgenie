@@ -6,8 +6,8 @@ import (
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 

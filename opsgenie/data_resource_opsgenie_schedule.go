@@ -5,7 +5,7 @@ import (
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceOpsgenieSchedule() *schema.Resource {
