@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
@@ -62,8 +62,8 @@ func TestAccOpsGenieEmailIntegration_basic(t *testing.T) {
 	config := testAccOpsGenieEmailIntegration_basic(randomName, randomMail)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieEmailIntegrationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieEmailIntegrationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -85,8 +85,8 @@ func TestAccOpsGenieEmailIntegration_complete(t *testing.T) {
 	config := testAccOpsGenieEmailIntegration_complete(randomName, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieEmailIntegrationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieEmailIntegrationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -197,24 +197,25 @@ resource "opsgenie_escalation" "test" {
 resource "opsgenie_email_integration" "test" {
   name = "genieintegration-%s"
   responders {
-    type ="user"
-    id = "${opsgenie_user.test.id}"
+    type ="escalation"
+    id = "${opsgenie_escalation.test.id}"
   }
   responders {
     type ="schedule"
     id = "${opsgenie_schedule.test.id}"
   }
   responders {
-    type ="escalation"
-    id = "${opsgenie_escalation.test.id}"
-  }
-  responders {
     type ="team"
     id = "${opsgenie_team.test2.id}"
   }
-  email_username="fahri"
+  responders {
+    type ="user"
+    id = "${opsgenie_user.test.id}"
+  }
+
+  email_username="%stest"
   ignore_responders_from_payload = true
   suppress_notifications = true
 }
-`, randomUser, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration)
+`, randomUser, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomUser)
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
@@ -27,6 +27,18 @@ func expandOpsgenieIntegrationResponders(d *schema.ResourceData) []integration.R
 		responders = append(responders, responder)
 	}
 
+	return responders
+}
+
+func flattenIntegrationResponders(r []interface{}) []map[string]interface{} {
+	responders := []map[string]interface{}{}
+	for _, i := range r {
+		c := i.(map[string]interface{})
+		responders = append(responders, map[string]interface{}{
+			"type": c["type"],
+			"id":   c["id"],
+		})
+	}
 	return responders
 }
 

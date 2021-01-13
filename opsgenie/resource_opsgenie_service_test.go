@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/service"
 )
@@ -62,8 +62,8 @@ func TestAccOpsGenieService_basic(t *testing.T) {
 	config := testAccOpsGenieService_basic(randomTeam, randomService)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieServiceDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieServiceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -83,8 +83,8 @@ func TestAccOpsGenieService_complete(t *testing.T) {
 	config := testAccOpsGenieService_complete(randomTeam, randomService, randomDescription)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieServiceDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieServiceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,

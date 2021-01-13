@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 )
@@ -142,6 +142,10 @@ func createApiIntegration(d *schema.ResourceData, meta interface{}) error {
 		createRequest.OwnerTeam = &og.OwnerTeam{
 			Id: ownerTeam,
 		}
+		createRequest.Responders = append(createRequest.Responders, integration.Responder{
+			Type: integration.ResponderType("team"),
+			Id:   ownerTeam,
+		})
 	}
 
 	log.Printf("[INFO] Creating OpsGenie api integration '%s'", name)
@@ -237,10 +241,10 @@ func resourceOpsgenieApiIntegrationRead(d *schema.ResourceData, meta interface{}
 	if result.Data["ownerTeam"] != nil {
 		ownerTeam := result.Data["ownerTeam"].(map[string]interface{})
 		d.Set("owner_team_id", ownerTeam["id"])
+	} else if result.Data["responders"] != nil {
+		d.Set("responders", flattenIntegrationResponders(result.Data["responders"].([]interface{})))
 	}
 	d.Set("name", result.Data["name"])
-	d.Set("id", result.Data["id"])
-	d.Set("responders", result.Data["responders"])
 	d.Set("type", result.Data["type"])
 	d.Set("allow_write_access", result.Data["allowWriteAccess"])
 	d.Set("enabled", result.Data["enabled"])

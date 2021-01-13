@@ -2,12 +2,12 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/custom_user_role"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 var validCustomRolesRights = []string{

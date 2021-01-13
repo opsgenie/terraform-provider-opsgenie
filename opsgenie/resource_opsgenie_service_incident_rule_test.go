@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/service"
 )
@@ -62,8 +62,8 @@ func TestAccOpsGenieServiceIncidentRule_basic(t *testing.T) {
 	config := testAccOpsGenieServiceIncidentRule_basic(randomTeam, randomService)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieServiceIncidentRuleDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieServiceIncidentRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -82,8 +82,8 @@ func TestAccOpsGenieServiceIncidentRule_complete(t *testing.T) {
 	config := testAccOpsGenieServiceIncidentRule_complete(randomTeam, randomService)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieServiceIncidentRuleDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieServiceIncidentRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -206,16 +206,13 @@ resource "opsgenie_service_incident_rule" "test2" {
 		operation = "contains"
 		expected_value = "expected2"
 	}
-	conditions {
-		field = "extra-properties"
-		not =  false
-		operation = "equals"
-		expected_value = "expected2"
-		key = "asd"
-	}
 	incident_properties {
 		message = "This is a test message"
 		priority = "P3"
+        tags = ["a","b"]
+        details = {
+			custom = "parameter"
+        }
 		stakeholder_properties {
 			message = "Message for stakeholders"
 			enable = "true"

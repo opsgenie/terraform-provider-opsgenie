@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 	"github.com/pkg/errors"
@@ -60,8 +60,8 @@ func TestAccOpsGenieApiIntegration_basic(t *testing.T) {
 	config := testAccOpsGenieApiIntegration_basic(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieApiIntegrationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieApiIntegrationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -80,8 +80,8 @@ func TestAccOpsGenieApiIntegration_limits(t *testing.T) {
 	config := testAccOpsGenieApiIntegration_limits(randomLongName, randomName)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieApiIntegrationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieApiIntegrationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -107,8 +107,8 @@ func TestAccOpsGenieApiIntegration_complete(t *testing.T) {
 	config := testAccOpsGenieApiIntegration_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2, randomIntegration3)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieApiIntegrationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieApiIntegrationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
