@@ -1,3 +1,15 @@
+## 0.6.0 (January 19, 2021)
+**BREAKING CHANGE**
+Terraform Plugin SDK upgraded to v2. 
+Acceptance tests are need Terraform 12.26+ versions.
+BUGFIX:
+* **Notification Rule :** Reading the time_restrictions corrected.
+* **Team Routing Rule :** Reading the time_restrictions corrected.
+* **Incident Service Rule :** Tags and details are implemented. Before it won't work due to schema <-> List conversion.
+* **Incident Template:** Stakeholder properties and impacted services read functions fixed to comply with their schema types.
+* **Integrations:** Responders only available when owner team isn't set. Therefore provider now only read and add responders to requests if owner team is not available.
+* **User:** UserAddress.city field has fixed. In future user resource will change to adopt Atlassian Opsgenie Platform changes.
+
 ## 0.5.7 (December 24, 2020)
 IMPROVEMENTS:
 * **Integration Actions :** add support for ignore action
