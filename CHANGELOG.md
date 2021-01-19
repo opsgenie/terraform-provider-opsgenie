@@ -1,7 +1,9 @@
 ## 0.6.0 (January 19, 2021)
 **BREAKING CHANGE**
+
 Terraform Plugin SDK upgraded to v2. 
 Acceptance tests are need Terraform 12.26+ versions.
+
 BUGFIX:
 * **Notification Rule :** Reading the time_restrictions corrected.
 * **Team Routing Rule :** Reading the time_restrictions corrected.
