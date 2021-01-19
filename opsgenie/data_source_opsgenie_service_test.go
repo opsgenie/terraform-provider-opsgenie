@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccDataSourceOpsGenieService_Basic(t *testing.T) {
@@ -14,7 +14,7 @@ func TestAccDataSourceOpsGenieService_Basic(t *testing.T) {
 	randomServiceName := acctest.RandString(6)
 
 	resource.Test(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccDataSourceOpsGenieServiceConfig(randomTeamName, randomServiceName),
@@ -64,6 +64,8 @@ resource "opsgenie_service" "test" {
 }
 data "opsgenie_service" "existingservice" {
   name = "${opsgenie_service.test.name}"
+  depends_on = [opsgenie_service.test]
+
 }
 `, randomTeamName, randomServiceName)
 }

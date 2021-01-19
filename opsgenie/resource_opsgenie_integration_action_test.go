@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
@@ -64,8 +64,8 @@ func TestAccOpsGenieIntegrationAction_basic(t *testing.T) {
 	config := testAccOpsGenieIntegrationAction_basic(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieIntegrationActionDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieIntegrationActionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -84,8 +84,8 @@ func TestAccOpsGenieIntegrationAction_custompriority(t *testing.T) {
 	config := testAccOpsGenieIntegrationAction_custompriority(rs, customPriorityEscaped)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieIntegrationActionDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieIntegrationActionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -103,8 +103,8 @@ func TestAccOpsGenieIntegrationAction_complete(t *testing.T) {
 	config := testAccOpsGenieIntegrationAction_complete(rString)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieIntegrationActionDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieIntegrationActionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,

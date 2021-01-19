@@ -3,6 +3,7 @@ package opsgenie
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"strconv"
@@ -10,20 +11,20 @@ import (
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/policy"
 )
 
 func resourceOpsGenieAlertPolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceOpsGenieAlertPolicyCreate,
-		Read:   handleNonExistentResource(resourceOpsGenieAlertPolicyRead),
-		Update: resourceOpsGenieAlertPolicyUpdate,
-		Delete: resourceOpsGenieAlertPolicyDelete,
+		CreateContext: resourceOpsGenieAlertPolicyCreate,
+		ReadContext:   resourceOpsGenieAlertPolicyRead,
+		Update:        resourceOpsGenieAlertPolicyUpdate,
+		Delete:        resourceOpsGenieAlertPolicyDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				idParts := strings.Split(d.Id(), "/")
 				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
 					return nil, fmt.Errorf("Unexpected format of ID (%q), expected team_id/notification_policy_id", d.Id())
@@ -277,10 +278,10 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 	}
 }
 
-func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceOpsGenieAlertPolicyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client, err := policy.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	message := d.Get("message").(string)
@@ -319,18 +320,18 @@ func resourceOpsGenieAlertPolicyCreate(d *schema.ResourceData, meta interface{})
 	log.Printf("[INFO] Creating Alert Policy '%s'", d.Get("name").(string))
 	result, err := client.CreateAlertPolicy(context.Background(), createRequest)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(result.Id)
 
-	return resourceOpsGenieAlertPolicyRead(d, meta)
+	return resourceOpsGenieAlertPolicyRead(ctx, d, meta)
 }
 
-func resourceOpsGenieAlertPolicyRead(d *schema.ResourceData, meta interface{}) error {
+func resourceOpsGenieAlertPolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client, err := policy.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	name := d.Get("name").(string)
 

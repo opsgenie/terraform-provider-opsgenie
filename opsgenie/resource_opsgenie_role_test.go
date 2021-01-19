@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/custom_user_role"
 	"log"
@@ -59,8 +59,8 @@ func TestAccOpsGenieUserRole_basic(t *testing.T) {
 	config := testAccOpsGenieUserRole_basic(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieUserRoleDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieUserRoleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -77,8 +77,8 @@ func TestAccOpsGenieUserRole_complete(t *testing.T) {
 	config := testAccOpsGenieUserRole_complete(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieUserRoleDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieUserRoleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -151,11 +151,11 @@ func TestAccOpsGenieUserRole_extendedRoleValidationError(t *testing.T) {
 	config := testAccOpsGenieUserRole_ExtendedRoleValidationError(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
-				ExpectError: regexp.MustCompile(fmt.Sprintf(`config is invalid: expected extended_role to be one of \[user observer stakeholder\], got invalid-role`)),
+				ExpectError: regexp.MustCompile(fmt.Sprintf(`Error: expected extended_role to be one of \[user observer stakeholder\], got invalid-role`)),
 			},
 		},
 	})
@@ -166,7 +166,7 @@ func TestAccOpsGenieUserRole_grantedRightsValidationError(t *testing.T) {
 	config := testAccOpsGenieUserRole_grantedRightsValidationError(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
@@ -181,7 +181,7 @@ func TestAccOpsGenieUserRole_disallowedRightsValidationError(t *testing.T) {
 	config := testAccOpsGenieUserRole_disallowedRightsValidationError(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config:      config,

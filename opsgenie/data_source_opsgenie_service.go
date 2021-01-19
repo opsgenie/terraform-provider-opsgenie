@@ -2,7 +2,7 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/service"
 	"log"
 	"strconv"
@@ -14,7 +14,7 @@ func dataSourceOpsGenieService() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceOpsGenieServiceRead,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -37,7 +37,6 @@ func dataSourceOpsGenieService() *schema.Resource {
 }
 
 func dataSourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) error {
-
 	// OpsGenie async call to create service might take a bit of time to take affect.
 	// This sleep will make sure we are not hitting 404 error if hit get/list service API before creation could happen.
 	time.Sleep(5 * time.Second)

@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/notification"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
@@ -69,13 +69,13 @@ func TestAccOpsGenieNotificationRule_basic(t *testing.T) {
 	config := testAccOpsGenieNotificationRule_basic(randomName)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieNotificationRuleDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieNotificationRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
-					testCheckOpsGenieNotificationRuleExists("opsgenie_notification_rule.test", randomName),
+					testCheckOpsGenieNotificationRuleExists("opsgenie_notification_rule.test"),
 				),
 			},
 		},
@@ -107,7 +107,7 @@ func testCheckOpsGenieNotificationRuleDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testCheckOpsGenieNotificationRuleExists(name, username string) resource.TestCheckFunc {
+func testCheckOpsGenieNotificationRuleExists(name string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
 		rs, ok := s.RootModule().Resources[name]

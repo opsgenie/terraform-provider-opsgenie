@@ -3,13 +3,13 @@ package opsgenie
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
 	"strings"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
 )
 
@@ -369,19 +369,20 @@ func flattenOpsgenieTimeRestriction(input og.TimeRestriction) []map[string]inter
 			restrictionMap["end_day"] = r.EndDay
 			restrictions = append(restrictions, restrictionMap)
 		}
-		return restrictions
+		out["restrictions"] = restrictions
+		rules = append(rules, out)
+		return rules
 	} else {
 		restriction := make(map[string]interface{})
 		//IF RESTRICTION
-		restriction["end_day"] = input.Restriction.EndDay
 		restriction["end_hour"] = input.Restriction.EndHour
 		restriction["end_min"] = input.Restriction.EndMin
-		restriction["start_day"] = input.Restriction.StartDay
 		restriction["start_hour"] = input.Restriction.StartHour
 		restriction["start_min"] = input.Restriction.StartMin
 
 		//IF restrictions
-		rules = append(rules, restriction)
+		out["restrictions"] = restriction
+		rules = append(rules, out)
 		return rules
 	}
 }

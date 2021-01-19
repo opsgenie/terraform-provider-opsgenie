@@ -2,8 +2,8 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/incident"
 	"log"
 )
@@ -11,7 +11,7 @@ import (
 func resourceOpsgenieIncidentTemplate() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceOpsgenieIncidentTemplateCreate,
-		Read:   resourceOpsgenieIncidentTemplateRead,
+		Read:   handleNonExistentResource(resourceOpsgenieIncidentTemplateRead),
 		Update: resourceOpsgenieIncidentTemplateUpdate,
 		Delete: resourceOpsgenieIncidentTemplateDelete,
 		Importer: &schema.ResourceImporter{
@@ -117,14 +117,15 @@ func resourceOpsgenieIncidentTemplateRead(d *schema.ResourceData, meta interface
 		for _, value := range result.IncidentTemplates["incidentTemplates"] {
 			if d.Id() == value.IncidentTemplateId {
 				d.Set("name", value.Name)
-				d.Set("id", value.IncidentTemplateId)
 				d.Set("message", value.Message)
 				d.Set("tags", value.Tags)
 				d.Set("description", value.Description)
 				d.Set("details", value.Details)
 				d.Set("priority", value.Priority)
-				d.Set("stakeholderProperties", value.StakeholderProperties)
-				d.Set("impactedServices", value.ImpactedServices)
+				d.Set("stakeholder_properties", flattenIncidentStakeHolderProperties(value.StakeholderProperties))
+				if value.ImpactedServices != nil {
+					d.Set("impacted_services", schema.NewSet(schema.HashString, flattenIncidentImpactedServices(value.ImpactedServices)))
+				}
 				break
 			}
 		}
@@ -213,4 +214,20 @@ func expandOpsgenieIncidentTemplateStakeholderProperties(input []interface{}) in
 		}
 	}
 	return stakeholderProperties
+}
+
+func flattenIncidentStakeHolderProperties(prop incident.StakeholderProperties) []map[string]interface{} {
+	return []map[string]interface{}{{
+		"enable":      *prop.Enable,
+		"message":     prop.Message,
+		"description": prop.Description,
+	}}
+}
+
+func flattenIncidentImpactedServices(impactedServices []string) []interface{} {
+	n := make([]interface{}, len(impactedServices))
+	for i, service := range impactedServices {
+		n[i] = service
+	}
+	return n
 }

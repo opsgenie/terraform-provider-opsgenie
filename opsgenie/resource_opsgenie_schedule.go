@@ -11,7 +11,7 @@ import (
 
 	"regexp"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceOpsgenieSchedule() *schema.Resource {
@@ -102,7 +102,6 @@ func resourceOpsgenieScheduleRead(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	d.Set("name", getResponse.Schedule.Name)
-	d.Set("id", getResponse.Schedule.Id)
 	if getResponse.Schedule.OwnerTeam != nil {
 		d.Set("owner_team_id", getResponse.Schedule.OwnerTeam.Id)
 	}
