@@ -12,6 +12,11 @@ The Opsgenie provider is used to interact with the
 many resources supported by Opsgenie. The provider needs to be configured
 with the proper credentials before it can be used.
 
+**Breaking Change - v0.6.0**
+
+With 0.6.0 version provider adopted Terraform Plugin SDK v2 therefore some resources reads has changed. 
+If you encounter any problems you can contact us via Github
+
 Use the navigation to the left to read about the available resources.
 
 ## Example Usage
