@@ -131,7 +131,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 							Required: true,
 						},
 						"restrictions": {
-							Type:     schema.TypeSet,
+							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -289,7 +289,7 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 	}
 
 	if len(timeRestriction) > 0 {
-		createRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
+		createRequest.TimeRestriction = expandNotificationRuleRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Creating Notification Rule '%s' for User: '%s'", d.Get("name").(string), d.Get("username").(string))
@@ -384,7 +384,7 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 	}
 
 	if len(timeRestriction) > 0 {
-		updateRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
+		updateRequest.TimeRestriction = expandNotificationRuleRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Updating Notification Rule '%s' for User: '%s'", d.Get("name").(string), d.Get("username").(string))
@@ -496,6 +496,24 @@ func expandOpsGenieNotificationRuleRepeat(input []interface{}) *notification.Rep
 		repeat.Enabled = &repeatEnabled
 	}
 	return &repeat
+}
+func expandNotificationRuleRestrictions(d []interface{}) *og.TimeRestriction {
+	timeRestriction := og.TimeRestriction{}
+
+	for _, v := range d {
+		config := v.(map[string]interface{})
+
+		timeRestrictionType := config["type"].(string)
+		timeRestriction.Type = og.RestrictionType(timeRestrictionType)
+
+		if len(config["restrictions"].([]interface{})) > 0 {
+			timeRestriction.RestrictionList = expandOpsgenieRestrictions(config["restrictions"].([]interface{}))
+		} else {
+			timeRestriction.Restriction = expandOpsgenieRestriction(config["restriction"].([]interface{}))
+		}
+	}
+
+	return &timeRestriction
 }
 
 func flattenOpsgenieNotificationRuleTimeRestriction(input *og.TimeRestriction) []map[string]interface{} {
