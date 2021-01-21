@@ -230,7 +230,7 @@ func setRetryPolicy(opsGenieClient *OpsGenieClient, cfg *Config) {
 }
 
 func NewOpsGenieClient(cfg *Config) (*OpsGenieClient, error) {
-	UserAgentHeader = fmt.Sprintf("opsgenie-go-sdk-%s %s (%s/%s)", Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	UserAgentHeader = fmt.Sprintf("opsgenie-go-sdk-%s %s (%s/%s) - Terraform", Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	opsGenieClient := &OpsGenieClient{
 		Config:          cfg,
 		RetryableClient: retryablehttp.NewClient(),
