@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 
@@ -44,9 +45,10 @@ func resourceOpsGenieUser() *schema.Resource {
 				Default:  "en_US",
 			},
 			"timezone": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "America/New_York",
+				Type:             schema.TypeString,
+				Optional:         true,
+				Default:          "America/New_York",
+				DiffSuppressFunc: checkTimeZoneDiff,
 			},
 			"tags": {
 				Type:     schema.TypeSet,
@@ -99,6 +101,20 @@ func resourceOpsGenieUser() *schema.Resource {
 	}
 }
 
+func checkTimeZoneDiff(k, old, new string, d *schema.ResourceData) bool {
+	locationOld, errOld := time.LoadLocation(old)
+	if errOld != nil {
+		return false
+	}
+	locationNew, errNew := time.LoadLocation(new)
+	if errNew != nil {
+		return false
+	}
+	now := time.Now()
+	timeOld := now.In(locationOld)
+	timeNew := now.In(locationNew)
+	return timeOld.Format(time.ANSIC) == timeNew.Format(time.ANSIC)
+}
 func expandOpsGenieUsertags(input *schema.Set) []string {
 	output := make([]string, 0)
 

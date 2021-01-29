@@ -73,6 +73,21 @@ func TestAccOpsGenieUser_basic(t *testing.T) {
 	})
 }
 
+func TestCheckTimeZoneDiff(t *testing.T) {
+	oldTimeZone := "America/Los_Angeles"
+	newTimeZone := "Canada/Pacific"
+	if !checkTimeZoneDiff("", oldTimeZone, newTimeZone, nil) {
+		t.Errorf("Timezones should be equal")
+	}
+}
+
+func TestCheckTimeZoneDiff_notEqual(t *testing.T) {
+	oldTimeZone := "America/Los_Angeles"
+	newTimeZone := "Europe/Istanbul"
+	if checkTimeZoneDiff("", oldTimeZone, newTimeZone, nil) {
+		t.Errorf("Timezones should be equal")
+	}
+}
 func TestAccOpsGenieUser_complete(t *testing.T) {
 	rs := acctest.RandString(6)
 	config := testAccOpsGenieUser_complete(rs)
