@@ -128,7 +128,7 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 							Required: true,
 						},
 						"restrictions": {
-							Type:     schema.TypeSet,
+							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -219,7 +219,7 @@ func resourceOpsGenieTeamRoutingRuleCreate(d *schema.ResourceData, meta interfac
 	}
 
 	if len(timeRestriction) > 0 {
-		createRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
+		createRequest.TimeRestriction = expandRoutingRuleTimeRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Creating OpsGenie team routing rule '%s'", name)
@@ -286,7 +286,7 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		Notify:              expandOpsgenieNotify(notify),
 	}
 	if len(timeRestriction) > 0 {
-		updateRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
+		updateRequest.TimeRestriction = expandRoutingRuleTimeRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Updating OpsGenie team routing rule '%s'", name)
@@ -351,6 +351,23 @@ func flattenOpsgenieCriteria(input og.Criteria) []map[string]interface{} {
 	rules = append(rules, out)
 	return rules
 }
+func expandRoutingRuleTimeRestrictions(d []interface{}) *og.TimeRestriction {
+	timeRestriction := og.TimeRestriction{}
+	for _, v := range d {
+		config := v.(map[string]interface{})
+
+		timeRestrictionType := config["type"].(string)
+		timeRestriction.Type = og.RestrictionType(timeRestrictionType)
+
+		if len(config["restrictions"].([]interface{})) > 0 {
+			timeRestriction.RestrictionList = expandOpsgenieRestrictions(config["restrictions"].([]interface{}))
+		} else {
+			timeRestriction.Restriction = expandOpsgenieRestriction(config["restriction"].([]interface{}))
+		}
+	}
+
+	return &timeRestriction
+}
 
 func flattenOpsgenieTimeRestriction(input og.TimeRestriction) []map[string]interface{} {
 	rules := make([]map[string]interface{}, 0, 1)
@@ -381,7 +398,7 @@ func flattenOpsgenieTimeRestriction(input og.TimeRestriction) []map[string]inter
 		restriction["start_min"] = input.Restriction.StartMin
 
 		//IF restrictions
-		out["restrictions"] = restriction
+		out["restriction"] = restriction
 		rules = append(rules, out)
 		return rules
 	}

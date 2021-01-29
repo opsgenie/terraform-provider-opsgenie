@@ -88,7 +88,7 @@ func resourceOpsgenieScheduleRotation() *schema.Resource {
 							ValidateFunc: validateRestrictionType,
 						},
 						"restrictions": {
-							Type:     schema.TypeSet,
+							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -411,7 +411,6 @@ func expandOpsgenieScheduleParticipants(input []interface{}) []og.Participant {
 	return participants
 }
 func expandTimeRestrictions(d []interface{}) *og.TimeRestriction {
-
 	timeRestriction := og.TimeRestriction{}
 
 	for _, v := range d {
@@ -420,8 +419,8 @@ func expandTimeRestrictions(d []interface{}) *og.TimeRestriction {
 		timeRestrictionType := config["type"].(string)
 		timeRestriction.Type = og.RestrictionType(timeRestrictionType)
 
-		if len(config["restrictions"].(*schema.Set).List()) > 0 {
-			timeRestriction.RestrictionList = expandOpsgenieRestrictions(config["restrictions"].(*schema.Set).List())
+		if len(config["restrictions"].([]interface{})) > 0 {
+			timeRestriction.RestrictionList = expandOpsgenieRestrictions(config["restrictions"].([]interface{}))
 		} else {
 			timeRestriction.Restriction = expandOpsgenieRestriction(config["restriction"].([]interface{}))
 		}

@@ -1,3 +1,13 @@
+## 0.6.1 (January 21, 2021)
+**BREAKING CHANGE**
+
+**Terraform Plugin SDK upgraded to v2.**
+
+BUGFIX:
+* **Notification Rule :** Reading the time_restrictions corrected.
+* **Team Routing Rule :** Reading the time_restrictions corrected.
+* **Schedule Rotations :** Reading the time_restrictions corrected.
+
 ## 0.6.0 (January 19, 2021)
 **BREAKING CHANGE**
 
