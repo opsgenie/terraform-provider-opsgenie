@@ -1,3 +1,7 @@
+## 0.6.2 (January 29, 2021)
+BUGFIX:
+* **User:** Timezone diff problem fixed.
+
 ## 0.6.1 (January 21, 2021)
 **BREAKING CHANGE**
 
