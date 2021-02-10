@@ -70,7 +70,7 @@ The following arguments are supported:
 
 * `alias` - (Optional) Alias of the alert. You can use {{alias}} to refer to the original alias. Default value is {{alias}}
 
-* `description` - (Optional) Description of the alert. You can use {{description}} to refer to the original alert description. Default value is {{description}}
+* `alert_description` - (Optional) Description of the alert. You can use {{description}} to refer to the original alert description. Default value is {{description}}
 
 * `entity` - (Optional) Entity field of the alert. You can use {{entity}} to refer to the original entity. Default value is {{entity}}
 
