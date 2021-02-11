@@ -1,3 +1,7 @@
+## 0.6.3 (February 11, 2021)
+BUGFIX:
+* **Alert Policy:** Global alert policy import fixed
+
 ## 0.6.2 (January 29, 2021)
 BUGFIX:
 * **User:** Timezone diff problem fixed.

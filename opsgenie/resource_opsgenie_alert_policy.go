@@ -26,12 +26,16 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				idParts := strings.Split(d.Id(), "/")
-				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
+				if len(idParts) == 1 {
+					//if its not team_id/policy_id it can be global policy
+					return []*schema.ResourceData{d}, nil
+				} else if len(idParts) == 2 && idParts[0] != "" && idParts[1] != "" {
+					d.Set("team_id", idParts[0])
+					d.SetId(idParts[1])
+					return []*schema.ResourceData{d}, nil
+				} else {
 					return nil, fmt.Errorf("Unexpected format of ID (%q), expected team_id/notification_policy_id", d.Id())
 				}
-				d.Set("team_id", idParts[0])
-				d.SetId(idParts[1])
-				return []*schema.ResourceData{d}, nil
 			},
 		},
 		Schema: map[string]*schema.Schema{
