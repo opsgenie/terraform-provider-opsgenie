@@ -17,6 +17,7 @@ The actions that are supported are:
 * close
 * acknowledge
 * add_note
+* ignore
 
 ## Example Usage
 
@@ -54,12 +55,31 @@ resource "opsgenie_integration_action" "test_action" {
   create {
     name = "Create medium priority alerts"
     tags = ["SEVERE", "SEV-1"]
+    priority = "P3"
     filter {
       type = "match-all-conditions"
       conditions {
         field = "priority"
         operation = "equals"
         expected_value = "P2"
+      }
+    }
+  }
+  
+  create {
+    name = "Create alert with priority from message"
+    custom_priority = "{{message.substringAfter(\"[custom]\")}}"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "tags"
+        operation = "contains"
+        expected_value = "P5"
+      }
+      conditions {
+        field = "message"
+        operation = "Starts With"
+        expected_value = "[custom]"
       }
     }
   }
@@ -105,6 +125,18 @@ resource "opsgenie_integration_action" "test_action" {
       type = "match-all"
     }
   }
+  
+  ignore {
+    name = "Ignore alerts with ignore tag"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "tags"
+        operation = "contains"
+        expected_value = "ignore"
+      }
+    }
+  }
 }
 ```
 
@@ -125,7 +157,8 @@ The following arguments are common and supported for all actions:
 * `note` - (Optional) Integer value that defines in which order the action will be performed.
 
 * `filter` - (Optional) Used to specify rules for matching alerts and the filter type. Please note that depending on the integration type the field names in the filter conditions are:
-  * For API integration: `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `recipients`, `teams`, `priority`.
+  * For SNS integration: `actions`, `alias`, `entity`, `Message`, `recipients`, `responders`, `Subject`, `tags`, `teams`, `eventType`, `Timestamp`, `TopicArn`.
+  * For API integration: `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `recipients`, `teams`, `priority`, `eventType`.
   * For Email integration: `from_address`, `from_name`, `conversationSubject`, `subject`
 
 ### Additional Arguments for Create Action
@@ -133,6 +166,10 @@ The following arguments are common and supported for all actions:
 * `description` - (Optional)  Detailed description of the alert, anything that may not have fit in the `message` field.
 
 * `entity` - (Optional) The entity the alert is related to.
+
+* `priority` - (Optional) Alert priority.
+
+* `custom_priority` - (Optional) Custom alert priority. e.g. {{message.substring(0,2)}}
 
 * `extra_properties` - (Optional) Set of user defined properties specified as a map.
 

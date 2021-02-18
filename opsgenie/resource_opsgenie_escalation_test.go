@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/escalation"
 )
@@ -63,8 +63,8 @@ func TestAccOpsGenieEscalation_basic(t *testing.T) {
 	config := testAccOpsGenieEscalation_basic(randomName, randomEscalation)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieEscalationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieEscalationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -84,8 +84,8 @@ func TestAccOpsGenieEscalation_complete(t *testing.T) {
 	config := testAccOpsGenieEscalation_complete(randomTeam, randomSchedule, randomEscalation)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieEscalationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieEscalationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,

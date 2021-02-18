@@ -1,4 +1,120 @@
-## 0.4.1 (Unreleased)
+## 0.6.3 (February 11, 2021)
+BUGFIX:
+* **Alert Policy:** Global alert policy import fixed
+
+## 0.6.2 (January 29, 2021)
+BUGFIX:
+* **User:** Timezone diff problem fixed.
+
+## 0.6.1 (January 21, 2021)
+**BREAKING CHANGE**
+
+**Terraform Plugin SDK upgraded to v2.**
+
+BUGFIX:
+* **Notification Rule :** Reading the time_restrictions corrected.
+* **Team Routing Rule :** Reading the time_restrictions corrected.
+* **Schedule Rotations :** Reading the time_restrictions corrected.
+
+## 0.6.0 (January 19, 2021)
+**BREAKING CHANGE**
+
+Terraform Plugin SDK upgraded to v2. 
+Acceptance tests are need Terraform 12.26+ versions.
+
+BUGFIX:
+* **Notification Rule :** Reading the time_restrictions corrected.
+* **Team Routing Rule :** Reading the time_restrictions corrected.
+* **Incident Service Rule :** Tags and details are implemented. Before it won't work due to schema <-> List conversion.
+* **Incident Template:** Stakeholder properties and impacted services read functions fixed to comply with their schema types.
+* **Integrations:** Responders only available when owner team isn't set. Therefore provider now only read and add responders to requests if owner team is not available.
+* **User:** UserAddress.city field has fixed. In future user resource will change to adopt Atlassian Opsgenie Platform changes.
+
+## 0.5.7 (December 24, 2020)
+IMPROVEMENTS:
+* **Integration Actions :** add support for ignore action
+
+
+## 0.5.6 (December 24, 2020)
+IMPROVEMENTS:
+* **Integration Actions :** add custom priority for create action (#177)
+
+
+## 0.5.5 (December 16, 2020)
+Improvement:
+* Add support for webhook integration (#197)
+
+
+## 0.5.4 (December 10, 2020)
+BUGFIX:
+* Able to set key in extra-properties field of condition for service incident rule (#204)
+
+
+## 0.5.3 (December 4, 2020)
+BUGFIX:
+* GO SDK v2 version synced to support none & escalation in schedule rotations 
+* Docs update
+
+
+## 0.5.2 (November 19, 2020)
+BUGFIX:
+* Fix opsgenie_notification_rule: Fix for issue (#188) 
+* Update integration name restrictions (#187)
+* Docs update (#194)
+
+
+## 0.5.1 (October 16, 2020)
+IMPROVEMENTS:
+* Added missing options to user resource (#179-#180)
+* Added actions to opsgenie_alert_policy (#186)
+
+
+## 0.5.0 (September 18, 2020)
+NEW RESOURCE:
+* Custom user role implemented (#161)
+
+## 0.4.9 (September 17, 2020)
+NEW RESOURCE:
+* Incident Template implemented (#178)
+
+
+## 0.4.8 (September 4, 2020)
+NEW RESOURCE:
+* Notification rule implemented (#121)
+
+
+## 0.4.7 (August 26, 2020)
+
+IMPROVEMENTS:
+* **Team :** allow users to delete default resources while creating team.
+
+
+## 0.4.6 (August 21, 2020)
+
+BUGFIX:
+* **Integration Actions :** allow integration action import(#151)
+
+## 0.4.5 (August 20, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** Go-Sdk-v2 updated to support all custom field names.
+
+## 0.4.4 (August 18, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** filter conditions set eventType as field (#148)
+
+## 0.4.3 (August 14, 2020)
+
+IMPROVEMENTS:
+* **Integration Actions :** add priority for create action (#157)
+
+## 0.4.2 (August 13, 2020)
+
+BUGFIX:
+* **Integration Actions :** allow extra_properties (#152)
+
+## 0.4.1 (July 29, 2020)
 
 Opsgenie Provider repository changes
 

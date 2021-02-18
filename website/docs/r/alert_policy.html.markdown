@@ -23,6 +23,8 @@ resource "opsgenie_alert_policy" "test" {
   name               = "example policy"
   team_id            = opsgenie_team.test.id
   policy_description = "This is sample policy"
+  message            = "{{message}}"
+
   filter {}
   time_restriction {
     type = "weekday-and-time-of-day"
@@ -64,11 +66,11 @@ The following arguments are supported:
 
 * `message` - (Required) Message of the alerts
 
-*`continue` - (Optional) It will trigger other modify policies if set to true. Default value is false
+*`continue_policy` - (Optional) It will trigger other modify policies if set to true. Default value is false
 
 * `alias` - (Optional) Alias of the alert. You can use {{alias}} to refer to the original alias. Default value is {{alias}}
 
-* `description` - (Optional) Description of the alert. You can use {{description}} to refer to the original alert description. Default value is {{description}}
+* `alert_description` - (Optional) Description of the alert. You can use {{description}} to refer to the original alert description. Default value is {{description}}
 
 * `entity` - (Optional) Entity field of the alert. You can use {{entity}} to refer to the original entity. Default value is {{entity}}
 
@@ -83,6 +85,8 @@ The following arguments are supported:
 * `responders` - (Optional) Responders to add to the alerts original responders value as a list of teams, users or the reserved word none or all. If ignoreOriginalResponders field is set to true, this will replace the original responders. The possible values for responders are: user, team. This is a block, structure is documented below.
 
 * `ignore_original_tags` - (Optional) If set to true, policy will ignore the original tags of the alert. Default value is false
+
+* `actions` - (Optional) Actions to add to the alerts original actions value as a list of strings. If ignore_original_actions field is set to true, this will replace the original actions.
 
 * `tags` - (Optional) Tags to add to the alerts original tags value as a list of strings. If ignoreOriginalResponders field is set to true, this will replace the original responders.
 
@@ -128,9 +132,9 @@ The `restrictions` block supports:
 
 * `end_hour` - (Required) Ending hour of restriction on defined `end_day`
 
-* `start_minute` - (Required) Staring minute of restriction on defined `start_hour`
+* `start_min` - (Required) Staring minute of restriction on defined `start_hour`
 
-* `end_minute` - (Required) Ending minute of restriction on defined `end_hour`
+* `end_min` - (Required) Ending minute of restriction on defined `end_hour`
 
 The `restriction` block supports:
 
@@ -138,9 +142,9 @@ The `restriction` block supports:
 
 * `end_hour` - (Required) Ending hour of restriction.
 
-* `start_minute` - (Required) Staring minute of restriction on defined `start_hour`
+* `start_min` - (Required) Staring minute of restriction on defined `start_hour`
 
-* `end_minute` - (Required) Ending minute of restriction on defined `end_hour`
+* `end_min` - (Required) Ending minute of restriction on defined `end_hour`
 
 The `responders` block supports:
 
@@ -158,3 +162,18 @@ The following attributes are exported:
 
 * `id` - The ID of the Opsgenie Alert Policy.
 
+## Import
+
+Alert policies can be imported using the `team id` and `policy_id`, e.g.
+
+`$ terraform import opsgenie_notification_policy.test teamId/Id`
+
+For this example:
+- Team Id = `c827c472-31f2-497b-9ec6-8ec855d7d94c`
+- Alert Policy Id = `2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+
+`$ terraform import opsgenie_alert_policy.test c827c472-31f2-497b-9ec6-8ec855d7d94c/2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+
+You can import global polices using only policy identifier 
+
+`$ terraform import opsgenie_alert_policy.test c827c472-31f2-497b-9ec6-8ec855d7d94c`

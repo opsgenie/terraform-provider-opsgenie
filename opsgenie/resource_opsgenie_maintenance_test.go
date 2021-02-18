@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/maintenance"
 )
@@ -63,8 +63,8 @@ func TestAccOpsGenieMaintenance_complete(t *testing.T) {
 	config := testAccOpsGenieMaintenance_complete(randomName, randomMaintenenace)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieMaintenanceDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieMaintenanceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -132,7 +132,7 @@ func testCheckOpsGenieMaintenanceExists(name string) resource.TestCheckFunc {
 func testAccOpsGenieMaintenance_complete(randomName, randomMaintenance string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_email_integration" "test" {
-  name = "testemailapi-maintenance"
+  name = "testemailapi-maintenance-%s"
   email_username ="user-%s"
 }
 resource "opsgenie_maintenance" "test" {
@@ -150,5 +150,5 @@ resource "opsgenie_maintenance" "test" {
     }
   }
 }
-`, randomName, randomMaintenance, time.Now().Year()+1, time.Now().Month(), time.Now().Day())
+`, randomName, randomName, randomMaintenance, time.Now().Year()+1, time.Now().Month(), time.Now().Day())
 }

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 	"github.com/pkg/errors"
@@ -60,13 +60,34 @@ func TestAccOpsGenieApiIntegration_basic(t *testing.T) {
 	config := testAccOpsGenieApiIntegration_basic(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieApiIntegrationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieApiIntegrationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOpsGenieApiIntegrationExists("opsgenie_api_integration.test"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccOpsGenieApiIntegration_limits(t *testing.T) {
+	randomLongName := acctest.RandString(245)
+	// include a backtick here as it's not possible to escape it in the multiline string
+	randomName := "`" + acctest.RandString(6)
+	config := testAccOpsGenieApiIntegration_limits(randomLongName, randomName)
+
+	resource.Test(t, resource.TestCase{
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieApiIntegrationDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOpsGenieApiIntegrationExists("opsgenie_api_integration.test_length"),
+					testCheckOpsGenieApiIntegrationExists("opsgenie_api_integration.test_format"),
 				),
 			},
 		},
@@ -81,17 +102,19 @@ func TestAccOpsGenieApiIntegration_complete(t *testing.T) {
 	randomEscalation := acctest.RandString(6)
 	randomIntegration := acctest.RandString(6)
 	randomIntegration2 := acctest.RandString(6)
+	randomIntegration3 := acctest.RandString(6)
 
-	config := testAccOpsGenieApiIntegration_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2)
+	config := testAccOpsGenieApiIntegration_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2, randomIntegration3)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieApiIntegrationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieApiIntegrationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOpsGenieApiIntegrationExists("opsgenie_api_integration.test"),
+					testCheckOpsGenieApiIntegrationExists("opsgenie_api_integration.test3"),
 				),
 			},
 		},
@@ -160,7 +183,21 @@ resource "opsgenie_api_integration" "test" {
 `, rString)
 }
 
-func testAccOpsGenieApiIntegration_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2 string) string {
+func testAccOpsGenieApiIntegration_limits(randomLongName, randomName string) string {
+	return fmt.Sprintf(`
+resource "opsgenie_api_integration" "test_length" {
+  type = "API"
+  name = "test-%s"
+}
+
+resource "opsgenie_api_integration" "test_format" {
+  type = "API"
+  name = "[] () {} 🚒 %s"
+}
+`, randomLongName, randomName)
+}
+
+func testAccOpsGenieApiIntegration_complete(randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2, randomIntegration3 string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_user" "test" {
   username  = "genietest-%s@opsgenie.com"
@@ -226,5 +263,17 @@ resource "opsgenie_api_integration" "test2" {
 	owner_team_id = "${opsgenie_team.test.id}"
 	enabled       = true
 }
-`, randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2)
+resource "opsgenie_api_integration" "test3" {
+	name = "genieintegration-webhook-%s"
+  	owner_team_id = "${opsgenie_team.test.id}"
+  	type = "Webhook"
+  	enabled                        = true
+  	allow_write_access             = false
+  	suppress_notifications         = false
+  	webhook_url                    = "https://example.com/v1"
+  	headers = {
+		header = "value1"
+	}
+}
+`, randomUsername, randomTeam, randomTeam2, randomSchedule, randomEscalation, randomIntegration, randomIntegration2, randomIntegration3)
 }

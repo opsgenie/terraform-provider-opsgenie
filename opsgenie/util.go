@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
 )
 
@@ -57,4 +57,19 @@ func validateDate(v interface{}, k string) (ws []string, errors []error) {
 	}
 
 	return
+}
+
+func convertStringMapToInterfaceMap(old map[string]string) map[string]interface{} {
+	new := map[string]interface{}{}
+	for k, v := range old {
+		new[k] = v
+	}
+	return new
+}
+func convertStringSliceToInterfaceSlice(old []string) []interface{} {
+	new := make([]interface{}, len(old))
+	for k, v := range old {
+		new[k] = v
+	}
+	return new
 }

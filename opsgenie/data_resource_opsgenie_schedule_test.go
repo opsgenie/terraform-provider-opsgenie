@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccDataSourceOpsGenieSchedule_Basic(t *testing.T) {
@@ -14,7 +14,7 @@ func TestAccDataSourceOpsGenieSchedule_Basic(t *testing.T) {
 	randomSchedule := acctest.RandString(6)
 
 	resource.Test(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccDataSourceOpsGenieScheduleConfig(randomTeam, randomSchedule),
@@ -54,7 +54,7 @@ func testAccDataSourceOpsGenieSchedule(src, n string) resource.TestCheckFunc {
 func testAccDataSourceOpsGenieScheduleConfig(randomTeam, randomSchedule string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_team" "test" {
-  name        = "genieschedule%s"
+  name        = "genieteam-%s"
   description = "This team deals with all the things"
 }
 resource "opsgenie_schedule" "test" {
@@ -64,7 +64,8 @@ resource "opsgenie_schedule" "test" {
   owner_team_id = "${opsgenie_team.test.id}"
 }
 data "opsgenie_schedule" "existingschedule" {
-  name = "${opsgenie_schedule.test.name}"
+  name = opsgenie_schedule.test.name
+  depends_on = [opsgenie_schedule.test]
 }
 `, randomTeam, randomSchedule)
 }

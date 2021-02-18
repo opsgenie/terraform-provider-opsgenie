@@ -2,10 +2,9 @@ package opsgenie
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
@@ -31,18 +30,16 @@ func expandOpsgenieIntegrationResponders(d *schema.ResourceData) []integration.R
 	return responders
 }
 
-func validateOpsgenieIntegrationName(v interface{}, k string) (ws []string, errors []error) {
-	value := v.(string)
-	if !regexp.MustCompile(`^[a-zA-Z 0-9_-]+$`).MatchString(value) {
-		errors = append(errors, fmt.Errorf(
-			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
+func flattenIntegrationResponders(r []interface{}) []map[string]interface{} {
+	responders := []map[string]interface{}{}
+	for _, i := range r {
+		c := i.(map[string]interface{})
+		responders = append(responders, map[string]interface{}{
+			"type": c["type"],
+			"id":   c["id"],
+		})
 	}
-
-	if len(value) >= 100 {
-		errors = append(errors, fmt.Errorf("%q cannot be longer than 100 characters: %q %d", k, value, len(value)))
-	}
-
-	return
+	return responders
 }
 
 func validateResponderType(v interface{}, k string) (ws []string, errors []error) {
@@ -61,6 +58,7 @@ func validateResponderType(v interface{}, k string) (ws []string, errors []error
 }
 
 const (
-	ApiIntegrationType   = "API"
-	EmailIntegrationType = "Email"
+	ApiIntegrationType     = "API"
+	EmailIntegrationType   = "Email"
+	WebhookIntegrationType = "Webhook"
 )

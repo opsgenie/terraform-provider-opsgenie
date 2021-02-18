@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/policy"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
@@ -76,12 +76,11 @@ func testSweepAlertPolicy(region string) error {
 }
 
 func TestAccOpsGenieAlertPolicy_basic(t *testing.T) {
-	alertPolicyName1 := acctest.RandString(6)
-	config := testAccOpsGenieAlertPolicy_basic(alertPolicyName1)
-
+	alertPolicyName := acctest.RandString(6)
+	config := testAccOpsGenieAlertPolicy_basic(alertPolicyName)
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieAlertPolicyDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieAlertPolicyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -100,8 +99,8 @@ func TestAccOpsGenieAlertPolicy_complete(t *testing.T) {
 	config := testAccOpsGenieAlertPolicy_complete(randomTeam, randomAlertPolicyName)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieAlertPolicyDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieAlertPolicyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -166,7 +165,7 @@ func testCheckOpsGenieAlertPolicyExists(name string) resource.TestCheckFunc {
 	}
 }
 
-func testAccOpsGenieAlertPolicy_basic(alertPolicyName1 string) string {
+func testAccOpsGenieAlertPolicy_basic(alertPolicyName string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_alert_policy" "test" {
   name               = "genie-alert-policy-%s"
@@ -193,7 +192,7 @@ resource "opsgenie_alert_policy" "test" {
     }
   }
 }
-`, alertPolicyName1)
+`, alertPolicyName)
 }
 
 func testAccOpsGenieAlertPolicy_complete(randomTeam, randomAlertPolicyName string) string {
@@ -241,6 +240,7 @@ func testAccOpsGenieAlertPolicy_complete(randomTeam, randomAlertPolicyName strin
 		id = "${opsgenie_team.test.id}"
 	  }
 	  tags = ["test"]
+	  actions = ["test_action"]
 	}
 	`, randomTeam, randomAlertPolicyName)
 

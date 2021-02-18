@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccDataSourceOpsGenieEscalation_Basic(t *testing.T) {
@@ -14,7 +14,7 @@ func TestAccDataSourceOpsGenieEscalation_Basic(t *testing.T) {
 	randomEscalation := acctest.RandString(6)
 
 	resource.Test(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccDataSourceOpsGenieEscalationConfig(randomUserName, randomEscalation),
@@ -72,6 +72,7 @@ resource "opsgenie_escalation" "test" {
 }
 data "opsgenie_escalation" "existingescalation" {
   name = "${opsgenie_escalation.test.name}"
+  depends_on = [opsgenie_escalation.test]
 }
 `, randomUser, randomEscalation)
 }

@@ -14,6 +14,7 @@ type CreateRequest struct {
 	TeamId      string     `json:"teamId"`
 	Description string     `json:"description,omitempty"`
 	Visibility  Visibility `json:"visibility,omitempty"`
+	Tags        []string   `json:"tags,omitempty"`
 }
 
 func (r *CreateRequest) Validate() error {

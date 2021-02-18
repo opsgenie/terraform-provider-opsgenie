@@ -70,8 +70,8 @@ func validateParticipants(rotation *Rotation) error {
 		if participant.Type == "" {
 			return errors.New("Participant type cannot be empty.")
 		}
-		if !(participant.Type == User || participant.Type == Team) {
-			return errors.New("Participant type should be one of these: 'User', 'Team'")
+		if !(participant.Type == User || participant.Type == Team || participant.Type == Escalation || participant.Type == None) {
+			return errors.New("Participant type should be one of these: 'User', 'Team', 'Escalation', 'None'")
 		}
 		if participant.Type == User && participant.Username == "" && participant.Id == "" {
 			return errors.New("For participant type user either username or id must be provided.")
@@ -79,6 +79,9 @@ func validateParticipants(rotation *Rotation) error {
 		if participant.Type == Team && participant.Name == "" && participant.Id == "" {
 			return errors.New("For participant type team either team name or id must be provided.")
 		}
+		if participant.Type == Escalation && participant.Name == "" && participant.Id == "" {
+			return errors.New("For participant type escalation either escalation name or id must be provided.")
+    }
 	}
 	return nil
 }
@@ -139,12 +142,6 @@ func ValidateConditions(conditions []Condition) error {
 	for _, condition := range conditions {
 		if condition.Field != ExtraProperties && condition.Key != "" {
 			return errors.New("condition key is only valid for extra-properties field")
-		}
-		switch condition.Field {
-		case Message, Alias, Description, Source, Entity, Tags, Actions, Details, ExtraProperties, Recipients, Teams, Priority, ConversationSub, FromAddress, FromName, Subject:
-			break
-		default:
-			return errors.New("condition field should be one of message, alias, description, source, entity, tags, actions, details, extra-properties, recipients, teams, priority, conversationSubject, from_address, from_name or subject")
 		}
 		switch condition.Field {
 		case Actions, Tags, Recipients:
@@ -263,6 +260,7 @@ const (
 	Description     ConditionFieldType = "description"
 	Source          ConditionFieldType = "source"
 	Entity          ConditionFieldType = "entity"
+	EventType       ConditionFieldType = "eventType"
 	Tags            ConditionFieldType = "tags"
 	Actions         ConditionFieldType = "actions"
 	Details         ConditionFieldType = "details"

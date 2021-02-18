@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/policy"
@@ -518,8 +518,8 @@ func expandOpsGenieNotificationPolicyDelayAction(input []interface{}) *policy.De
 		config := v.(map[string]interface{})
 		action.DelayOption = policy.DelayType(config["delay_option"].(string))
 		untilMinute := config["until_minute"].(int)
-		action.UntilMinute = &untilMinute
 		untilHour := config["until_hour"].(int)
+		action.UntilMinute = &untilMinute
 		action.UntilHour = &untilHour
 		if len(config["duration"].([]interface{})) > 0 {
 			action.Duration = expandOpsGenieNotificationPolicyDuration(config["duration"].([]interface{}))

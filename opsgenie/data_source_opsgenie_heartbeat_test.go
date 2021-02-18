@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccDataSourceOpsGenieHeartbeat_Basic(t *testing.T) {
@@ -14,7 +14,7 @@ func TestAccDataSourceOpsGenieHeartbeat_Basic(t *testing.T) {
 	randomTeamName := acctest.RandString(6)
 
 	resource.Test(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccDataSourceOpsGenieHeartbeatConfig(randomTeamName, randomName),
@@ -71,6 +71,8 @@ resource "opsgenie_heartbeat" "test" {
 }
 data "opsgenie_heartbeat" "existingheartbeat" {
   name = "${opsgenie_heartbeat.test.name}"
+  depends_on = [opsgenie_heartbeat.test]
+
 }
 `, randomTeamName, randomName)
 }

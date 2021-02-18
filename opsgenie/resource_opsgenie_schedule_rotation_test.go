@@ -11,9 +11,9 @@ import (
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func init() {
@@ -76,8 +76,8 @@ func TestAccOpsGenieScheduleRotation_basic(t *testing.T) {
 	config := testAccOpsGenieScheduleRotation_basic(randomUser, randomTeam, randomSchedule, randomRotation)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieScheduleRotationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieScheduleRotationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -99,8 +99,8 @@ func TestAccOpsGenieScheduleRotation_complete(t *testing.T) {
 	config := testAccOpsGenieScheduleRotation_complete(randomUser, randomTeam, randomSchedule, randomRotation, randomRotation2)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieScheduleRotationDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieScheduleRotationDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -225,6 +225,19 @@ resource "opsgenie_schedule" "test" {
   owner_team_id = "${opsgenie_team.test.id}"
 }
 
+resource "opsgenie_escalation" "test" {
+ name ="genieescalationsched-%s"
+ rules {
+  condition =   "if-not-acked"
+    notify_type  =   "default"
+    recipient {
+      type  = "user"
+      id  = "${opsgenie_user.test.id}"
+		}
+    delay = 1
+	}
+}
+
 resource "opsgenie_schedule_rotation" "test" { 
     schedule_id = "${opsgenie_schedule.test.id}"
     name = "test-%s"
@@ -270,5 +283,50 @@ resource "opsgenie_schedule_rotation" "test2" {
       }
     }
 }
-`, randomName, randomTeam, randomSchedule, randomRotation, randomRotation2)
+
+resource "opsgenie_schedule_rotation" "none" { 
+    schedule_id = "${opsgenie_schedule.test.id}"
+    name = "schedulenone-%s"
+    start_date = "2019-06-18T17:30:00Z"
+    end_date ="2019-06-20T17:00:00Z"
+    type ="hourly"
+    length = 6
+    participant {
+      type = "none"
+    }
+
+    time_restriction {
+      type ="time-of-day"
+      restriction {
+        start_hour = 1
+        start_min = 0
+        end_hour = 10
+        end_min = 0
+      }
+    }
+}
+
+resource "opsgenie_schedule_rotation" "esc" { 
+    schedule_id = "${opsgenie_schedule.test.id}"
+    name = "schedule-escalation-%s"
+    start_date = "2019-06-18T17:30:00Z"
+    end_date ="2019-06-20T17:00:00Z"
+    type ="hourly"
+    length = 6
+    participant {
+      type = "escalation"
+      id = "${opsgenie_escalation.test.id}"
+    }
+
+    time_restriction {
+      type ="time-of-day"
+      restriction {
+        start_hour = 1
+        start_min = 0
+        end_hour = 10
+        end_min = 0
+      }
+    }
+}
+`, randomName, randomTeam, randomSchedule, randomRotation, randomRotation2, randomRotation2, randomRotation2, randomRotation2)
 }

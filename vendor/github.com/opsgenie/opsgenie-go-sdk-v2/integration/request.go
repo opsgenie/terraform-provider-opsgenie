@@ -74,6 +74,42 @@ func (r *APIBasedIntegrationRequest) Method() string {
 	return http.MethodPost
 }
 
+type WebhookIntegrationRequest struct {
+	client.BaseRequest
+	Name                  string            `json:"name"`
+	Type                  string            `json:"type"`
+	AllowWriteAccess      *bool             `json:"allowWriteAccess"`
+	SuppressNotifications *bool             `json:"suppressNotifications"`
+	OwnerTeam             *og.OwnerTeam     `json:"ownerTeam,omitempty"`
+	Responders            []Responder       `json:"responders,omitempty"`
+	WebhookUrl            string            `json:"url"`
+	AddAlertDescription   *bool             `json:"addAlertDescription"`
+	AddAlertDetails       *bool             `json:"addAlertDetails"`
+	Headers               map[string]string `json:"headers,omitempty"`
+}
+
+func (r *WebhookIntegrationRequest) Validate() error {
+	if r.Name == "" || r.Type == "" || r.WebhookUrl == "" {
+		return errors.New("Name, Type and WebhookUrl fields cannot be empty.")
+	}
+	if r.Type != "Webhook" {
+		return errors.New("Type has to be [Webhook] for Webhook integration.")
+	}
+	err := validateResponders(r.Responders)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *WebhookIntegrationRequest) ResourcePath() string {
+	return "/v2/integrations"
+}
+
+func (r *WebhookIntegrationRequest) Method() string {
+	return http.MethodPost
+}
+
 type EmailBasedIntegrationRequest struct {
 	client.BaseRequest
 	Name                        string        `json:"name"`
@@ -110,10 +146,14 @@ type UpdateIntegrationRequest struct {
 	Name                        string
 	Type                        string
 	EmailUsername               string
+	WebhookUrl                  string
 	Enabled                     *bool
 	IgnoreRespondersFromPayload *bool
 	SuppressNotifications       *bool
 	Responders                  []Responder
+	AddAlertDescription         *bool
+	AddAlertDetails             *bool
+	Headers                     map[string]string
 	OtherFields
 }
 
@@ -129,6 +169,11 @@ func (r OtherFields) Validate() error {
 	}
 	if _, ok := r["type"]; !ok {
 		return errors.New("Type field cannot be empty.")
+	}
+	if r["type"] == "Webhook" {
+		if _, ok := r["url"]; !ok {
+			return errors.New("[url] cannot be empty for type Webhook.")
+		}
 	}
 	err := validateResponders(r["responders"].([]Responder))
 	if err != nil {
@@ -257,8 +302,8 @@ func (r *GetIntegrationActionsRequest) Method() string {
 }
 
 type Filter struct {
-       ConditionMatchType og.ConditionMatchType `json:"conditionMatchType,omitempty"`
-       Conditions         []og.Condition        `json:"conditions,omitempty"`
+	ConditionMatchType og.ConditionMatchType `json:"conditionMatchType,omitempty"`
+	Conditions         []og.Condition        `json:"conditions,omitempty"`
 }
 
 type CreateIntegrationActionsRequest struct {
@@ -325,6 +370,7 @@ type UpdateAllIntegrationActionsRequest struct {
 	Close       []IntegrationAction `json:"close"`
 	Acknowledge []IntegrationAction `json:"acknowledge"`
 	AddNote     []IntegrationAction `json:"addNote"`
+	Ignore      []IntegrationAction `json:"ignore"`
 }
 
 type IntegrationAction struct {
@@ -339,6 +385,8 @@ type IntegrationAction struct {
 	Message                          string            `json:"message,omitempty"`
 	Description                      string            `json:"description,omitempty"`
 	Entity                           string            `json:"entity,omitempty"`
+	Priority                         string            `json:"priority,omitempty"`
+	CustomPriority                   string            `json:"customPriority,omitempty"`
 	AppendAttachments                *bool             `json:"appendAttachments,omitempty"`
 	AlertActions                     []string          `json:"alertActions,omitempty"`
 	IgnoreAlertActionsFromPayload    *bool             `json:"ignoreAlertActionsFromPayload,omitempty"`
@@ -427,11 +475,11 @@ func validateResponders(responders []Responder) error {
 
 func validateActionType(actionType ActionType) error {
 	switch actionType {
-	case Create, Close, Acknowledge, AddNote:
+	case Create, Close, Acknowledge, AddNote, Ignore:
 		return nil
 	}
 	return errors.New("Action type should be one of these: " +
-		"'Create','Close','Acknowledge','AddNote'")
+		"'Create','Close','Acknowledge','AddNote','Ignore'")
 }
 
 func validateConditionMatchType(matchType og.ConditionMatchType) error {
