@@ -80,20 +80,18 @@ The following arguments are supported:
 
 `rules` supports the following:
 
-* `condition` - (Required) The condition for notifying the recipient of escalation rule that is based on the alert state. Possible values are: if-not-acked and if-not-closed. If not given, if-not-acked is used.
+* `condition` - (Required) The condition for notifying the recipient of escalation rule that is based on the alert state. Possible values are: `if-not-acked` and `if-not-closed`. Default: `if-not-acked`
 * `notify_type` - (Required) Recipient calculation logic for schedules. Possible values are:
-```
-default: on call users
-next: next users in rotation
-previous: previous users on rotation
-users: users of the team
-admins: admins of the team
-all: all members of the team
-```
 
+  - `default`: on call users
+  - `next`: next users in rotation
+  - `previous`: previous users on rotation
+  - `users`: users of the team
+  - `admins`: admins of the team
+  - `all`: all members of the team
 
-* `recipient` - (Required) Object of schedule, team, or users which will be notified in escalation. The possible values for participants are: user, schedule, team.
-* `delay` - (Required) Time delay of the escalation rule. This parameter takes an object that consists timeAmount field that takes time amount in minutes.
+* `recipient` - (Required) Object of schedule, team, or users which will be notified in escalation. The possible values for participants are: `user`, `schedule`, `team`.
+* `delay` - (Required) Time delay of the escalation rule, in minutes.
 
 
 ## Attributes Reference
