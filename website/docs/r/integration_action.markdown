@@ -9,15 +9,15 @@ description: |-
 # opsgenie_integration_action
 
 Manages advanced actions for Integrations within Opsgenie. This applies for the following resources:
-* opsgenie_api_integration
-* opsgenie_email_integration
+* [`opsgenie_api_integration`](api_integration.html)
+* [`opsgenie_email_integration`](email_integration.html)
 
 The actions that are supported are:
-* create
-* close
-* acknowledge
-* add_note
-* ignore
+* `create`
+* `close`
+* `acknowledge`
+* `add_note`
+* `ignore`
 
 ## Example Usage
 
@@ -148,13 +148,13 @@ The following arguments are common and supported for all actions:
 
 * `name` - (Required) Name of the integration action.
 
-* `alias` - (Optional) An identifier that is used for alert deduplication. Defaults to `{{alias}}`.
+* `alias` - (Optional) An identifier that is used for alert deduplication. Default: `{{alias}}`.
 
-* `order` - (Optional) Integer value that defines in which order the action will be performed. Defaults to `1`.
+* `order` - (Optional) Integer value that defines in which order the action will be performed. Default: `1`.
 
 * `user` - (Optional) Owner of the execution for integration action.
 
-* `note` - (Optional) Integer value that defines in which order the action will be performed.
+* `note` - (Optional) Additional alert action note.
 
 * `filter` - (Optional) Used to specify rules for matching alerts and the filter type. Please note that depending on the integration type the field names in the filter conditions are:
   * For SNS integration: `actions`, `alias`, `entity`, `Message`, `recipients`, `responders`, `Subject`, `tags`, `teams`, `eventType`, `Timestamp`, `TopicArn`.
@@ -169,7 +169,7 @@ The following arguments are common and supported for all actions:
 
 * `priority` - (Optional) Alert priority.
 
-* `custom_priority` - (Optional) Custom alert priority. e.g. {{message.substring(0,2)}}
+* `custom_priority` - (Optional) Custom alert priority. e.g. ``{{message.substring(0,2)}}``
 
 * `extra_properties` - (Optional) Set of user defined properties specified as a map.
 
@@ -188,7 +188,7 @@ The following arguments are common and supported for all actions:
 `responders` is supported only in create action and supports the following:
 
 * `id` - (Required) The id of the responder.
-* `type` - (Required) The responder type - can be escalation, team or user.
+* `type` - (Required) The responder type - can be `escalation`, `team` or `user`.
 
 ## Attributes Reference
 
