@@ -10,31 +10,8 @@ import (
 
 func dataSourceOpsgenieSchedule() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceOpsgenieScheduleRead,
-		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validateOpsgenieScheduleName,
-			},
-			"description": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validateOpsgenieScheduleDescription,
-			},
-			"timezone": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
-			"owner_team_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-		},
+		Read:   dataSourceOpsgenieScheduleRead,
+		Schema: opsgenieScheduleSchema,
 	}
 }
 
