@@ -499,7 +499,7 @@ func validateScheduleRotationParticipantType(v interface{}, k string) (ws []stri
 		"team":       true,
 		"escalation": true,
 		"none":       true,
-		"group":	  true,
+		"group":      true,
 	}
 
 	if !families[value] {
