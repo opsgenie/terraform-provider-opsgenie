@@ -499,10 +499,11 @@ func validateScheduleRotationParticipantType(v interface{}, k string) (ws []stri
 		"team":       true,
 		"escalation": true,
 		"none":       true,
+		"group":	  true,
 	}
 
 	if !families[value] {
-		errors = append(errors, fmt.Errorf("it can only be one of these 'user', 'schedule', 'team', 'escalation'"))
+		errors = append(errors, fmt.Errorf("it can only be one of these 'user', 'schedule', 'team', 'escalation', group"))
 	}
 	return
 }
