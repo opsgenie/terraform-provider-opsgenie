@@ -42,12 +42,12 @@ func resourceOpsGenieUser() *schema.Resource {
 			"locale": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default:  "en_US",
+				Computed: true,
 			},
 			"timezone": {
 				Type:             schema.TypeString,
 				Optional:         true,
-				Default:          "America/New_York",
+				Computed:         true,
 				DiffSuppressFunc: checkTimeZoneDiff,
 			},
 			"tags": {
