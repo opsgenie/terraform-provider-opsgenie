@@ -122,11 +122,11 @@ The `auto_restart_action` block supports:
 
 The `de_duplication_action` block supports:
 
-* `duration` - (Required) Duration of this action. This is a block, structure is documented below.
-
-* `de_duplication_action_type` - (Required) Deduplication type. Possible values are: `value-based`, `frequency-based`
+* `de_duplication_action_type` - (Required) Deduplication type. Possible values are: "value-based", "frequency-based"
 
 * `count` - (Required) - Count
+
+* `duration` - (Optional) Duration of this action (only required for "frequency-based" de-duplication action). This is a block, structure is documented below.
 
 The `delay_action` block supports:
 

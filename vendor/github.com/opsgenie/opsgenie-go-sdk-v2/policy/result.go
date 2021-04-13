@@ -38,7 +38,7 @@ type GetNotificationPolicyResult struct {
 	MainFields
 	AutoRestartAction         *AutoRestartAction   `json:"autoRestartAction,omitempty"`
 	AutoCloseAction           *AutoCloseAction     `json:"autoCloseAction,omitempty"`
-	DeDuplicationActionAction *DeDuplicationAction `json:"deduplicationActionAction,omitempty"`
+	DeDuplicationAction 	  *DeDuplicationAction `json:"deduplicationAction,omitempty"`
 	DelayAction               *DelayAction         `json:"delayAction,omitempty"`
 	Suppress                  bool                 `json:"suppress,omitempty"`
 }
