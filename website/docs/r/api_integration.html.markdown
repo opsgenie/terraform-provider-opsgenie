@@ -70,13 +70,13 @@ The following arguments are supported:
 
 * `type` - (Optional) Type of the integration (API, Marid, Prometheus, etc). The full list of options can be found [here](https://docs.opsgenie.com/docs/integration-types-to-use-with-api).
 
-* `allow_write_access` - (Optional) This parameter is for configuring the write access of integration. If write access is restricted, the integration will not be authorized to write within any domain. Defaults to true.
+* `allow_write_access` - (Optional) This parameter is for configuring the write access of integration. If write access is restricted, the integration will not be authorized to write within any domain. Default: `true`.
 
-* `enabled` - (Optional) This parameter is for specifying whether the integration will be enabled or not. Defaults to true
+* `enabled` - (Optional) This parameter is for specifying whether the integration will be enabled or not. Default: `true`
 
-* `ignore_responders_from_payload` - (Optional) If enabled, the integration will ignore recipients sent in request payloads. Defaults to false.
+* `ignore_responders_from_payload` - (Optional) If enabled, the integration will ignore recipients sent in request payloads. Default: `false`.
 
-* `suppress_notifications` - (Optional) If enabled, notifications that come from alerts will be suppressed. Defaults to false.
+* `suppress_notifications` - (Optional) If enabled, notifications that come from alerts will be suppressed. Default: `false`.
 
 * `owner_team_id` - (Optional) Owner team id of the integration.
 
@@ -99,6 +99,6 @@ The following attributes are exported:
 
 ## Import
 
-API Integrations can be imported using the `id`, e.g.
+API Integrations can be imported using the `integration_id`, e.g.
 
-`$ terraform import opsgenie_api_integration.defaultintegration 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_api_integration.this integration_id`

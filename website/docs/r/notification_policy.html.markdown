@@ -153,12 +153,6 @@ The following attributes are exported:
 
 ## Import
 
-Notification policies can be imported using the `team id` and `id`, e.g.
+Notification policies can be imported using the `team_id` and `notification_policy_id`, e.g.
 
-`$ terraform import opsgenie_notification_policy.test teamId/Id`
-
-For this example:
-- Team Id = `c827c472-31f2-497b-9ec6-8ec855d7d94c`
-- Notification Policy Id = `2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
-
-`$ terraform import opsgenie_notification_policy.test c827c472-31f2-497b-9ec6-8ec855d7d94c/2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+`$ terraform import opsgenie_notification_policy.test team_id/notification_policy_id`

@@ -56,7 +56,7 @@ The following arguments are supported:
 
 * `description` - (Optional) A description for this team.
 
-* `ignore_members` - (Optional) Set to true to ignore any configured member blocks and any team member added/updated/removed via OpsGenie web UI. Use this option e.g. to maintain membership via web UI only and use it only for new teams. Changing the value for existing teams might lead to strange behaviour. Defaults to false.
+* `ignore_members` - (Optional) Set to true to ignore any configured member blocks and any team member added/updated/removed via OpsGenie web UI. Use this option e.g. to maintain membership via web UI only and use it only for new teams. Changing the value for existing teams might lead to strange behaviour. Default: `false`.
 
 * `delete_default_resources` - (Optional) Set to true to remove default escalation and schedule for newly created team. **Be careful its also changes that team routing rule to None. That means you have to define routing rule as well**
 
@@ -66,7 +66,7 @@ The following arguments are supported:
 `member` supports the following:
 
 * `id` - (Required) The UUID for the member to add to this Team.
-* `role` - (Optional) The role for the user within the Team - can be either 'admin' or 'user', defaults to 'user' if not set.
+* `role` - (Optional) The role for the user within the Team - can be either `admin` or `user`. Default: `user`.
 
 ## Attributes Reference
 
@@ -76,6 +76,6 @@ The following attributes are exported:
 
 ## Import
 
-Teams can be imported using the `id`, e.g.
+Teams can be imported using the `team_id`, e.g.
 
-`$ terraform import opsgenie_team.team1 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_team.team1 team_id`

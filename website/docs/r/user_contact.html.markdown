@@ -39,7 +39,7 @@ The following arguments are supported:
 * `username` - (Required) The username for contact.(reference)
 
 * `to` - (Required) to field is the address of given method.
-                    
+
 * `method` - (Required) This parameter is the contact method of user and should be one of email, sms or voice. Please note that adding mobile is not supported from API.
 
 * `enabled` - (Optional) Enable contact of the user in OpsGenie. Default value is true.
@@ -53,12 +53,6 @@ The following attributes are exported:
 
 ## Import
 
-Users can be imported using the `id`, e.g.
+Users can be imported using the `username/contact_id`, e.g.
 
-`$ terraform import opsgenie_user_contact.testcontact username/contactId`
-
-For this example:
-- Username = `genie@awesometeam.com` 
-- Contact Id = `2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
-
-`$ terraform import opsgenie_user_contact.testcontact genie@awesometeam.com/2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+`$ terraform import opsgenie_user_contact.testcontact username/contact_id`

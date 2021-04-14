@@ -108,7 +108,7 @@ The `conditions` block supports:
 
 * `key` - (Optional) If `field` is set as extra-properties, key could be used for key-value pair
 
-* `not` - (Optional) Indicates behaviour of the given operation. Default:`false`
+* `not` - (Optional) Indicates behaviour of the given operation. Default: `false`
 
 * `expected_value` - (Optional) User defined value that will be compared with alert field according to the operation. Default: empty string
 
@@ -164,16 +164,10 @@ The following attributes are exported:
 
 ## Import
 
-Alert policies can be imported using the `team id` and `policy_id`, e.g.
+Alert policies can be imported using the `team_id/policy_id`, e.g.
 
-`$ terraform import opsgenie_notification_policy.test teamId/Id`
-
-For this example:
-- Team Id = `c827c472-31f2-497b-9ec6-8ec855d7d94c`
-- Alert Policy Id = `2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
-
-`$ terraform import opsgenie_alert_policy.test c827c472-31f2-497b-9ec6-8ec855d7d94c/2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+`$ terraform import opsgenie_notification_policy.test team_id/policy_id`
 
 You can import global polices using only policy identifier
 
-`$ terraform import opsgenie_alert_policy.test c827c472-31f2-497b-9ec6-8ec855d7d94c`
+`$ terraform import opsgenie_alert_policy.test policy_id`

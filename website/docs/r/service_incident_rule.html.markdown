@@ -60,18 +60,18 @@ The following arguments are supported:
 
 The `incident_rule` block supports:
 
-* `condition_match_type` - (Optional) A Condition type, supported types are: "match-all", "match-any-condition", "match-all-conditions". Default: "match-all"
+* `condition_match_type` - (Optional) A Condition type, supported types are: `match-all`, `match-any-condition`, `match-all-conditions`. Default: `match-all`
 
 * `conditions` - (Optional) Conditions applied to incident. This is a block, structure is documented below.
 
 * `incident_properties`- (Required) Properties for incident rule. This is a block, structure is documented below.
 
- 
+
 The `conditions` block supports:
 
-* `field` - (Required) Specifies which alert field will be used in condition. Possible values are "message", "alias", "description", "source", "entity", "tags", "actions", "details", "extra-properties", "recipients", "teams", "priority"
+* `field` - (Required) Specifies which alert field will be used in condition. Possible values are `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `recipients`, `teams`, `priority`
 
-* `operation` - (Required) It is the operation that will be executed for the given field and key. Possible operations are "matches", "contains", "starts-with", "ends-with", "equals", "contains-key", "contains-value", "greater-than", "less-than", "is-empty", "equals-ignore-whitespace".
+* `operation` - (Required) It is the operation that will be executed for the given field and key. Possible operations are `matches`, `contains`, `starts-with`, `ends-with`, `equals`, `contains-key`, `contains-value`, `greater-than`, `less-than`, `is-empty`, `equals-ignore-whitespace`.
 
 * `not` - (Optional) Indicates behaviour of the given operation. Default: false
 
@@ -88,7 +88,7 @@ The `incident_properties` block supports:
 
 * `description` - (Optional) Description field of the incident rule.
 
-* `priority` - (Required) Priority level of the alert. Possible values are P1, P2, P3, P4 and P5
+* `priority` - (Required) Priority level of the alert. Possible values are `P1`, `P2`, `P3`, `P4` and `P5`
 
 * `stakeholder_properties` - (Required) DEtails about stakeholders for this rule. This is a block, structure is documented below.
 
@@ -112,4 +112,4 @@ The following attributes are exported:
 
 Service Incident Rule can be imported using the `service_id/service_incident_rule_id`, e.g.
 
-`$ terraform import opsgenie_service_incident_rule.this 812be1a1-32c8-4666-a7fb-03ecc385106c/b84ed86f-6ce3-4388-91ac-7638ac0a8052`
+`$ terraform import opsgenie_service_incident_rule.this service_id/service_incident_rule_id`
