@@ -364,8 +364,8 @@ func resourceOpsGenieNotificationPolicyRead(d *schema.ResourceData, meta interfa
 		d.Set("auto_restart_action", nil)
 	}
 	// Workaround for a mispelling in ops-genie-sdk-v2 v1.0.5
-	if policy.DeDuplicationActionAction != nil {
-		d.Set("de_duplication_action", flattenOpsGenieNotificationPolicyDeDuplicationAction(policy.DeDuplicationActionAction))
+	if policy.DeDuplicationAction != nil {
+		d.Set("de_duplication_action", flattenOpsGenieNotificationPolicyDeDuplicationAction(policy.DeDuplicationAction))
 	} else {
 		d.Set("de_duplication_action", nil)
 	}

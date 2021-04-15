@@ -91,6 +91,26 @@ func TestAccOpsGenieNotificationPolicy_basic(t *testing.T) {
 	})
 }
 
+func TestAccOpsGenieDeDuplicationNotificationPolicy_basic(t *testing.T) {
+	teamName := acctest.RandString(6)
+	notificationPolicyName := acctest.RandString(6)
+
+	config := testAccOpsGenieDeDuplicationActionNotificationPolicy_basic(teamName, notificationPolicyName)
+
+	resource.Test(t, resource.TestCase{
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieNotificationPolicyDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOpsGenieNotificationPolicyExists("opsgenie_notification_policy.test"),
+				),
+			},
+		},
+	})
+}
+
 func testCheckOpsGenieNotificationPolicyDestroy(s *terraform.State) error {
 	client, err := policy.NewClient(testAccProvider.Meta().(*OpsgenieClient).client.Config)
 	if err != nil {
@@ -179,6 +199,26 @@ resource "opsgenie_notification_policy" "test" {
       start_min  = 0
     }
   }
+}
+`, teamName, notificationPolicyName)
+}
+
+func testAccOpsGenieDeDuplicationActionNotificationPolicy_basic(teamName, notificationPolicyName string) string {
+	return fmt.Sprintf(`
+resource "opsgenie_team" "test" {
+  name        = "genieteam-%s"
+  description = "This team deals with all the things"
+}
+
+resource "opsgenie_notification_policy" "test" {
+  name               = "geniepolicy-%s"
+  team_id            = opsgenie_team.test.id
+  policy_description = "Perfect notification policy for the team."
+  de_duplication_action {
+		count                      = 20
+		de_duplication_action_type = "value-based"
+    }
+	filter {}
 }
 `, teamName, notificationPolicyName)
 }
