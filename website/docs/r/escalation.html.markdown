@@ -32,28 +32,28 @@ resource "opsgenie_escalation" "test" {
   name          = "genieescalation-%s"
   description   = "test"
   owner_team_id = "${opsgenie_team.test.id}"
- 
+
   rules {
     condition   = "if-not-acked"
     notify_type = "default"
     delay       = 1
-    
+
     recipient {
       type = "user"
       id   = "${opsgenie_user.test.id}"
     }
-	  
+
     recipient {
       type = "team"
       id   = "${opsgenie_team.test.id}"
     }
-	  
+
     recipient {
       type = "schedule"
       id   = "${opsgenie_schedule.test.id}"
     }
   }
-  
+
   repeat  {
     wait_interval          = 10
     count                  = 1
@@ -102,7 +102,7 @@ The following attributes are exported:
 
 ## Import
 
-Escalations can be imported using the `id`, e.g.
+Escalations can be imported using the `escalation_id`, e.g.
 
-`$ terraform import opsgenie_escalation.test 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_escalation.test escalation_id`
 

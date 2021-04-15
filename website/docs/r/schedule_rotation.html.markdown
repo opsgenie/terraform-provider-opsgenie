@@ -12,14 +12,14 @@ Manages a Schedule Rotation within Opsgenie.
 
 ## Example Usage
 ```hcl
-resource "opsgenie_schedule_rotation" "test" { 
+resource "opsgenie_schedule_rotation" "test" {
   schedule_id = "${opsgenie_schedule.test.id}"
   name        = "test"
   start_date  = "2019-06-18T17:00:00Z"
   end_date    = "2019-06-20T17:30:00Z"
   type        = "hourly"
   length      = 6
-  
+
   participant {
     type = "user"
     id   = "${opsgenie_user.test.id}"
@@ -27,7 +27,7 @@ resource "opsgenie_schedule_rotation" "test" {
 
   time_restriction {
     type = "time-of-day"
-    
+
     restriction {
       start_hour = 1
       start_min  = 1
@@ -42,7 +42,7 @@ resource "opsgenie_schedule_rotation" "test" {
 
 The following arguments are supported:
 
-* `schedule_id` - (Required) Identifier of the schedule.                             
+* `schedule_id` - (Required) Identifier of the schedule.
 
 * `name` - (Optional) Name of rotation.
 
@@ -66,7 +66,7 @@ The following arguments are supported:
 `time_restriction` supports the following:
 
 * `type` - (Required) This parameter should be set to `time-of-day` or `weekday-and-time-of-day`.
-                      
+
 * `restriction` - (Optional) It is a restriction object which is described below. In this case startDay/endDay fields are not supported. This can be used only if time restriction type is `time-of-day`.
 
     `restriction` supports the following:
@@ -97,12 +97,6 @@ The following attributes are exported:
 
 ## Import
 
-Schedule Rotations can be imported using the `id` and `schedule_id`, e.g.
+Schedule Rotations can be imported using the `schedule_id/rotation_id`, e.g.
 
-* `terraform import opsgenie_schedule_rotation.test schedule_id/id`
-
-For this example:
-- Schedule Id = `c827c472-31f2-497b-9ec6-8ec855d7d94c` 
-- Rotation Id = `2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
-
-`$ terraform import opsgenie_schedule_rotation.test c827c472-31f2-497b-9ec6-8ec855d7d94c/2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+* `terraform import opsgenie_schedule_rotation.test schedule_id/rotation_id`

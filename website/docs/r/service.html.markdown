@@ -42,6 +42,6 @@ The following attributes are exported:
 
 ## Import
 
-Teams can be imported using the `id`, e.g.
+Teams can be imported using the `service_id`, e.g.
 
-`$ terraform import opsgenie_service.this 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_service.this service_id`
