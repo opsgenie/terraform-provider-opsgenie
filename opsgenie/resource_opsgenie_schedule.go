@@ -7,12 +7,42 @@ import (
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 
-	"fmt"
-
 	"regexp"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
+
+var opsgenieScheduleSchema = map[string]*schema.Schema{
+	"name": {
+		Type:     schema.TypeString,
+		Required: true,
+		ValidateFunc: validation.All(
+			validation.StringLenBetween(1, 100),
+			validation.StringMatch(
+				regexp.MustCompile(`^[[:alnum:]._-]([ [:alnum:]._-]*[[:alnum:]._-])?$`),
+				"Only alphanumeric characters, dots, underscores and dashes are allowed. Leading and trailing spaces are not allowed.",
+			),
+		),
+	},
+	"description": {
+		Type:         schema.TypeString,
+		Optional:     true,
+		ValidateFunc: validation.StringLenBetween(0, 10000),
+	},
+	"timezone": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+	"enabled": {
+		Type:     schema.TypeBool,
+		Optional: true,
+	},
+	"owner_team_id": {
+		Type:     schema.TypeString,
+		Optional: true,
+	},
+}
 
 func resourceOpsgenieSchedule() *schema.Resource {
 	return &schema.Resource{
@@ -23,30 +53,7 @@ func resourceOpsgenieSchedule() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
-		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validateOpsgenieScheduleName,
-			},
-			"description": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ValidateFunc: validateOpsgenieScheduleDescription,
-			},
-			"timezone": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
-			"owner_team_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-		},
+		Schema: opsgenieScheduleSchema,
 	}
 }
 
@@ -166,27 +173,4 @@ func resourceOpsgenieScheduleDelete(d *schema.ResourceData, meta interface{}) er
 	}
 
 	return nil
-}
-
-func validateOpsgenieScheduleName(v interface{}, k string) (ws []string, errors []error) {
-	value := v.(string)
-	if !regexp.MustCompile(`^[a-zA-Z 0-9_-]+$`).MatchString(value) {
-		errors = append(errors, fmt.Errorf(
-			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
-	}
-
-	if len(value) >= 100 {
-		errors = append(errors, fmt.Errorf("%q cannot be longer than 100 characters: %q %d", k, value, len(value)))
-	}
-
-	return
-}
-func validateOpsgenieScheduleDescription(v interface{}, k string) (ws []string, errors []error) {
-	value := v.(string)
-
-	if len(value) >= 10000 {
-		errors = append(errors, fmt.Errorf("%q cannot be longer than 100 characters: %q %d", k, value, len(value)))
-	}
-
-	return
 }
