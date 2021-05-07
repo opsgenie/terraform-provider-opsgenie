@@ -79,7 +79,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 										Required: true,
 										ValidateFunc: validation.StringInSlice([]string{
 											"message", "alias", "description", "source", "entity", "tags",
-											"actions", "details", "extra-properties", "recipients", "teams", "priority",
+											"actions", "details", "extra-properties", "responders", "teams", "priority",
 										}, false),
 									},
 									"operation": {
