@@ -2,10 +2,10 @@ package opsgenie
 
 import (
 	"context"
-	"log"
-
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
+	"log"
+	"time"
 
 	"fmt"
 
@@ -35,8 +35,10 @@ func resourceOpsgenieSchedule() *schema.Resource {
 				ValidateFunc: validateOpsgenieScheduleDescription,
 			},
 			"timezone": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:             schema.TypeString,
+				Optional:         true,
+				Default:          "America/New_York",
+				DiffSuppressFunc: checkTimeZoneDifference,
 			},
 			"enabled": {
 				Type:     schema.TypeBool,
@@ -48,6 +50,21 @@ func resourceOpsgenieSchedule() *schema.Resource {
 			},
 		},
 	}
+}
+
+func checkTimeZoneDifference(k, old, new string, d *schema.ResourceData) bool {
+	locationOld, errOld := time.LoadLocation(old)
+	if errOld != nil {
+		return false
+	}
+	locationNew, errNew := time.LoadLocation(new)
+	if errNew != nil {
+		return false
+	}
+	now := time.Now()
+	timeOld := now.In(locationOld)
+	timeNew := now.In(locationNew)
+	return timeOld.Format(time.ANSIC) == timeNew.Format(time.ANSIC)
 }
 
 func resourceOpsgenieScheduleCreate(d *schema.ResourceData, meta interface{}) error {
