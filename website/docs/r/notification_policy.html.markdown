@@ -39,11 +39,11 @@ The following arguments are supported:
 
 * `team_id` - (Required) Id of team that this policy belons to.
 
-* `enabled` - (Optional) If policy should be enabled. Default: true
+* `enabled` - (Optional) If policy should be enabled. Default: `true`
 
 * `policy_description` - (Optional) Description of the policy. This can be max 512 characters.
 
-* `filter` - (Required) A notification filter which will be applied. This filter can be empty: filter {} - this means 'match-all'. This is a block, structure is documented below.
+* `filter` - (Required) A notification filter which will be applied. This filter can be empty: `filter {}` - this means `match-all`. This is a block, structure is documented below.
 
 * `time_restriction` - (Optional) Time restrictions specified in this field must be met for this policy to work. This is a block, structure is documented below.
 
@@ -55,24 +55,24 @@ The following arguments are supported:
 
 * `delay_action` - (Optional) Delay notifications. This is a block, structure is documented below.
 
-* `suppress` - (Optional) Suppress value of the policy. Values are: true, false. Default: false
+* `suppress` - (Optional) Suppress value of the policy. Values are: `true`, `false`. Default: `false`
 
 
 The `filter` block supports:
 
-* `type` (Optional) - A filter type, supported types are: "match-all", "match-any-condition", "match-all-conditions". Default: "match-all"
+* `type` (Optional) - A filter type, supported types are: `match-all`, `match-any-condition`, `match-all-conditions`. Default: `match-all`
 
 * `conditions` (Optional) Conditions applied to filter. This is a block, structure is documented below.
 
 The `conditions` block supports:
 
-* `field` - (Required) Specifies which alert field will be used in condition. Possible values are "message", "alias", "description", "source", "entity", "tags", "actions", "details", "extra-properties", "recipients", "teams", "priority"
+* `field` - (Required) Specifies which alert field will be used in condition. Possible values are `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `recipients`, `teams`, `priority`
 
-* `operation` - (Required) It is the operation that will be executed for the given field and key. Possible operations are "matches", "contains", "starts-with", "ends-with", "equals", "contains-key", "contains-value", "greater-than", "less-than", "is-empty", "equals-ignore-whitespace".
+* `operation` - (Required) It is the operation that will be executed for the given field and key. Possible operations are `matches`, `contains`, `starts-with`, `ends-with`, `equals`, `contains-key`, `contains-value`, `greater-than`, `less-than`, `is-empty`, `equals-ignore-whitespace`.
 
 * `key` - (Optional) If `field` is set as extra-properties, key could be used for key-value pair
 
-* `not` - (Optional) Indicates behaviour of the given operation. Default: false
+* `not` - (Optional) Indicates behaviour of the given operation. Default: `false`
 
 * `expected_value` - (Optional) User defined value that will be compared with alert field according to the operation. Default: empty string
 
@@ -80,17 +80,17 @@ The `conditions` block supports:
 
 The `time_restriction` block supports:
 
-* `type` - (Required) Defines if restriction should apply daily on given hours or on certain days and hours. Possible values are: "time-of-day", "weekday-and-time-of-day"
+* `type` - (Required) Defines if restriction should apply daily on given hours or on certain days and hours. Possible values are: `time-of-day`, `weekday-and-time-of-day`
 
-* `restrictions` - (Optional) List of days and hours definitions for field type = "weekday-and-time-of-day". This is a block, structure is documented below.
+* `restrictions` - (Optional) List of days and hours definitions for field type = `weekday-and-time-of-day`. This is a block, structure is documented below.
 
-* `restriction` - (Optional) A definition of hourly definition applied daily, this has to be used with combination: type = "time-of-day". This is a block, structure is documented below.
+* `restriction` - (Optional) A definition of hourly definition applied daily, this has to be used with combination: type = `time-of-day`. This is a block, structure is documented below.
 
 The `restrictions` block supports:
 
-* `start_day` - (Required) Starting day of restriction (eg. "monday")
+* `start_day` - (Required) Starting day of restriction (eg. `monday`)
 
-* `end_day` - (Required) Ending day of restriction (eg. "wednesday)
+* `end_day` - (Required) Ending day of restriction (eg. `wednesday`)
 
 * `start_hour` - (Required) Starting hour of restriction on defined `start_day`
 
@@ -122,25 +122,25 @@ The `auto_restart_action` block supports:
 
 The `de_duplication_action` block supports:
 
-* `duration` - (Required) Duration of this action. This is a block, structure is documented below.
-
 * `de_duplication_action_type` - (Required) Deduplication type. Possible values are: "value-based", "frequency-based"
 
 * `count` - (Required) - Count
 
+* `duration` - (Optional) Duration of this action (only required for "frequency-based" de-duplication action). This is a block, structure is documented below.
+
 The `delay_action` block supports:
 
-* `delay_option` - (Required) Defines until what day to delay or for what duration. Possible values are: "for-duration", "next-time", "next-weekday", "next-monday", "next-tuesday", "next-wednesday", "next-thursday", "next-friday", "next-saturday", "next-sunday"
+* `delay_option` - (Required) Defines until what day to delay or for what duration. Possible values are: `for-duration`, `next-time`, `next-weekday`, `next-monday`, `next-tuesday`, `next-wednesday`, `next-thursday`, `next-friday`, `next-saturday`, `next-sunday`
 
-* `duration` - (Optional) Duration of this action. If `delay_option` = "for-duration" this has to be set. This is a block, structure is documented below.
+* `duration` - (Optional) Duration of this action. If `delay_option` = `for-duration` this has to be set. This is a block, structure is documented below.
 
-* `until_hour` - (Optional) Until what hour notifications will be delayed. If `delay_option` is set to antyhing else then "for-duration" this has to be set.
+* `until_hour` - (Optional) Until what hour notifications will be delayed. If `delay_option` is set to antyhing else then `for-duration` this has to be set.
 
-* `until_minute` - (Optional) Until what minute on `until_hour` notifications will be delayed. If `delay_option` is set to antyhing else then "for-duration" this has to be set.
+* `until_minute` - (Optional) Until what minute on `until_hour` notifications will be delayed. If `delay_option` is set to antyhing else then `for-duration` this has to be set.
 
 The `duration` block supports:
 
-* `time_unit` - (Optional) Valid time units are: "minutes", "hours", "days". Default: minutes
+* `time_unit` - (Optional) Valid time units are: `minutes`, `hours`, `days`. Default: `minutes`
 
 * `time_amount` - (Required) A amount of time in `time_units`. This is a integer attribute.
 
@@ -153,12 +153,6 @@ The following attributes are exported:
 
 ## Import
 
-Notification policies can be imported using the `team id` and `id`, e.g.
+Notification policies can be imported using the `team_id` and `notification_policy_id`, e.g.
 
-`$ terraform import opsgenie_notification_policy.test teamId/Id`
-
-For this example:
-- Team Id = `c827c472-31f2-497b-9ec6-8ec855d7d94c` 
-- Notification Policy Id = `2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
-
-`$ terraform import opsgenie_notification_policy.test c827c472-31f2-497b-9ec6-8ec855d7d94c/2d1a78d0-c13e-47d3-af0a-8b6d0cc2b7b1`
+`$ terraform import opsgenie_notification_policy.test team_id/notification_policy_id`

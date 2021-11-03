@@ -1,3 +1,11 @@
+## 0.6.5 (June 15, 2021)
+BUGFIX:
+* **Schedule:** Timezone diff problem fixed.
+
+## 0.6.4 (April 14, 2021)
+BUGFIX:
+* **Notification Policy:** De-duplication Action problem fixed.
+
 ## 0.6.3 (February 11, 2021)
 BUGFIX:
 * **Alert Policy:** Global alert policy import fixed

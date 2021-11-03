@@ -174,3 +174,19 @@ resource "opsgenie_schedule" "test" {
 
 `, rString)
 }
+
+func TestCheckTimeZoneDifference(t *testing.T) {
+	oldTimeZone := "America/Los_Angeles"
+	newTimeZone := "Canada/Pacific"
+	if !checkTimeZoneDiff("", oldTimeZone, newTimeZone, nil) {
+		t.Errorf("Timezones should be equal")
+	}
+}
+
+func TestCheckTimeZoneDifference_notEqual(t *testing.T) {
+	oldTimeZone := "America/Los_Angeles"
+	newTimeZone := "Europe/Istanbul"
+	if checkTimeZoneDiff("", oldTimeZone, newTimeZone, nil) {
+		t.Errorf("Timezones should be equal")
+	}
+}

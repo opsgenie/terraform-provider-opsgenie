@@ -32,28 +32,28 @@ resource "opsgenie_escalation" "test" {
   name          = "genieescalation-%s"
   description   = "test"
   owner_team_id = "${opsgenie_team.test.id}"
- 
+
   rules {
     condition   = "if-not-acked"
     notify_type = "default"
     delay       = 1
-    
+
     recipient {
       type = "user"
       id   = "${opsgenie_user.test.id}"
     }
-	  
+
     recipient {
       type = "team"
       id   = "${opsgenie_team.test.id}"
     }
-	  
+
     recipient {
       type = "schedule"
       id   = "${opsgenie_schedule.test.id}"
     }
   }
-  
+
   repeat  {
     wait_interval          = 10
     count                  = 1
@@ -80,20 +80,18 @@ The following arguments are supported:
 
 `rules` supports the following:
 
-* `condition` - (Required) The condition for notifying the recipient of escalation rule that is based on the alert state. Possible values are: if-not-acked and if-not-closed. If not given, if-not-acked is used.
+* `condition` - (Required) The condition for notifying the recipient of escalation rule that is based on the alert state. Possible values are: `if-not-acked` and `if-not-closed`. Default: `if-not-acked`
 * `notify_type` - (Required) Recipient calculation logic for schedules. Possible values are:
-```
-default: on call users
-next: next users in rotation
-previous: previous users on rotation
-users: users of the team
-admins: admins of the team
-all: all members of the team
-```
 
+  - `default`: on call users
+  - `next`: next users in rotation
+  - `previous`: previous users on rotation
+  - `users`: users of the team
+  - `admins`: admins of the team
+  - `all`: all members of the team
 
-* `recipient` - (Required) Object of schedule, team, or users which will be notified in escalation. The possible values for participants are: user, schedule, team.
-* `delay` - (Required) Time delay of the escalation rule. This parameter takes an object that consists timeAmount field that takes time amount in minutes.
+* `recipient` - (Required) Object of schedule, team, or users which will be notified in escalation. The possible values for participants are: `user`, `schedule`, `team`.
+* `delay` - (Required) Time delay of the escalation rule, in minutes.
 
 
 ## Attributes Reference
@@ -104,7 +102,7 @@ The following attributes are exported:
 
 ## Import
 
-Escalations can be imported using the `id`, e.g.
+Escalations can be imported using the `escalation_id`, e.g.
 
-`$ terraform import opsgenie_escalation.test 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_escalation.test escalation_id`
 
