@@ -1,4 +1,4 @@
-## 0.6.5 (December 13, 2021)
+## 0.6.6 (December 13, 2021)
 BUGFIX:
 * **Routing Rule:** Add is_default field
 * **Heartbeat:** Add "." string support
