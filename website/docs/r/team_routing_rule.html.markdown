@@ -70,6 +70,8 @@ The following arguments are supported:
 
 * `team_id` - (Required) Id of the team owning the routing rule
 
+* `is_default` - (Optional) Only use when importing default routing rule
+
 * `order` - (Optional) The order of the team routing rule within the rules. order value is actually the index of the team routing rule whose minimum value is 0 and whose maximum value is n-1 (number of team routing rules is n)
 
 * `timezone` - (Optional) Timezone of team routing rule. If timezone field is not given, account timezone is used as default.You can refer to Supported Locale IDs for available timezones
