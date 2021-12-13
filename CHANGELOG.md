@@ -1,3 +1,6 @@
+## 0.6.7 (December 13, 2021)
+* GoLang version increased
+
 ## 0.6.6 (December 13, 2021)
 BUGFIX:
 * **Routing Rule:** Add is_default field
