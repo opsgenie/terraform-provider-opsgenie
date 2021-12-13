@@ -1,3 +1,8 @@
+## 0.6.5 (December 13, 2021)
+BUGFIX:
+* **Routing Rule:** Add is_default field
+* **Heartbeat:** Add "." string support
+
 ## 0.6.5 (June 15, 2021)
 BUGFIX:
 * **Schedule:** Timezone diff problem fixed.
