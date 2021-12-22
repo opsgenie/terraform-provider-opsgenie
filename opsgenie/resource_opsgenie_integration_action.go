@@ -2,12 +2,12 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
@@ -196,6 +196,10 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
+						},
+						"custom_priority": {
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 					},
 				},
@@ -449,6 +453,74 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 					},
 				},
 			},
+			"ignore": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Default:  "ignore",
+						},
+						"order": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Default:  1,
+						},
+						"filter": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"type": {
+										Type:         schema.TypeString,
+										Required:     true,
+										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
+									},
+									"conditions": {
+										Type:     schema.TypeList,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"field": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"key": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"not": {
+													Type:     schema.TypeBool,
+													Optional: true,
+													Default:  false,
+												},
+												"operation": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+												"expected_value": {
+													Type:     schema.TypeString,
+													Optional: true,
+												},
+												"order": {
+													Type:     schema.TypeInt,
+													Optional: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -513,12 +585,18 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 
 		action.Type = integration.ActionType(inputMap["type"].(string))
 		action.Name = inputMap["name"].(string)
-		action.Alias = inputMap["alias"].(string)
 		action.Order = inputMap["order"].(int)
-		action.User = inputMap["user"].(string)
-		action.Note = inputMap["note"].(string)
+		if action.Type != integration.Ignore {
+			action.Alias = inputMap["alias"].(string)
+			action.User = inputMap["user"].(string)
+			action.Note = inputMap["note"].(string)
+		}
+
 		if priority := inputMap["priority"]; priority != nil {
 			action.Priority = priority.(string)
+		}
+		if customPriority := inputMap["custom_priority"]; customPriority != nil {
+			action.CustomPriority = customPriority.(string)
 		}
 		filters := expandOpsgenieFilter(inputMap["filter"].([]interface{}))
 		action.Filter = &filters
@@ -593,14 +671,17 @@ func flattenOpsgenieIntegrationActions(input []integration.IntegrationAction) []
 		actionMap := make(map[string]interface{})
 		actionMap["type"] = action.Type
 		actionMap["name"] = action.Name
-		actionMap["alias"] = action.Alias
+		if action.Type != "ignore" {
+			actionMap["user"] = action.User
+			actionMap["alias"] = action.Alias
+			actionMap["note"] = action.Note
+		}
 		actionMap["order"] = action.Order
-		actionMap["note"] = action.Note
-		actionMap["user"] = action.User
 		actionMap["filter"] = flattenOpsgenieFilter(action.Filter)
 		if action.Type == "create" {
 			actionMap["source"] = action.Source
 			actionMap["priority"] = action.Priority
+			actionMap["custom_priority"] = action.CustomPriority
 			actionMap["message"] = action.Message
 			actionMap["description"] = action.Description
 			actionMap["entity"] = action.Entity
@@ -640,6 +721,7 @@ func resourceOpsgenieIntegrationActionCreate(d *schema.ResourceData, meta interf
 		Close:       expandOpsgenieIntegrationActions(d.Get("close")),
 		Acknowledge: expandOpsgenieIntegrationActions(d.Get("acknowledge")),
 		AddNote:     expandOpsgenieIntegrationActions(d.Get("add_note")),
+		Ignore:      expandOpsgenieIntegrationActions(d.Get("ignore")),
 	}
 
 	log.Printf("[INFO] Creating OpsGenie integration actions for '%s'", integrationId)
@@ -673,6 +755,7 @@ func resourceOpsgenieIntegrationActionRead(d *schema.ResourceData, meta interfac
 	d.Set("close", flattenOpsgenieIntegrationActions(result.Close))
 	d.Set("acknowledge", flattenOpsgenieIntegrationActions(result.Acknowledge))
 	d.Set("add_note", flattenOpsgenieIntegrationActions(result.AddNote))
+	d.Set("ignore", flattenOpsgenieIntegrationActions(result.Ignore))
 
 	return nil
 }
@@ -694,6 +777,7 @@ func resourceOpsgenieIntegrationActionDelete(d *schema.ResourceData, meta interf
 		Close:       []integration.IntegrationAction{},
 		Acknowledge: []integration.IntegrationAction{},
 		AddNote:     []integration.IntegrationAction{},
+		Ignore:      []integration.IntegrationAction{},
 	}
 
 	_, err = client.UpdateAllActions(context.Background(), deleteRequest)

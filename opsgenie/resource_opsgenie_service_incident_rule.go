@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"strconv"
-
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/service"
 )
@@ -61,6 +59,7 @@ func resourceOpsGenieServiceIncidentRule() *schema.Resource {
 										ValidateFunc: validation.StringInSlice([]string{
 											"message", "description", "tags",
 											"extra-properties", "recipients", "teams", "priority",
+											"alias", "source", "entity", "actions", "details",
 										}, false),
 									},
 									"operation": {
@@ -102,14 +101,14 @@ func resourceOpsGenieServiceIncidentRule() *schema.Resource {
 										ValidateFunc: validation.StringLenBetween(1, 130),
 									},
 									"tags": {
-										Type:     schema.TypeList,
+										Type:     schema.TypeSet,
 										Optional: true,
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
 										},
 									},
 									"details": {
-										Type:     schema.TypeList,
+										Type:     schema.TypeMap,
 										Optional: true,
 										Elem: &schema.Schema{
 											Type: schema.TypeString,
@@ -118,6 +117,7 @@ func resourceOpsGenieServiceIncidentRule() *schema.Resource {
 									"description": {
 										Type:         schema.TypeString,
 										Optional:     true,
+										Default:      "{{description}}",
 										ValidateFunc: validation.StringLenBetween(1, 10000),
 									},
 									"priority": {
@@ -250,7 +250,6 @@ func resourceOpsGenieServiceIncidentRuleUpdate(d *schema.ResourceData, meta inte
 }
 
 func resourceOpsGenieServiceIncidentRuleDelete(d *schema.ResourceData, meta interface{}) error {
-
 	service_id := d.Get("service_id").(string)
 	incident_rule_id := d.Id()
 
@@ -271,8 +270,7 @@ func resourceOpsGenieServiceIncidentRuleDelete(d *schema.ResourceData, meta inte
 	return nil
 }
 
-func flattenOpsGenieServiceIncidentRules(input service.IncidentRuleResult) map[string]interface{} {
-
+func flattenOpsGenieServiceIncidentRules(input service.IncidentRuleResult) []map[string]interface{} {
 	incident_rule := make(map[string]interface{})
 	conditions_list := make([]map[string]interface{}, 0, len(input.Conditions))
 
@@ -284,28 +282,29 @@ func flattenOpsGenieServiceIncidentRules(input service.IncidentRuleResult) map[s
 	incident_rule["condition_match_type"] = input.ConditionMatchType
 	incident_rule["incident_properties"] = flattenOpsGenieServiceIncidentRuleIncidentProperties(input.IncidentProperties)
 
-	return incident_rule
+	return []map[string]interface{}{incident_rule}
 
 }
 
 func expandOpsGenieServiceIncidentRuleConditions(input []interface{}) []og.Condition {
-
 	conditions := make([]og.Condition, 0, len(input))
-	condition := og.Condition{}
 	if input == nil {
 		return conditions
 	}
 
 	for _, v := range input {
+		condition := og.Condition{}
 		config := v.(map[string]interface{})
 		not_value := config["not"].(bool)
 		condition.Field = og.ConditionFieldType(config["field"].(string))
 		condition.Operation = og.ConditionOperation(config["operation"].(string))
 		condition.IsNot = &not_value
 		condition.ExpectedValue = config["expected_value"].(string)
-		key := config["key"].(string)
-		if key != "" {
-			condition.Key = config["key"].(string)
+		if condition.Field == og.ExtraProperties {
+			key := config["key"].(string)
+			if key != "" {
+				condition.Key = config["key"].(string)
+			}
 		}
 		conditions = append(conditions, condition)
 	}
@@ -314,18 +313,17 @@ func expandOpsGenieServiceIncidentRuleConditions(input []interface{}) []og.Condi
 }
 
 func expandOpsGenieServiceIncidentRuleIncidentProperties(input []interface{}) service.IncidentProperties {
-
 	incident_properties := service.IncidentProperties{}
 
 	for _, v := range input {
 		config := v.(map[string]interface{})
 		incident_properties.Message = config["message"].(string)
 
-		if len(config["tags"].([]interface{})) > 0 {
+		if config["tags"].(*schema.Set).Len() > 0 {
 			incident_properties.Tags = flattenOpsgenieServiceIncidentRuleRequestTags(config["tags"].(*schema.Set))
 		}
-		if len(config["details"].([]interface{})) > 0 {
-			incident_properties.Details = flattenOpsgenieServiceIncidentRuleRequestDetails(config["details"].(*schema.Set))
+		if config["details"].(map[string]interface{}) != nil {
+			incident_properties.Details = flattenOpsgenieServiceIncidentRuleRequestDetails(config["details"].(map[string]interface{}))
 		}
 
 		incident_properties.Description = config["description"].(string)
@@ -336,7 +334,6 @@ func expandOpsGenieServiceIncidentRuleIncidentProperties(input []interface{}) se
 }
 
 func expandOpsGenieServiceIncidentRuleStakeholderProperties(input []interface{}) service.StakeholderProperties {
-
 	stakeholder_properties := service.StakeholderProperties{}
 	if input == nil {
 		return stakeholder_properties
@@ -365,16 +362,15 @@ func flattenOpsgenieServiceIncidentRuleRequestTags(input *schema.Set) []string {
 	return tags
 }
 
-func flattenOpsgenieServiceIncidentRuleRequestDetails(input *schema.Set) map[string]string {
+func flattenOpsgenieServiceIncidentRuleRequestDetails(input map[string]interface{}) map[string]string {
 	details := make(map[string]string)
 
 	if input == nil {
 		return details
 	}
 
-	for k, v := range input.List() {
-		index := strconv.Itoa(k)
-		details[index] = v.(string)
+	for k, v := range input {
+		details[k] = v.(string)
 	}
 	return details
 }
@@ -384,7 +380,7 @@ func flattenOpsGenieServiceIncidentRuleConditions(input og.Condition) map[string
 
 	condition["field"] = input.Field
 	condition["operation"] = input.Operation
-	condition["not"] = &input.IsNot
+	condition["not"] = *input.IsNot
 	condition["expected_value"] = input.ExpectedValue
 	if input.Key != "" {
 		condition["key"] = input.Key
@@ -393,25 +389,30 @@ func flattenOpsGenieServiceIncidentRuleConditions(input og.Condition) map[string
 	return condition
 }
 
-func flattenOpsGenieServiceIncidentRuleIncidentProperties(input service.IncidentProperties) map[string]interface{} {
-
+func flattenOpsGenieServiceIncidentRuleIncidentProperties(input service.IncidentProperties) []map[string]interface{} {
 	incident_properties := make(map[string]interface{})
-
+	if len(input.Tags) > 0 {
+		incident_properties["tags"] = schema.NewSet(schema.HashString, convertStringSliceToInterfaceSlice(input.Tags))
+	}
+	if len(input.Details) > 0 {
+		incident_properties["details"] = convertStringMapToInterfaceMap(input.Details)
+	}
+	if input.Description != "" {
+		incident_properties["description"] = input.Description
+	}
 	incident_properties["message"] = input.Message
-	incident_properties["tags"] = input.Tags
-	incident_properties["details"] = input.Details
-	incident_properties["description"] = input.Description
 	incident_properties["priority"] = input.Priority
 	incident_properties["stakeholder_properties"] = flattenOpsGenieServiceIncidentRuleStakeholderProperties(input.StakeholderProperties)
-	return incident_properties
+	return []map[string]interface{}{incident_properties}
 }
 
-func flattenOpsGenieServiceIncidentRuleStakeholderProperties(input service.StakeholderProperties) map[string]interface{} {
-
+func flattenOpsGenieServiceIncidentRuleStakeholderProperties(input service.StakeholderProperties) []map[string]interface{} {
 	stakeholders_properties := make(map[string]interface{})
 
-	stakeholders_properties["enable"] = &input.Enable
+	stakeholders_properties["enable"] = *input.Enable
 	stakeholders_properties["message"] = input.Message
-	stakeholders_properties["description"] = input.Description
-	return stakeholders_properties
+	if input.Description != "" {
+		stakeholders_properties["description"] = input.Description
+	}
+	return []map[string]interface{}{stakeholders_properties}
 }

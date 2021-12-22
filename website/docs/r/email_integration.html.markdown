@@ -76,9 +76,9 @@ The following arguments are supported:
 
 * `enabled` - (Optional) A Member block as documented below.
 
-* `ignore_responders_from_payload` - (Optional) If enabled, the integration will ignore recipients sent in request payloads. Defaults to false.
+* `ignore_responders_from_payload` - (Optional) If enabled, the integration will ignore recipients sent in request payloads. Default: `false`.
 
-* `suppress_notifications` - (Optional) If enabled, notifications that come from alerts will be suppressed. Defaults to false.
+* `suppress_notifications` - (Optional) If enabled, notifications that come from alerts will be suppressed. Default: `false`.
 
 * `owner_team_id` - (Optional) Owner team id of the integration.
 
@@ -99,4 +99,4 @@ The following attributes are exported:
 
 Email Integrations can be imported using the `id`, e.g.
 
-`$ terraform import opsgenie_email_integration.test 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_email_integration.test id`

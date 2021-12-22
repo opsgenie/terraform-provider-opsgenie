@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/notification"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
@@ -131,7 +131,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 							Required: true,
 						},
 						"restrictions": {
-							Type:     schema.TypeSet,
+							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -200,8 +200,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 						},
 						"name": {
 							Type:     schema.TypeString,
-							Optional: true,
-							Default:  true,
+							Required: true,
 						},
 					},
 				},
@@ -290,7 +289,7 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 	}
 
 	if len(timeRestriction) > 0 {
-		createRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
+		createRequest.TimeRestriction = expandNotificationRuleRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Creating Notification Rule '%s' for User: '%s'", d.Get("name").(string), d.Get("username").(string))
@@ -326,13 +325,10 @@ func resourceOpsGenieNotificationRuleRead(d *schema.ResourceData, meta interface
 			return nil
 		}
 	}
-	d.Set("name", rule.Name)
-	d.Set("action_type", rule.ActionType)
-	d.Set("notification_time", rule.NotificationTime)
-	d.Set("enabled", rule.Enabled)
-	d.Set("order", rule.Order)
-	d.Set("schedules", rule.Schedules)
 
+	if rule.Schedules != nil {
+		d.Set("schedules", flattenNotificationSchedules(rule.Schedules))
+	}
 	if rule.TimeRestriction != nil {
 		d.Set("time_restriction", flattenOpsgenieNotificationRuleTimeRestriction(rule.TimeRestriction))
 	} else {
@@ -344,6 +340,12 @@ func resourceOpsGenieNotificationRuleRead(d *schema.ResourceData, meta interface
 	} else {
 		d.Set("steps", nil)
 	}
+
+	d.Set("name", rule.Name)
+	d.Set("action_type", rule.ActionType)
+	d.Set("notification_time", rule.NotificationTime)
+	d.Set("enabled", rule.Enabled)
+	d.Set("order", rule.Order)
 
 	return nil
 }
@@ -382,7 +384,7 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 	}
 
 	if len(timeRestriction) > 0 {
-		updateRequest.TimeRestriction = expandTimeRestrictions(timeRestriction)
+		updateRequest.TimeRestriction = expandNotificationRuleRestrictions(timeRestriction)
 	}
 
 	log.Printf("[INFO] Updating Notification Rule '%s' for User: '%s'", d.Get("name").(string), d.Get("username").(string))
@@ -495,6 +497,24 @@ func expandOpsGenieNotificationRuleRepeat(input []interface{}) *notification.Rep
 	}
 	return &repeat
 }
+func expandNotificationRuleRestrictions(d []interface{}) *og.TimeRestriction {
+	timeRestriction := og.TimeRestriction{}
+
+	for _, v := range d {
+		config := v.(map[string]interface{})
+
+		timeRestrictionType := config["type"].(string)
+		timeRestriction.Type = og.RestrictionType(timeRestrictionType)
+
+		if len(config["restrictions"].([]interface{})) > 0 {
+			timeRestriction.RestrictionList = expandOpsgenieRestrictions(config["restrictions"].([]interface{}))
+		} else {
+			timeRestriction.Restriction = expandOpsgenieRestriction(config["restriction"].([]interface{}))
+		}
+	}
+
+	return &timeRestriction
+}
 
 func flattenOpsgenieNotificationRuleTimeRestriction(input *og.TimeRestriction) []map[string]interface{} {
 	rules := make([]map[string]interface{}, 0, 1)
@@ -505,27 +525,28 @@ func flattenOpsgenieNotificationRuleTimeRestriction(input *og.TimeRestriction) [
 		restrictions := make([]map[string]interface{}, 0, len(input.RestrictionList))
 		for _, r := range input.RestrictionList {
 			restrictionMap := make(map[string]interface{})
-			restrictionMap["start_min"] = r.StartMin
-			restrictionMap["start_hour"] = r.StartHour
 			restrictionMap["start_day"] = r.StartDay
-			restrictionMap["end_min"] = r.EndMin
-			restrictionMap["end_hour"] = r.EndHour
 			restrictionMap["end_day"] = r.EndDay
+			restrictionMap["start_hour"] = r.StartHour
+			restrictionMap["start_min"] = r.StartMin
+			restrictionMap["end_hour"] = r.EndHour
+			restrictionMap["end_min"] = r.EndMin
 			restrictions = append(restrictions, restrictionMap)
 		}
-		return restrictions
+		out["restrictions"] = restrictions
+		rules = append(rules, out)
+		return rules
 	} else {
 		restriction := make(map[string]interface{})
 		//IF RESTRICTION
-		restriction["end_day"] = input.Restriction.EndDay
-		restriction["end_hour"] = input.Restriction.EndHour
-		restriction["end_min"] = input.Restriction.EndMin
-		restriction["start_day"] = input.Restriction.StartDay
 		restriction["start_hour"] = input.Restriction.StartHour
 		restriction["start_min"] = input.Restriction.StartMin
+		restriction["end_hour"] = input.Restriction.EndHour
+		restriction["end_min"] = input.Restriction.EndMin
 
-		//IF restrictions
-		rules = append(rules, restriction)
+		out["restriction"] = []map[string]interface{}{restriction}
+		rules = append(rules, out)
+
 		return rules
 	}
 }
@@ -578,4 +599,14 @@ func expandOpsgenieNotificationRuleCriteriaConditions(input []interface{}) []og.
 		}
 	}
 	return conditions
+}
+func flattenNotificationSchedules(schedArr []*notification.Schedule) []map[string]interface{} {
+	var schedMap []map[string]interface{}
+	for _, sched := range schedArr {
+		schedMap = append(schedMap, map[string]interface{}{
+			"type": "schedule", // This parameter is mandatory and should be set as schedule https://docs.opsgenie.com/docs/notification-rule-api
+			"name": sched.Name,
+		})
+	}
+	return schedMap
 }

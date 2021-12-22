@@ -38,7 +38,7 @@ The following arguments are supported:
 
 * `description` - (Optional) The description of schedule.
 
-* `timezone` -  (Optional) Timezone of schedule. Please look at [Supported Timezone Ids](https://docs.opsgenie.com/docs/supported-timezone-ids) for available timezones - Defaults to "America/New_York".
+* `timezone` -  (Optional) Timezone of schedule. Please look at [Supported Timezone Ids](https://docs.opsgenie.com/docs/supported-timezone-ids) for available timezones - Default: `America/New_York`.
 
 * `enabled` - (Optional) Enable/disable state of schedule
 
@@ -52,6 +52,6 @@ The following attributes are exported:
 
 ## Import
 
-Schedule can be imported using the `id`, e.g.
+Schedule can be imported using the `schedule_id`, e.g.
 
-`$ terraform import opsgenie_schedule.test 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_schedule.test schedule_id`

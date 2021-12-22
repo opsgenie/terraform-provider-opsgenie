@@ -1,3 +1,66 @@
+## 0.6.7 (December 13, 2021)
+* GoLang version increased
+
+## 0.6.6 (December 13, 2021)
+BUGFIX:
+* **Routing Rule:** Add is_default field
+* **Heartbeat:** Add "." string support
+
+## 0.6.5 (June 15, 2021)
+BUGFIX:
+* **Schedule:** Timezone diff problem fixed.
+
+## 0.6.4 (April 14, 2021)
+BUGFIX:
+* **Notification Policy:** De-duplication Action problem fixed.
+
+## 0.6.3 (February 11, 2021)
+BUGFIX:
+* **Alert Policy:** Global alert policy import fixed
+
+## 0.6.2 (January 29, 2021)
+BUGFIX:
+* **User:** Timezone diff problem fixed.
+
+## 0.6.1 (January 21, 2021)
+**BREAKING CHANGE**
+
+**Terraform Plugin SDK upgraded to v2.**
+
+BUGFIX:
+* **Notification Rule :** Reading the time_restrictions corrected.
+* **Team Routing Rule :** Reading the time_restrictions corrected.
+* **Schedule Rotations :** Reading the time_restrictions corrected.
+
+## 0.6.0 (January 19, 2021)
+**BREAKING CHANGE**
+
+Terraform Plugin SDK upgraded to v2. 
+Acceptance tests are need Terraform 12.26+ versions.
+
+BUGFIX:
+* **Notification Rule :** Reading the time_restrictions corrected.
+* **Team Routing Rule :** Reading the time_restrictions corrected.
+* **Incident Service Rule :** Tags and details are implemented. Before it won't work due to schema <-> List conversion.
+* **Incident Template:** Stakeholder properties and impacted services read functions fixed to comply with their schema types.
+* **Integrations:** Responders only available when owner team isn't set. Therefore provider now only read and add responders to requests if owner team is not available.
+* **User:** UserAddress.city field has fixed. In future user resource will change to adopt Atlassian Opsgenie Platform changes.
+
+## 0.5.7 (December 24, 2020)
+IMPROVEMENTS:
+* **Integration Actions :** add support for ignore action
+
+
+## 0.5.6 (December 24, 2020)
+IMPROVEMENTS:
+* **Integration Actions :** add custom priority for create action (#177)
+
+
+## 0.5.5 (December 16, 2020)
+Improvement:
+* Add support for webhook integration (#197)
+
+
 ## 0.5.4 (December 10, 2020)
 BUGFIX:
 * Able to set key in extra-properties field of condition for service incident rule (#204)

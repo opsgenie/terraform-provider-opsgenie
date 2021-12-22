@@ -43,6 +43,23 @@ resource "opsgenie_api_integration" "example-api-integration" {
   suppress_notifications         = true
   owner_team_id                  = "${opsgenie_team.team.id}"
 }
+
+resource "opsgenie_api_integration" "test3" {
+  name  = "webhook-int"
+  type  = "Webhook"
+
+  responders {
+    type = "user"
+    id   = "${opsgenie_user.user.id}"
+  }
+  enabled                 = false
+  allow_write_access      = false
+  suppress_notifications  = true
+  webhook_url             = "https://api.example.com/v1"
+  headers = {
+    header1 = value1
+  }
+}
 ```
 
 ## Argument Reference
@@ -53,17 +70,19 @@ The following arguments are supported:
 
 * `type` - (Optional) Type of the integration (API, Marid, Prometheus, etc). The full list of options can be found [here](https://docs.opsgenie.com/docs/integration-types-to-use-with-api).
 
-* `allow_write_access` - (Optional) This parameter is for configuring the write access of integration. If write access is restricted, the integration will not be authorized to write within any domain. Defaults to true.
+* `allow_write_access` - (Optional) This parameter is for configuring the write access of integration. If write access is restricted, the integration will not be authorized to write within any domain. Default: `true`.
 
-* `enabled` - (Optional) This parameter is for specifying whether the integration will be enabled or not. Defaults to true
+* `enabled` - (Optional) This parameter is for specifying whether the integration will be enabled or not. Default: `true`
 
-* `ignore_responders_from_payload` - (Optional) If enabled, the integration will ignore recipients sent in request payloads. Defaults to false.
+* `ignore_responders_from_payload` - (Optional) If enabled, the integration will ignore recipients sent in request payloads. Default: `false`.
 
-* `suppress_notifications` - (Optional) If enabled, notifications that come from alerts will be suppressed. Defaults to false.
+* `suppress_notifications` - (Optional) If enabled, notifications that come from alerts will be suppressed. Default: `false`.
 
 * `owner_team_id` - (Optional) Owner team id of the integration.
 
 * `responders` - (Optional)  User, schedule, teams or escalation names to calculate which users will receive the notifications of the alert.
+
+* `webhook_url` - (Optional) It is required if type is `Webhook`. This is the url Opsgenie will be sending request to.
 
 `responders` supports the following:
 
@@ -80,6 +99,6 @@ The following attributes are exported:
 
 ## Import
 
-API Integrations can be imported using the `id`, e.g.
+API Integrations can be imported using the `integration_id`, e.g.
 
-`$ terraform import opsgenie_api_integration.defaultintegration 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_api_integration.this integration_id`

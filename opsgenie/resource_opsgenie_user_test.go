@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 )
@@ -21,7 +21,6 @@ func init() {
 		Name: "opsgenie_user",
 		F:    testSweepUser,
 	})
-
 }
 
 func testSweepUser(region string) error {
@@ -61,8 +60,8 @@ func TestAccOpsGenieUser_basic(t *testing.T) {
 	config := testAccOpsGenieUser_basic(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieUserDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieUserDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -74,13 +73,28 @@ func TestAccOpsGenieUser_basic(t *testing.T) {
 	})
 }
 
+func TestCheckTimeZoneDiff(t *testing.T) {
+	oldTimeZone := "America/Los_Angeles"
+	newTimeZone := "Canada/Pacific"
+	if !checkTimeZoneDiff("", oldTimeZone, newTimeZone, nil) {
+		t.Errorf("Timezones should be equal")
+	}
+}
+
+func TestCheckTimeZoneDiff_notEqual(t *testing.T) {
+	oldTimeZone := "America/Los_Angeles"
+	newTimeZone := "Europe/Istanbul"
+	if checkTimeZoneDiff("", oldTimeZone, newTimeZone, nil) {
+		t.Errorf("Timezones should be equal")
+	}
+}
 func TestAccOpsGenieUser_complete(t *testing.T) {
 	rs := acctest.RandString(6)
 	config := testAccOpsGenieUser_complete(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieUserDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieUserDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -97,11 +111,11 @@ func TestAccOpsGenieUser_usernameValidationError(t *testing.T) {
 	config := testAccOpsGenieUser_usernameValidationError(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers: testAccProviders,
+		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
 				Config:      config,
-				ExpectError: regexp.MustCompile(fmt.Sprintf(`config is invalid: username contains uppercase characters, only lowercase characters are allowed: "GenieTest-%v@opsgenie.com"`, rs)),
+				ExpectError: regexp.MustCompile(fmt.Sprintf(`Error: username contains uppercase characters, only lowercase characters are allowed: "GenieTest-%v@opsgenie.com"`, rs)),
 			},
 		},
 	})

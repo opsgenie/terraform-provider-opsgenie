@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/incident"
 )
@@ -43,7 +43,6 @@ func testSweepIncidentTemplate(region string) error {
 				if _, err := client.DeleteIncidentTemplate(context.Background(), &deleteRequest); err != nil {
 					return err
 				}
-				break
 			}
 		}
 	}
@@ -53,8 +52,8 @@ func testSweepIncidentTemplate(region string) error {
 func TestAccOpsGenieIncidentTemplate_basic(t *testing.T) {
 	config := testAccOpsGenieIncidentTemplate_basic(acctest.RandString(6))
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieIncidentTemplateDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieIncidentTemplateDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,

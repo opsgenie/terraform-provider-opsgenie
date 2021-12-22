@@ -2,16 +2,16 @@ package opsgenie
 
 import (
 	"context"
-	"log"
-
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
+	"log"
+	"time"
 
 	"fmt"
 
 	"regexp"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceOpsgenieSchedule() *schema.Resource {
@@ -35,8 +35,10 @@ func resourceOpsgenieSchedule() *schema.Resource {
 				ValidateFunc: validateOpsgenieScheduleDescription,
 			},
 			"timezone": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:             schema.TypeString,
+				Optional:         true,
+				Default:          "America/New_York",
+				DiffSuppressFunc: checkTimeZoneDifference,
 			},
 			"enabled": {
 				Type:     schema.TypeBool,
@@ -48,6 +50,21 @@ func resourceOpsgenieSchedule() *schema.Resource {
 			},
 		},
 	}
+}
+
+func checkTimeZoneDifference(k, old, new string, d *schema.ResourceData) bool {
+	locationOld, errOld := time.LoadLocation(old)
+	if errOld != nil {
+		return false
+	}
+	locationNew, errNew := time.LoadLocation(new)
+	if errNew != nil {
+		return false
+	}
+	now := time.Now()
+	timeOld := now.In(locationOld)
+	timeNew := now.In(locationNew)
+	return timeOld.Format(time.ANSIC) == timeNew.Format(time.ANSIC)
 }
 
 func resourceOpsgenieScheduleCreate(d *schema.ResourceData, meta interface{}) error {
@@ -102,7 +119,6 @@ func resourceOpsgenieScheduleRead(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	d.Set("name", getResponse.Schedule.Name)
-	d.Set("id", getResponse.Schedule.Id)
 	if getResponse.Schedule.OwnerTeam != nil {
 		d.Set("owner_team_id", getResponse.Schedule.OwnerTeam.Id)
 	}

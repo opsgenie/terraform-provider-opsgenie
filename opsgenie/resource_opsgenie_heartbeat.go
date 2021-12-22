@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/heartbeat"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 )
@@ -199,9 +199,9 @@ func flattenTags(d *schema.ResourceData) []string {
 
 func validateOpsgenieHeartbeat(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if !regexp.MustCompile(`^[a-zA-Z0-9_-]+$`).MatchString(value) {
+	if !regexp.MustCompile(`^[a-zA-Z0-9._-]+$`).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
-			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
+			"only alpha numeric characters, underscores (_), dashes (-) and periods (.) are allowed in %q: %q", k, value))
 	}
 
 	if len(value) >= 100 {

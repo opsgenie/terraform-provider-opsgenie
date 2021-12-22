@@ -9,14 +9,15 @@ description: |-
 # opsgenie_integration_action
 
 Manages advanced actions for Integrations within Opsgenie. This applies for the following resources:
-* opsgenie_api_integration
-* opsgenie_email_integration
+* [`opsgenie_api_integration`](api_integration.html)
+* [`opsgenie_email_integration`](email_integration.html)
 
 The actions that are supported are:
-* create
-* close
-* acknowledge
-* add_note
+* `create`
+* `close`
+* `acknowledge`
+* `add_note`
+* `ignore`
 
 ## Example Usage
 
@@ -24,43 +25,60 @@ The actions that are supported are:
 resource "opsgenie_integration_action" "test_action" {
   integration_id = opsgenie_api_integration.test.id
 
-
   create {
     name = "create action"
     tags = ["CRITICAL", "SEV-0"]
     user = "Example-service"
     note = "{{note}}"
-	alias = "{{alias}}"
-	source = "{{source}}"
-	message = "{{message}}"
-	description = "{{description}}"
-	entity = "{{entity}}"
+	alias         = "{{alias}}"
+	source        = "{{source}}"
+	message       = "{{message}}"
+	description   = "{{description}}"
+	entity        = "{{entity}}"
 	alert_actions = ["Runbook ID#342"]
     
     filter {
       type = "match-all-conditions"
       conditions {
-        field = "priority"
-        operation = "equals"
+        field          = "priority"
+        operation      = "equals"
         expected_value = "P1"
       }
     }
     responders {
-      id = "${opsgenie_team.test.id}"
+      id   = "${opsgenie_team.test.id}"
       type = "team"
     }
   }
 
   create {
-    name = "Create medium priority alerts"
-    tags = ["SEVERE", "SEV-1"]
+    name     = "Create medium priority alerts"
+    tags     = ["SEVERE", "SEV-1"]
     priority = "P3"
     filter {
       type = "match-all-conditions"
       conditions {
-        field = "priority"
-        operation = "equals"
+        field          = "priority"
+        operation      = "equals"
         expected_value = "P2"
+      }
+    }
+  }
+  
+  create {
+    name            = "Create alert with priority from message"
+    custom_priority = "{{message.substringAfter(\"[custom]\")}}"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field          = "tags"
+        operation      = "contains"
+        expected_value = "P5"
+      }
+      conditions {
+        field          = "message"
+        operation      = "starts-with"
+        expected_value = "[custom]"
       }
     }
   }
@@ -70,13 +88,13 @@ resource "opsgenie_integration_action" "test_action" {
     filter {
       type = "match-any-condition"
       conditions {
-        field = "priority"
-        operation = "equals"
+        field          = "priority"
+        operation      = "equals"
         expected_value = "P5"
       }
       conditions {
-        field = "message"
-        operation = "contains"
+        field          = "message"
+        operation      = "contains"
         expected_value = "DEBUG"
       }
     }
@@ -87,13 +105,14 @@ resource "opsgenie_integration_action" "test_action" {
     filter {
       type = "match-all-conditions"
       conditions {
-        field = "message"
-        operation = "contains"
+        field          = "message"
+	not            = true
+        operation      = "contains"
         expected_value = "TEST"
       }
       conditions {
-        field = "priority"
-        operation = "equals"
+        field          = "priority"
+        operation      = "equals"
         expected_value = "P5"
       }
     }
@@ -104,6 +123,18 @@ resource "opsgenie_integration_action" "test_action" {
     note = "Created from test integration"
     filter {
       type = "match-all"
+    }
+  }
+  
+  ignore {
+    name = "Ignore alerts with ignore tag"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field          = "tags"
+        operation      = "contains"
+        expected_value = "ignore"
+      }
     }
   }
 }
@@ -117,13 +148,13 @@ The following arguments are common and supported for all actions:
 
 * `name` - (Required) Name of the integration action.
 
-* `alias` - (Optional) An identifier that is used for alert deduplication. Defaults to `{{alias}}`.
+* `alias` - (Optional) An identifier that is used for alert deduplication. Default: `{{alias}}`.
 
-* `order` - (Optional) Integer value that defines in which order the action will be performed. Defaults to `1`.
+* `order` - (Optional) Integer value that defines in which order the action will be performed. Default: `1`.
 
 * `user` - (Optional) Owner of the execution for integration action.
 
-* `note` - (Optional) Integer value that defines in which order the action will be performed.
+* `note` - (Optional) Additional alert action note.
 
 * `filter` - (Optional) Used to specify rules for matching alerts and the filter type. Please note that depending on the integration type the field names in the filter conditions are:
   * For SNS integration: `actions`, `alias`, `entity`, `Message`, `recipients`, `responders`, `Subject`, `tags`, `teams`, `eventType`, `Timestamp`, `TopicArn`.
@@ -137,6 +168,8 @@ The following arguments are common and supported for all actions:
 * `entity` - (Optional) The entity the alert is related to.
 
 * `priority` - (Optional) Alert priority.
+
+* `custom_priority` - (Optional) Custom alert priority. e.g. ``{{message.substring(0,2)}}``
 
 * `extra_properties` - (Optional) Set of user defined properties specified as a map.
 
@@ -155,7 +188,7 @@ The following arguments are common and supported for all actions:
 `responders` is supported only in create action and supports the following:
 
 * `id` - (Required) The id of the responder.
-* `type` - (Required) The responder type - can be escalation, team or user.
+* `type` - (Required) The responder type - can be `escalation`, `team` or `user`.
 
 ## Attributes Reference
 

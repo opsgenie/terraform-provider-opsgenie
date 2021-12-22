@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
 
@@ -30,6 +30,18 @@ func expandOpsgenieIntegrationResponders(d *schema.ResourceData) []integration.R
 	return responders
 }
 
+func flattenIntegrationResponders(r []interface{}) []map[string]interface{} {
+	responders := []map[string]interface{}{}
+	for _, i := range r {
+		c := i.(map[string]interface{})
+		responders = append(responders, map[string]interface{}{
+			"type": c["type"],
+			"id":   c["id"],
+		})
+	}
+	return responders
+}
+
 func validateResponderType(v interface{}, k string) (ws []string, errors []error) {
 	value := strings.ToLower(v.(string))
 	families := map[string]bool{
@@ -46,6 +58,7 @@ func validateResponderType(v interface{}, k string) (ws []string, errors []error
 }
 
 const (
-	ApiIntegrationType   = "API"
-	EmailIntegrationType = "Email"
+	ApiIntegrationType     = "API"
+	EmailIntegrationType   = "Email"
+	WebhookIntegrationType = "Webhook"
 )

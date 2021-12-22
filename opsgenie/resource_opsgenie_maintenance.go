@@ -8,7 +8,7 @@ import (
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/maintenance"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceOpsgenieMaintenance() *schema.Resource {
@@ -132,10 +132,8 @@ func resourceOpsgenieMaintenanceRead(d *schema.ResourceData, meta interface{}) e
 		return nil
 	}
 
-	d.Set("time", found.Time)
-	d.Set("id", found.Id)
+	d.Set("time", flattenMaintenanceTime(found.Time))
 	d.Set("description", found.Description)
-	d.Set("status", found.Status)
 
 	return nil
 }
@@ -283,4 +281,13 @@ func expandOpsgenieMaintenanceTime(d *schema.ResourceData) maintenance.Time {
 	}
 
 	return maintenanceTime
+}
+
+func flattenMaintenanceTime(time maintenance.Time) []map[string]interface{} {
+	timeLayout := "2006-01-02T15:04:05Z"
+	return []map[string]interface{}{{
+		"type":       time.Type,
+		"start_date": time.StartDate.Format(timeLayout),
+		"end_date":   time.EndDate.Format(timeLayout),
+	}}
 }

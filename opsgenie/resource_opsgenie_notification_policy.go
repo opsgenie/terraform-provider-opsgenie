@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/policy"
@@ -364,8 +364,8 @@ func resourceOpsGenieNotificationPolicyRead(d *schema.ResourceData, meta interfa
 		d.Set("auto_restart_action", nil)
 	}
 	// Workaround for a mispelling in ops-genie-sdk-v2 v1.0.5
-	if policy.DeDuplicationActionAction != nil {
-		d.Set("de_duplication_action", flattenOpsGenieNotificationPolicyDeDuplicationAction(policy.DeDuplicationActionAction))
+	if policy.DeDuplicationAction != nil {
+		d.Set("de_duplication_action", flattenOpsGenieNotificationPolicyDeDuplicationAction(policy.DeDuplicationAction))
 	} else {
 		d.Set("de_duplication_action", nil)
 	}

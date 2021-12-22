@@ -14,7 +14,7 @@ Manages heartbeat within Opsgenie.
 
 ```hcl
 resource "opsgenie_heartbeat" "test" {
-	name           = "genieheartbeat-%s"
+	name           = "genieheartbeat-test"
 	description    = "test opsgenie heartbeat terraform"
 	interval_unit  = "minutes"
 	interval       = 10
@@ -58,4 +58,4 @@ Only the arguments listed above are exposed as attributes.
 
 Heartbeat Integrations can be imported using the `name`, e.g.
 
-`$ terraform import opsgenie_heartbeat.test geniehearbeat-%s`
+`$ terraform import opsgenie_heartbeat.test name`

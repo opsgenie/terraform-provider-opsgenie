@@ -162,6 +162,7 @@ const (
 	Close       ActionType = "close"
 	Acknowledge ActionType = "acknowledge"
 	AddNote     ActionType = "AddNote"
+	Ignore      ActionType = "ignore"
 )
 
 type Responder struct {

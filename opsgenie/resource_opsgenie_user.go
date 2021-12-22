@@ -4,12 +4,13 @@ import (
 	"context"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 
 	"fmt"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceOpsGenieUser() *schema.Resource {
@@ -44,9 +45,10 @@ func resourceOpsGenieUser() *schema.Resource {
 				Default:  "en_US",
 			},
 			"timezone": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "America/New_York",
+				Type:             schema.TypeString,
+				Optional:         true,
+				Default:          "America/New_York",
+				DiffSuppressFunc: checkTimeZoneDiff,
 			},
 			"tags": {
 				Type:     schema.TypeSet,
@@ -99,6 +101,20 @@ func resourceOpsGenieUser() *schema.Resource {
 	}
 }
 
+func checkTimeZoneDiff(k, old, new string, d *schema.ResourceData) bool {
+	locationOld, errOld := time.LoadLocation(old)
+	if errOld != nil {
+		return false
+	}
+	locationNew, errNew := time.LoadLocation(new)
+	if errNew != nil {
+		return false
+	}
+	now := time.Now()
+	timeOld := now.In(locationOld)
+	timeNew := now.In(locationNew)
+	return timeOld.Format(time.ANSIC) == timeNew.Format(time.ANSIC)
+}
 func expandOpsGenieUsertags(input *schema.Set) []string {
 	output := make([]string, 0)
 
@@ -177,7 +193,7 @@ func resourceOpsGenieUserCreate(d *schema.ResourceData, meta interface{}) error 
 		UserAddressRequest: &user.UserAddressRequest{
 			Country: userAddress["country"],
 			State:   userAddress["state"],
-			City:    userAddress["state"],
+			City:    userAddress["city"],
 			Line:    userAddress["line"],
 			ZipCode: userAddress["zipcode"],
 		},
@@ -211,15 +227,16 @@ func resourceOpsGenieUserRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	d.Set("username", usr.Username)
 	d.Set("full_name", usr.FullName)
 	d.Set("role", usr.Role.RoleName)
 	d.Set("locale", usr.Locale)
 	d.Set("timezone", usr.TimeZone)
 	d.Set("tags", usr.Tags)
-	d.Set("user_address", usr.UserAddress)
-	d.Set("user_details", usr.Details)
+	if usr.UserAddress != nil && usr.UserAddress.Country != "" {
+		d.Set("user_address", flattenUserAddress(usr.UserAddress))
+	}
+	//d.Set("user_details", usr.Details) TODO FIX
 	d.Set("skype_username", usr.SkypeUsername)
 
 	return nil
@@ -254,7 +271,7 @@ func resourceOpsGenieUserUpdate(d *schema.ResourceData, meta interface{}) error 
 		UserAddressRequest: &user.UserAddressRequest{
 			Country: userAddress["country"],
 			State:   userAddress["state"],
-			City:    userAddress["state"],
+			City:    userAddress["city"],
 			Line:    userAddress["line"],
 			ZipCode: userAddress["zipcode"],
 		},
@@ -319,4 +336,14 @@ func validateOpsGenieUserRole(v interface{}, k string) (ws []string, errors []er
 		errors = append(errors, fmt.Errorf("%q cannot be longer than 512 characters: %q %d", k, value, len(value)))
 	}
 	return
+}
+
+func flattenUserAddress(addr *user.UserAddress) []map[string]interface{} {
+	return []map[string]interface{}{{
+		"country": addr.Country,
+		"state":   addr.State,
+		"city":    addr.City,
+		"line":    addr.Line,
+		"zipcode": addr.ZipCode,
+	}}
 }

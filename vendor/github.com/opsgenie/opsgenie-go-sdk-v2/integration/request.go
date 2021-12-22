@@ -76,16 +76,16 @@ func (r *APIBasedIntegrationRequest) Method() string {
 
 type WebhookIntegrationRequest struct {
 	client.BaseRequest
-	Name                        string        `json:"name"`
-	Type                        string        `json:"type"`
-	AllowWriteAccess            *bool         `json:"allowWriteAccess"`
-	SuppressNotifications       *bool         `json:"suppressNotifications"`
-	OwnerTeam                   *og.OwnerTeam `json:"ownerTeam,omitempty"`
-	Responders                  []Responder   `json:"responders,omitempty"`
-	WebhookUrl                  string        `json:"url"`
-	AddAlertDescription         *bool         `json:"addAlertDescription"`
-	AddAlertDetails             *bool         `json:"addAlertDetails"`
-	Headers                     map[string]string         `json:"headers,omitempty"`
+	Name                  string            `json:"name"`
+	Type                  string            `json:"type"`
+	AllowWriteAccess      *bool             `json:"allowWriteAccess"`
+	SuppressNotifications *bool             `json:"suppressNotifications"`
+	OwnerTeam             *og.OwnerTeam     `json:"ownerTeam,omitempty"`
+	Responders            []Responder       `json:"responders,omitempty"`
+	WebhookUrl            string            `json:"url"`
+	AddAlertDescription   *bool             `json:"addAlertDescription"`
+	AddAlertDetails       *bool             `json:"addAlertDetails"`
+	Headers               map[string]string `json:"headers,omitempty"`
 }
 
 func (r *WebhookIntegrationRequest) Validate() error {
@@ -109,7 +109,6 @@ func (r *WebhookIntegrationRequest) ResourcePath() string {
 func (r *WebhookIntegrationRequest) Method() string {
 	return http.MethodPost
 }
-
 
 type EmailBasedIntegrationRequest struct {
 	client.BaseRequest
@@ -371,6 +370,7 @@ type UpdateAllIntegrationActionsRequest struct {
 	Close       []IntegrationAction `json:"close"`
 	Acknowledge []IntegrationAction `json:"acknowledge"`
 	AddNote     []IntegrationAction `json:"addNote"`
+	Ignore      []IntegrationAction `json:"ignore"`
 }
 
 type IntegrationAction struct {
@@ -386,6 +386,7 @@ type IntegrationAction struct {
 	Description                      string            `json:"description,omitempty"`
 	Entity                           string            `json:"entity,omitempty"`
 	Priority                         string            `json:"priority,omitempty"`
+	CustomPriority                   string            `json:"customPriority,omitempty"`
 	AppendAttachments                *bool             `json:"appendAttachments,omitempty"`
 	AlertActions                     []string          `json:"alertActions,omitempty"`
 	IgnoreAlertActionsFromPayload    *bool             `json:"ignoreAlertActionsFromPayload,omitempty"`
@@ -474,11 +475,11 @@ func validateResponders(responders []Responder) error {
 
 func validateActionType(actionType ActionType) error {
 	switch actionType {
-	case Create, Close, Acknowledge, AddNote:
+	case Create, Close, Acknowledge, AddNote, Ignore:
 		return nil
 	}
 	return errors.New("Action type should be one of these: " +
-		"'Create','Close','Acknowledge','AddNote'")
+		"'Create','Close','Acknowledge','AddNote','Ignore'")
 }
 
 func validateConditionMatchType(matchType og.ConditionMatchType) error {

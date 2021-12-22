@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
 )
@@ -64,13 +64,33 @@ func TestAccOpsGenieIntegrationAction_basic(t *testing.T) {
 	config := testAccOpsGenieIntegrationAction_basic(rs)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieIntegrationActionDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieIntegrationActionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOpsGenieIntegrationActionExists("opsgenie_integration_action.test"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccOpsGenieIntegrationAction_custompriority(t *testing.T) {
+	customPriority := "{{condition_name.extract(/^\\[(\\S+)\\].*$/, 1)}"
+	customPriorityEscaped := "{{condition_name.extract(/^\\\\[(\\\\S+)\\\\].*$/, 1)}"
+	rs := acctest.RandString(6)
+	config := testAccOpsGenieIntegrationAction_custompriority(rs, customPriorityEscaped)
+
+	resource.Test(t, resource.TestCase{
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieIntegrationActionDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOpsGenieIntegrationActionCustomPriorityExists("opsgenie_integration_action.testcustom", customPriority),
 				),
 			},
 		},
@@ -83,8 +103,8 @@ func TestAccOpsGenieIntegrationAction_complete(t *testing.T) {
 	config := testAccOpsGenieIntegrationAction_complete(rString)
 
 	resource.Test(t, resource.TestCase{
-		Providers:    testAccProviders,
-		CheckDestroy: testCheckOpsGenieIntegrationActionDestroy,
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieIntegrationActionDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: config,
@@ -150,6 +170,35 @@ func testCheckOpsGenieIntegrationActionExists(name string) resource.TestCheckFun
 	}
 }
 
+func testCheckOpsGenieIntegrationActionCustomPriorityExists(name, customPriority string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+
+		rs, ok := s.RootModule().Resources[name]
+		if !ok {
+			return fmt.Errorf("Not found: %s", name)
+		}
+
+		client, err := integration.NewClient(testAccProvider.Meta().(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+		Id := rs.Primary.Attributes["id"]
+
+		req := integration.GetIntegrationActionsRequest{
+			Id: Id,
+		}
+
+		iAction, err := client.GetActions(context.Background(), &req)
+		if err != nil {
+			return fmt.Errorf("Bad: ApiIntegration with id %q does not exist", Id)
+		}
+		if iAction.Create[0].CustomPriority != customPriority {
+			return fmt.Errorf("Bad: CustomPriority %s for ApiIntegration with id %q does not exist", customPriority, Id)
+		}
+		return nil
+	}
+}
+
 func testAccOpsGenieIntegrationAction_basic(rString string) string {
 	return fmt.Sprintf(`
 resource "opsgenie_integration_action" "test" {
@@ -171,6 +220,43 @@ resource "opsgenie_api_integration" "test" {
   name = "genieintegration-%s"
 }
 `, rString)
+}
+
+func testAccOpsGenieIntegrationAction_custompriority(rString, crString string) string {
+	return fmt.Sprintf(`
+resource "opsgenie_api_integration" "test" {
+  type = "API"
+  name = "genieintegration-custompri-%s"
+}
+resource "opsgenie_integration_action" "testcustom" {
+  integration_id = opsgenie_api_integration.test.id
+  create {
+    name = "Create high priority alerts"
+    tags = ["CRITICAL", "SEV-0"]
+    user = "Acceptance test user"
+    note = "{{note}}"
+    alias = "{{alias}}"
+    source = "{{source}}"
+    message = "{{message}}"
+    description = "{{description}}"
+    entity = "{{entity}}"
+    custom_priority = "%s"
+    alert_actions = ["Check error rate"]
+    extra_properties = map(
+      "Environment", "test-env",
+      "Region", "us-west-2"
+    )
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "priority"
+        operation = "equals"
+        expected_value = "P1"
+      }
+    }
+  }
+}
+`, rString, crString)
 }
 
 func testAccOpsGenieIntegrationAction_complete(rString string) string {
@@ -241,6 +327,17 @@ resource "opsgenie_integration_action" "test_api" {
     responders {
       id = "${opsgenie_user.test.id}"
       type = "user"
+    }
+  }
+  ignore {
+    name = "Ignore alerts with priority P5"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "priority"
+        operation = "equals"
+        expected_value = "P5"
+      }
     }
   }
   close {

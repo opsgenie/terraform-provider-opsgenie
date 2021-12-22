@@ -36,7 +36,7 @@ resource "opsgenie_incident_template" "test" {
     key1 = "value1"
     key2 = "value2"
   }
-  impacted_services = [ 
+  impacted_services = [
     opsgenie_service.test.id
   ]
 }
@@ -56,18 +56,18 @@ The following arguments are supported:
 
 * `details` (Optional) Map of key-value pairs to use as custom properties of the incident template. This field must not be longer than 8000 characters.
 
-* `priority` (Required) Priority level of the incident. Possible values are P1, P2, P3, P4 and P5.
+* `priority` (Required) Priority level of the incident. Possible values are `P1`, `P2`, `P3`, `P4` and `P5`.
 
 * `impactedServices` (Optional) Impacted services of incident template. Maximum 20 services.
 
 * `stakeholderProperties` (Required)
 
    * `enable` (Optional) Option to enable stakeholder notifications.Default value is true.
-   
+
    * `message` (Required) Message that is to be passed to audience that is generally used to provide a content information about the alert.
-   
+
    * `description` (Optional) Description that is generally used to provide a detailed information about the alert. This field must not be longer than 15000 characters.
-   
+
 
 ## Attributes Reference
 
@@ -77,6 +77,6 @@ The following attributes are exported:
 
 ## Import
 
-Service can be imported using the `id`, e.g.
+Service can be imported using the `template_id`, e.g.
 
-`$ terraform import opsgenie_incident_template.test 812be1a1-32c8-4666-a7fb-03ecc385106c`
+`$ terraform import opsgenie_incident_template.test template_id`
