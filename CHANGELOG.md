@@ -1,3 +1,6 @@
+## 0.6.8 (January 5, 2022)
+* Alert Policy alert_description fix implemented
+
 ## 0.6.7 (December 13, 2021)
 * GoLang version increased
 
