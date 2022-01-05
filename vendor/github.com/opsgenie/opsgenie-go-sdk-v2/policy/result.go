@@ -19,7 +19,7 @@ type GetAlertPolicyResult struct {
 	Message                  string             `json:"message"`
 	Continue                 bool               `json:"continue,omitempty"`
 	Alias                    string             `json:"alias,omitempty"`
-	AlertDescription         string             `json:"alertDescription,omitempty"`
+	AlertDescription         string             `json:"description,omitempty"`
 	Entity                   string             `json:"entity,omitempty"`
 	Source                   string             `json:"source,omitempty"`
 	IgnoreOriginalDetails    bool               `json:"ignoreOriginalDetails,omitempty"`
@@ -36,11 +36,11 @@ type GetAlertPolicyResult struct {
 type GetNotificationPolicyResult struct {
 	client.ResultMetadata
 	MainFields
-	AutoRestartAction         *AutoRestartAction   `json:"autoRestartAction,omitempty"`
-	AutoCloseAction           *AutoCloseAction     `json:"autoCloseAction,omitempty"`
-	DeDuplicationAction 	  *DeDuplicationAction `json:"deduplicationAction,omitempty"`
-	DelayAction               *DelayAction         `json:"delayAction,omitempty"`
-	Suppress                  bool                 `json:"suppress,omitempty"`
+	AutoRestartAction   *AutoRestartAction   `json:"autoRestartAction,omitempty"`
+	AutoCloseAction     *AutoCloseAction     `json:"autoCloseAction,omitempty"`
+	DeDuplicationAction *DeDuplicationAction `json:"deduplicationAction,omitempty"`
+	DelayAction         *DelayAction         `json:"delayAction,omitempty"`
+	Suppress            bool                 `json:"suppress,omitempty"`
 }
 
 type PolicyResult struct {

@@ -15,7 +15,7 @@ type CreateAlertPolicyRequest struct {
 	Message                  string             `json:"message,omitempty"`
 	Continue                 *bool              `json:"continue,omitempty"`
 	Alias                    string             `json:"alias,omitempty"`
-	AlertDescription         string             `json:"alertDescription,omitempty"`
+	AlertDescription         string             `json:"description,omitempty"`
 	Entity                   string             `json:"entity,omitempty"`
 	Source                   string             `json:"source,omitempty"`
 	IgnoreOriginalDetails    *bool              `json:"ignoreOriginalDetails,omitempty"`
@@ -257,9 +257,9 @@ func (r *UpdateAlertPolicyRequest) ResourcePath() string {
 }
 
 func (r *UpdateAlertPolicyRequest) RequestParams() map[string]string {
-        params := make(map[string]string)
-        params["teamId"] = r.TeamId
-        return params
+	params := make(map[string]string)
+	params["teamId"] = r.TeamId
+	return params
 }
 
 func (r *UpdateAlertPolicyRequest) Method() string {
