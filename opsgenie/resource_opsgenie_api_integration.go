@@ -88,12 +88,10 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 			"send_via_oec": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true,
 			},
 			"send_via_marid": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true,
 			},
 		},
 	}
