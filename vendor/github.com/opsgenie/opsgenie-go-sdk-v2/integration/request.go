@@ -51,6 +51,8 @@ type APIBasedIntegrationRequest struct {
 	AllowWriteAccess            *bool         `json:"allowWriteAccess"`
 	IgnoreRespondersFromPayload *bool         `json:"ignoreRespondersFromPayload"`
 	SuppressNotifications       *bool         `json:"suppressNotifications"`
+	SendViaOEC                  *bool         `json:"sendViaOEC,omitempty"`
+	SendViaMarid                *bool         `json:"sendViaMarid,omitempty"`
 	OwnerTeam                   *og.OwnerTeam `json:"ownerTeam,omitempty"`
 	Responders                  []Responder   `json:"responders,omitempty"`
 }

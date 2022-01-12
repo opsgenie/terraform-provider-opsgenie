@@ -85,6 +85,16 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"send_via_oec": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
+			"send_via_marid": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  true,
+			},
 		},
 	}
 }
@@ -124,6 +134,8 @@ func createApiIntegration(d *schema.ResourceData, meta interface{}) error {
 	ownerTeam := d.Get("owner_team_id").(string)
 	integrationType := d.Get("type").(string)
 	enabled := d.Get("enabled").(bool)
+	sendViaOEC := d.Get("send_via_oec").(bool)
+	sendViaMarid := d.Get("send_via_marid").(bool)
 
 	if integrationType == "" {
 		integrationType = ApiIntegrationType
@@ -135,6 +147,8 @@ func createApiIntegration(d *schema.ResourceData, meta interface{}) error {
 		AllowWriteAccess:            &allowWriteAccess,
 		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
 		SuppressNotifications:       &suppressNotifications,
+		SendViaOEC:                  &sendViaOEC,
+		SendViaMarid:                &sendViaMarid,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
 	}
 
