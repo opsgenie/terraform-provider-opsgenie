@@ -256,6 +256,7 @@ func resourceOpsGenieTeamRoutingRuleRead(d *schema.ResourceData, meta interface{
 	}
 	d.Set("is_default", result.IsDefault)
 	d.Set("name", result.Name)
+	d.Set("order", result.Order)
 	d.Set("time_restriction", flattenOpsgenieTimeRestriction(result.TimeRestriction))
 	d.Set("notify", flattenOpsgenieNotify(result.Notify))
 	d.Set("criteria", flattenOpsgenieCriteria(result.Criteria))

@@ -1,3 +1,6 @@
+## 0.6.9 (February 10, 2022)
+* Import Routing rule Order fixed.
+
 ## 0.6.8 (January 5, 2022)
 * Alert Policy alert_description fix implemented
 
