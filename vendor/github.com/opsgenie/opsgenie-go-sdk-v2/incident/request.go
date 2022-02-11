@@ -197,6 +197,44 @@ func (r *ListRequest) RequestParams() map[string]string {
 	return params
 }
 
+type ResolveRequest struct {
+	client.BaseRequest
+	Id         string
+	Identifier IdentifierType
+	Note       string `json:"note,omitempty"`
+}
+
+func (r *ResolveRequest) Validate() error {
+	if r.Id == "" {
+		return errors.New("Incident ID cannot be blank.")
+	}
+	if r.Identifier != "" && r.Identifier != Id && r.Identifier != Tiny {
+		return errors.New("Identifier type should be one of these: 'Id', 'Tiny' or empty.")
+	}
+	return nil
+}
+
+func (r *ResolveRequest) ResourcePath() string {
+	return "/v1/incidents/" + r.Id + "/resolve"
+}
+
+func (r *ResolveRequest) Method() string {
+	return http.MethodPost
+}
+
+func (r *ResolveRequest) RequestParams() map[string]string {
+
+	params := make(map[string]string)
+
+	if r.Identifier == Tiny {
+		params["identifierType"] = "tiny"
+	} else {
+		params["identifierType"] = "id"
+	}
+
+	return params
+}
+
 type CloseRequest struct {
 	client.BaseRequest
 	Id         string
