@@ -82,7 +82,7 @@ The following arguments are supported:
 
 * `ignore_original_responders` - (Optional) If set to `true`, policy will ignore the original responders of the alert. Default: `false`
 
-* `responders` - (Optional) Responders to add to the alerts original responders value as a list of teams, users or the reserved word none or all. If `ignore_original_responders` field is set to `true`, this will replace the original responders. The possible values for responders are: `user`, `team`. This is a block, structure is documented below.
+* `responders` - (Optional) Responders to add to the alerts original responders value as a list of teams, users or the reserved word none or all. If `ignore_original_responders` field is set to `true`, this will replace the original responders. The possible values for responders are: `user`, `team`, `escalation`. This is a block, structure is documented below.
 
 * `ignore_original_tags` - (Optional) If set to `true`, policy will ignore the original tags of the alert. Default: `false`
 
@@ -148,7 +148,7 @@ The `restriction` block supports:
 
 The `responders` block supports:
 
-* `type` - (Required) Type of responder. Acceptable values are: `user` or `team`
+* `type` - (Required) Type of responder. Acceptable values are: `user`, `team` or `escalation`
 
 * `name` - (Optional) Name of the responder
 
