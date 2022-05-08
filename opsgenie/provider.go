@@ -2,8 +2,9 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -53,6 +54,7 @@ func Provider() *schema.Provider {
 			"opsgenie_schedule":   dataSourceOpsgenieSchedule(),
 			"opsgenie_heartbeat":  dataSourceOpsgenieHeartbeat(),
 			"opsgenie_service":    dataSourceOpsGenieService(),
+			"opsgenie_contact":    dataSourceOpsGenieContact(),
 		},
 	}
 	p.ConfigureContextFunc = providerConfigure
