@@ -22,7 +22,7 @@ func dataSourceOpsGenieContact() *schema.Resource {
 				ValidateFunc: validateOpsGenieUserUsername,
 			},
 			"contact_list": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{

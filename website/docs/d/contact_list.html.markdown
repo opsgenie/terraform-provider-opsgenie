@@ -1,7 +1,7 @@
 ---
 layout: "opsgenie"
-page_title: "Opsgenie: opsgenie_contact"
-sidebar_current: "docs-opsgenie-resource-contact"
+page_title: "Opsgenie: opsgenie_contact_list"
+sidebar_current: "docs-opsgenie-resource-contact-list"
 description: |-
   Manages existing Contact within Opsgenie.
 ---
@@ -13,7 +13,7 @@ Manages existing User's contacts within Opsgenie.
 ## Example Usage
 
 ```hcl
-data "opsgenie_contact" "test" {
+data "opsgenie_contact_list" "test" {
   username = "user@domain.com"
 }
 ```
