@@ -10,10 +10,25 @@ import (
 
 	"fmt"
 	"regexp"
+	"sort"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
 )
+
+type memberList []team.Member
+
+func (e memberList) Len() int {
+	return len(e)
+}
+
+func (e memberList) Less(i, j int) bool {
+	return e[i].User.ID > e[j].User.ID
+}
+
+func (e memberList) Swap(i, j int) {
+	e[i], e[j] = e[j], e[i]
+}
 
 func resourceOpsGenieTeam() *schema.Resource {
 	return &schema.Resource{
@@ -144,7 +159,7 @@ func resourceOpsGenieTeamRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("description", getResponse.Description)
 
 	if !d.Get("ignore_members").(bool) {
-		d.Set("member", flattenOpsGenieTeamMembers(getResponse.Members))
+		d.Set("member", expandOpsGenieTeamMembers(d))
 	}
 
 	return nil
@@ -198,6 +213,7 @@ func resourceOpsGenieTeamDelete(d *schema.ResourceData, meta interface{}) error 
 }
 
 func flattenOpsGenieTeamMembers(input []team.Member) []map[string]interface{} {
+	sort.Sort(memberList(input))
 	members := make([]map[string]interface{}, 0, len(input))
 	for _, inputMember := range input {
 		outputMember := make(map[string]interface{})
@@ -232,6 +248,7 @@ func expandOpsGenieTeamMembers(d *schema.ResourceData) []team.Member {
 
 		members = append(members, member)
 	}
+	sort.Sort(memberList(members))
 
 	return members
 }
