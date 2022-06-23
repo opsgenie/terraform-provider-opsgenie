@@ -12,9 +12,11 @@ Manages an Escalation within Opsgenie.
 
 ## Example Usage
 
+An escalation with a single rule
+
 ```hcl
-resource "opsgenie_escalation" "test" {
-  name = "genieescalation-%s"
+resource "opsgenie_escalation" "default" {
+  name = "genieescalation"
 
   rules {
     condition   = "if-not-acked"
@@ -23,15 +25,19 @@ resource "opsgenie_escalation" "test" {
 
     recipient {
       type = "user"
-      id   = "${opsgenie_user.test.id}"
+      id   = opsgenie_user.test.id
 		}
 	}
 }
+```
 
-resource "opsgenie_escalation" "test" {
-  name          = "genieescalation-%s"
+An escalation with a multiple rules
+
+```
+resource "opsgenie_escalation" "default" {
+  name          = "genieescalation"
   description   = "test"
-  owner_team_id = "${opsgenie_team.test.id}"
+  owner_team_id = opsgenie_team.test.id
 
   rules {
     condition   = "if-not-acked"
@@ -40,21 +46,32 @@ resource "opsgenie_escalation" "test" {
 
     recipient {
       type = "user"
-      id   = "${opsgenie_user.test.id}"
-    }
-
-    recipient {
-      type = "team"
-      id   = "${opsgenie_team.test.id}"
-    }
-
-    recipient {
-      type = "schedule"
-      id   = "${opsgenie_schedule.test.id}"
+      id   = opsgenie_user.test.id
     }
   }
 
-  repeat  {
+  rules {
+    condition   = "if-not-acked"
+    notify_type = "default"
+    delay       = 1
+
+    recipient {
+      type = "team"
+      id   = opsgenie_team.test.id
+    }
+
+  rules {
+    condition   = "if-not-acked"
+    notify_type = "default"
+    delay       = 1
+
+    recipient {
+      type = "schedule"
+      id   = opsgenie_schedule.test.id
+    }
+  }
+
+  repeat {
     wait_interval          = 10
     count                  = 1
     reset_recipient_states = true
@@ -77,10 +94,10 @@ The following arguments are supported:
 
 * `repeat` - (Optional) Repeat preferences of the escalation including repeat interval, count, reverting acknowledge and seen states back and closing an alert automatically as soon as repeats are completed
 
-
 `rules` supports the following:
 
 * `condition` - (Required) The condition for notifying the recipient of escalation rule that is based on the alert state. Possible values are: `if-not-acked` and `if-not-closed`. Default: `if-not-acked`
+
 * `notify_type` - (Required) Recipient calculation logic for schedules. Possible values are:
 
   - `default`: on call users
@@ -90,9 +107,9 @@ The following arguments are supported:
   - `admins`: admins of the team
   - `all`: all members of the team
 
-* `recipient` - (Required) Object of schedule, team, or users which will be notified in escalation. The possible values for participants are: `user`, `schedule`, `team`.
-* `delay` - (Required) Time delay of the escalation rule, in minutes.
+* `recipient` - (Required) Object of schedule, team, or users which will be notified in escalation. The possible values for participants are: `user`, `schedule`, `team`. There can only be one recipient per each `rules`.
 
+* `delay` - (Required) Time delay of the escalation rule, in minutes.
 
 ## Attributes Reference
 
@@ -105,4 +122,3 @@ The following attributes are exported:
 Escalations can be imported using the `escalation_id`, e.g.
 
 `$ terraform import opsgenie_escalation.test escalation_id`
-
