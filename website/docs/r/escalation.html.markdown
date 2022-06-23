@@ -33,7 +33,7 @@ resource "opsgenie_escalation" "default" {
 
 An escalation with a multiple rules
 
-```
+```hcl
 resource "opsgenie_escalation" "default" {
   name          = "genieescalation"
   description   = "test"
@@ -86,7 +86,7 @@ The following arguments are supported:
 
 * `name` - (Required) Name of the escalation.
 
-* `rules` - (Required) List of the escalation rules.
+* `rules` - (Required) List of the escalation rules. See below for how rules are defined.
 
 * `description` - (Optional) Description of the escalation.
 
