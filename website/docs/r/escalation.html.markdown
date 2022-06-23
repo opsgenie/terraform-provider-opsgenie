@@ -59,6 +59,7 @@ resource "opsgenie_escalation" "default" {
       type = "team"
       id   = opsgenie_team.test.id
     }
+  }
 
   rules {
     condition   = "if-not-acked"
