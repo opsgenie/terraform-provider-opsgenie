@@ -1,3 +1,25 @@
+## 0.6.10 (February 18, 2022)
+* Update Routing rule will update the order,too.
+  **Note:** There are still bug in creation of Routing Rules from scratch due to concurrency problem. Following command will solve the problem. Apologize for the confusion
+  
+            terraform apply -refresh-only
+  
+
+## 0.6.8 (January 5, 2022)
+* Alert Policy alert_description fix implemented
+
+## 0.6.7 (December 13, 2021)
+* GoLang version increased
+
+## 0.6.6 (December 13, 2021)
+BUGFIX:
+* **Routing Rule:** Add is_default field
+* **Heartbeat:** Add "." string support
+
+## 0.6.5 (June 15, 2021)
+BUGFIX:
+* **Schedule:** Timezone diff problem fixed.
+
 ## 0.6.4 (April 14, 2021)
 BUGFIX:
 * **Notification Policy:** De-duplication Action problem fixed.

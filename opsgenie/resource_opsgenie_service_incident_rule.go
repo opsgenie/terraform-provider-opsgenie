@@ -59,6 +59,7 @@ func resourceOpsGenieServiceIncidentRule() *schema.Resource {
 										ValidateFunc: validation.StringInSlice([]string{
 											"message", "description", "tags",
 											"extra-properties", "recipients", "teams", "priority",
+											"alias", "source", "entity", "actions", "details",
 										}, false),
 									},
 									"operation": {
