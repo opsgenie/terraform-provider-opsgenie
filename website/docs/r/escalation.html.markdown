@@ -26,8 +26,8 @@ resource "opsgenie_escalation" "default" {
     recipient {
       type = "user"
       id   = opsgenie_user.test.id
-		}
-	}
+    }
+  }
 }
 ```
 
