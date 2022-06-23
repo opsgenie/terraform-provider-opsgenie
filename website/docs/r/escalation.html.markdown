@@ -101,11 +101,11 @@ The following arguments are supported:
 * `notify_type` - (Required) Recipient calculation logic for schedules. Possible values are:
 
   - `default`: on call users
-  - `next`: next users in rotation
-  - `previous`: previous users on rotation
-  - `users`: users of the team
-  - `admins`: admins of the team
-  - `all`: all members of the team
+  - `next`: next users in `schedule` rotation
+  - `previous`: previous users on `schedule` rotation
+  - `users`: users of the `team`
+  - `admins`: admins of the `team`
+  - `all`: all members of the `team`
 
 * `recipient` - (Required) Object of schedule, team, or users which will be notified in escalation. The possible values for participants are: `user`, `schedule`, `team`. There can only be one recipient per each `rules`.
 
