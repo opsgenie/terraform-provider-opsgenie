@@ -256,6 +256,7 @@ func resourceOpsGenieTeamRoutingRuleRead(d *schema.ResourceData, meta interface{
 	}
 	d.Set("is_default", result.IsDefault)
 	d.Set("name", result.Name)
+	d.Set("order", result.Order)
 	d.Set("time_restriction", flattenOpsgenieTimeRestriction(result.TimeRestriction))
 	d.Set("notify", flattenOpsgenieNotify(result.Notify))
 	d.Set("criteria", flattenOpsgenieCriteria(result.Criteria))
@@ -270,6 +271,7 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		return err
 	}
 	name := d.Get("name").(string)
+	order := d.Get("order").(int)
 	teamId := d.Get("team_id").(string)
 	timezone := d.Get("timezone").(string)
 	timeRestriction := d.Get("time_restriction").([]interface{})
@@ -299,8 +301,17 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 	}
 
 	log.Printf("[INFO] Updating OpsGenie team routing rule '%s'", name)
-
 	_, err = client.UpdateRoutingRule(context.Background(), updateRequest)
+	if err != nil {
+		return err
+	}
+
+	_, err = client.ChangeRoutingRuleOrder(context.Background(), &team.ChangeRoutingRuleOrderRequest{
+		RoutingRuleId:       d.Id(),
+		TeamIdentifierType:  team.Id,
+		TeamIdentifierValue: teamId,
+		Order:               &order,
+	})
 	if err != nil {
 		return err
 	}

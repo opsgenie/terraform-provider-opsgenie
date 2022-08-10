@@ -1,3 +1,14 @@
+## 0.6.11 (February 18, 2022)
+* fix team set problem
+
+
+## 0.6.10 (February 18, 2022)
+* Update Routing rule will update the order,too.
+  **Note:** There are still bug in creation of Routing Rules from scratch due to concurrency problem. Following command will solve the problem. Apologize for the confusion
+  
+            terraform apply -refresh-only
+  
+
 ## 0.6.8 (January 5, 2022)
 * Alert Policy alert_description fix implemented
 
