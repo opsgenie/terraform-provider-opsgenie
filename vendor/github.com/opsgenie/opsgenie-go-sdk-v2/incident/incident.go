@@ -62,6 +62,15 @@ func (c *Client) List(context context.Context, request *ListRequest) (*ListResul
 	return result, nil
 }
 
+func (c *Client) Resolve(context context.Context, request *ResolveRequest) (*AsyncResult, error) {
+	result := &AsyncResult{}
+	err := c.client.Exec(context, request, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *Client) Close(context context.Context, request *CloseRequest) (*AsyncResult, error) {
 	result := &AsyncResult{}
 	err := c.client.Exec(context, request, result)

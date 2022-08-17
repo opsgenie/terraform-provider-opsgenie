@@ -44,7 +44,7 @@ func resourceOpsGenieTeam() *schema.Resource {
 				Default:  false,
 			},
 			"member": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -78,7 +78,7 @@ func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error 
 		Description: description,
 	}
 
-	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
+	if d.Get("member").(*schema.Set).Len() > 0 && !d.Get("ignore_members").(bool) {
 		createRequest.Members = expandOpsGenieTeamMembers(d)
 	}
 
@@ -164,7 +164,7 @@ func resourceOpsGenieTeamUpdate(d *schema.ResourceData, meta interface{}) error 
 		Description: description,
 	}
 
-	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
+	if d.Get("member").(*schema.Set).Len() > 0 && !d.Get("ignore_members").(bool) {
 		updateRequest.Members = expandOpsGenieTeamMembers(d)
 	}
 
@@ -210,14 +210,14 @@ func flattenOpsGenieTeamMembers(input []team.Member) []map[string]interface{} {
 }
 
 func expandOpsGenieTeamMembers(d *schema.ResourceData) []team.Member {
-	input := d.Get("member").([]interface{})
-	members := make([]team.Member, 0, len(input))
+	input := d.Get("member").(*schema.Set)
+	members := make([]team.Member, 0, input.Len())
 
 	if input == nil {
 		return members
 	}
 
-	for _, v := range input {
+	for _, v := range input.List() {
 		config := v.(map[string]interface{})
 
 		userId := config["id"].(string)
