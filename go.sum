@@ -279,10 +279,6 @@ github.com/nsf/jsondiff v0.0.0-20200515183724-f29ed568f4ce h1:RPclfga2SEJmgMmz2k
 github.com/nsf/jsondiff v0.0.0-20200515183724-f29ed568f4ce/go.mod h1:uFMI8w+ref4v2r9jz+c9i1IfIttS/OkmLfrk1jne5hs=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
-github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.8 h1:qF/rRi8GSU2mjBXfJIyMj9GGmjedsV3Gm1uYbiGlCRk=
-github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.8/go.mod h1:4OjcxgwdXzezqytxN534MooNmrxRD50geWZxTD7845s=
-github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.9-0.20220105104804-b14b16d483ab h1:7fzAUOMkb+SuhUsKbBrr8KOxmGWTtPTt2fqL+RcqGUA=
-github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.9-0.20220105104804-b14b16d483ab/go.mod h1:4OjcxgwdXzezqytxN534MooNmrxRD50geWZxTD7845s=
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.11-0.20220210080402-2a8f79978ae0 h1:qlSiuCdXCgw/fwoQA+SV2Ek3peiq6G9cR9meP1Ux8Ys=
 github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.11-0.20220210080402-2a8f79978ae0/go.mod h1:4OjcxgwdXzezqytxN534MooNmrxRD50geWZxTD7845s=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
