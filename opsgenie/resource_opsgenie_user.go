@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 
 	"fmt"
@@ -293,6 +294,12 @@ func resourceOpsGenieUserDelete(d *schema.ResourceData, meta interface{}) error 
 	if err != nil {
 		return err
 	}
+
+	err = deleteUserFromTeams(client, d.Id(), meta)
+	if err != nil {
+		return err
+	}
+
 	deleteRequest := &user.DeleteRequest{
 		Identifier: d.Id(),
 	}
@@ -346,4 +353,34 @@ func flattenUserAddress(addr *user.UserAddress) []map[string]interface{} {
 		"line":    addr.Line,
 		"zipcode": addr.ZipCode,
 	}}
+}
+
+func deleteUserFromTeams(client *user.Client, userId string, meta interface{}) error {
+	teamRequest := &user.ListUserTeamsRequest{
+		Identifier: userId,
+	}
+	teamResult, err := client.ListUserTeams(context.Background(), teamRequest)
+	if err != nil {
+		return err
+	}
+	for _, t := range teamResult.Teams {
+
+		tclient, err := team.NewClient(meta.(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+
+		log.Printf("[INFO] Removing OpsGenie user '%s' from OpsGenie team '%s'", userId, t.Id)
+
+		_, err = tclient.RemoveMember(context.Background(), &team.RemoveTeamMemberRequest{
+			TeamIdentifierType:    team.Id,
+			TeamIdentifierValue:   t.Id,
+			MemberIdentifierType:  team.Id,
+			MemberIdentifierValue: userId,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
