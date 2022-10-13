@@ -88,7 +88,7 @@ func resourceOpsgenieScheduleRotation() *schema.Resource {
 							ValidateFunc: validateRestrictionType,
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -126,7 +126,7 @@ func resourceOpsgenieScheduleRotation() *schema.Resource {
 							},
 						},
 						"restriction": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{

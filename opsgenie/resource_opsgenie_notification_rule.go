@@ -131,7 +131,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 							Required: true,
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -163,7 +163,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 							},
 						},
 						"restriction": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{

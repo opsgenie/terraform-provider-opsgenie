@@ -137,7 +137,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"time-of-day", "weekday-and-time-of-day"}, false),
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -169,7 +169,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							},
 						},
 						"restriction": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{

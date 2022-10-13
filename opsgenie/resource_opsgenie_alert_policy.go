@@ -3,10 +3,11 @@ package opsgenie
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"strconv"
 
 	"log"
 	"strings"
@@ -128,7 +129,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"time-of-day", "weekday-and-time-of-day"}, false),
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -160,7 +161,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 							},
 						},
 						"restriction": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{

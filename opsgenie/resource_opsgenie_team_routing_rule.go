@@ -3,9 +3,10 @@ package opsgenie
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
 	"strings"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 
@@ -133,7 +134,7 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 							Required: true,
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -165,7 +166,7 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 							},
 						},
 						"restriction": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeMap,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
