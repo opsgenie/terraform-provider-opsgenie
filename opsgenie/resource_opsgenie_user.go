@@ -2,10 +2,14 @@ package opsgenie
 
 import (
 	"context"
+	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/schedule"
 	"log"
 	"strings"
 	"time"
 
+	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/user"
 
 	"fmt"
@@ -293,13 +297,42 @@ func resourceOpsGenieUserDelete(d *schema.ResourceData, meta interface{}) error 
 	if err != nil {
 		return err
 	}
-	deleteRequest := &user.DeleteRequest{
-		Identifier: d.Id(),
-	}
 
-	_, err = client.Delete(context.Background(), deleteRequest)
-	if err != nil {
-		return err
+	maxAttempt := 5
+	attempt := 0
+	for {
+		retry := false
+		attempt++
+
+		err = deleteUserFromTeams(client, d.Id(), meta)
+		if err != nil {
+			return err
+		}
+
+		err = deleteUserFromScheduleRotations(client, d.Id(), meta)
+		if err != nil {
+			return err
+		}
+
+		deleteRequest := &user.DeleteRequest{
+			Identifier: d.Id(),
+		}
+
+		_, err = client.Delete(context.Background(), deleteRequest)
+		if err != nil {
+			if e, ok := err.(*ogClient.ApiError); ok && e.StatusCode == 428 {
+				if attempt == maxAttempt {
+					return err
+				}
+				retry = true
+			} else {
+				return err
+			}
+		}
+
+		if retry == false {
+			break
+		}
 	}
 
 	return nil
@@ -346,4 +379,89 @@ func flattenUserAddress(addr *user.UserAddress) []map[string]interface{} {
 		"line":    addr.Line,
 		"zipcode": addr.ZipCode,
 	}}
+}
+
+func deleteUserFromTeams(client *user.Client, userId string, meta interface{}) error {
+	teamRequest := &user.ListUserTeamsRequest{
+		Identifier: userId,
+	}
+	teamResult, err := client.ListUserTeams(context.Background(), teamRequest)
+	if err != nil {
+		return err
+	}
+	for _, t := range teamResult.Teams {
+
+		tclient, err := team.NewClient(meta.(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+
+		log.Printf("[INFO] Removing OpsGenie user '%s' from OpsGenie team '%s'", userId, t.Id)
+
+		_, err = tclient.RemoveMember(context.Background(), &team.RemoveTeamMemberRequest{
+			TeamIdentifierType:    team.Id,
+			TeamIdentifierValue:   t.Id,
+			MemberIdentifierType:  team.Id,
+			MemberIdentifierValue: userId,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func deleteUserFromScheduleRotations(client *user.Client, userId string, meta interface{}) error {
+	schedulesRequest := &user.ListUserSchedulesRequest{
+		Identifier: userId,
+	}
+
+	schedulesResult, err := client.ListUserSchedules(context.Background(), schedulesRequest)
+	if err != nil {
+		return err
+	}
+
+	for _, s := range schedulesResult.Schedules {
+
+		scheduleRotationsRequest := &schedule.ListRotationsRequest{
+			ScheduleIdentifierType:  schedule.Id,
+			ScheduleIdentifierValue: s.Id,
+		}
+
+		sclient, err := schedule.NewClient(meta.(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+
+		scheduleRotationsResult, err := sclient.ListRotations(context.Background(), scheduleRotationsRequest)
+		if err != nil {
+			return err
+		}
+
+		for _, r := range scheduleRotationsResult.Rotations {
+			for i, p := range r.Participants {
+				if p.Id == userId {
+					log.Printf("[INFO] Removing OpsGenie user '%s' from OpsGenie schedule rotation '%s'", userId, r.Id)
+
+					participants := append(r.Participants[:i], r.Participants[i+1:]...)
+
+					updateRotationRequest := &schedule.UpdateRotationRequest{
+						RotationId:              r.Id,
+						ScheduleIdentifierType:  schedule.Id,
+						ScheduleIdentifierValue: s.Id,
+						Rotation: &og.Rotation{
+							Participants: participants,
+						},
+					}
+
+					_, err := sclient.UpdateRotation(context.Background(), updateRotationRequest)
+					if err != nil {
+						return err
+					}
+				}
+			}
+		}
+	}
+
+	return nil
 }
