@@ -1,3 +1,7 @@
+## 0.6.18 (November 16, 2022)
+BUGFIX:
+* **Escalation:** Import repeat field bug fixed.
+
 ## 0.6.11 (February 18, 2022)
 * fix team set problem
 

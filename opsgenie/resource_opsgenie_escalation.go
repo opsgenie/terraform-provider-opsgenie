@@ -154,8 +154,7 @@ func resourceOpsgenieEscalationRead(d *schema.ResourceData, meta interface{}) er
 	d.Set("name", getResponse.Name)
 	d.Set("description", getResponse.Description)
 	d.Set("rules", flattenOpsgenieEscalationRules(getResponse.Rules))
-	repeat := d.Get("repeat").([]interface{})
-	if len(repeat) > 0 {
+	if getResponse.Repeat != nil {
 		d.Set("repeat", flattenOpsgenieEscalationRepeat(getResponse.Repeat))
 	}
 	if getResponse.OwnerTeam != nil {
@@ -237,7 +236,7 @@ func flattenOpsgenieEscalationRules(input []escalation.Rule) []map[string]interf
 	return rules
 }
 
-func flattenOpsgenieEscalationRepeat(input escalation.Repeat) []map[string]interface{} {
+func flattenOpsgenieEscalationRepeat(input *escalation.Repeat) []map[string]interface{} {
 	repeats := make([]map[string]interface{}, 0, 1)
 	out := make(map[string]interface{})
 	out["count"] = input.Count
