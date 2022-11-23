@@ -53,7 +53,7 @@ The `steps` block supports:
 
 * `enabled` - (Optional) Defined if this step is enabled. Default: `true`
 
-* `send_after` - (Optional) Time period, in minutes, notification will be sent after.
+* `send_after` - (Optional) Time period, in minutes, notification will be sent after. Should be an integer equal to or higher than 0.
 
 * `contact` - (Required) Defines the contact that notification will be sent to. This is a block, structure is documented below.
 
