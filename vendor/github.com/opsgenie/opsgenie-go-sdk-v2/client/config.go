@@ -1,11 +1,12 @@
 package client
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"net/http"
-	"time"
 )
 
 type Config struct {
@@ -29,7 +30,7 @@ type Config struct {
 
 	LogLevel logrus.Level
 
-	Logger *logrus.Logger
+	Logger logrus.FieldLogger
 }
 
 type ApiUrl string
