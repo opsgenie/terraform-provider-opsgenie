@@ -210,7 +210,7 @@ type UpdateAlertPolicyRequest struct {
 	Message                  string                 `json:"message,omitempty"`
 	Continue                 *bool                  `json:"continue,omitempty"`
 	Alias                    string                 `json:"alias,omitempty"`
-	AlertDescription         string                 `json:"alertDescription,omitempty"`
+	AlertDescription         string                 `json:"description,omitempty"`
 	Entity                   string                 `json:"entity,omitempty"`
 	Source                   string                 `json:"source,omitempty"`
 	IgnoreOriginalDetails    *bool                  `json:"ignoreOriginalDetails,omitempty"`
