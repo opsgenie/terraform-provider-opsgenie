@@ -178,3 +178,12 @@ func (c *Client) ListNotes(context context.Context, request *ListNotesRequest) (
 	}
 	return result, nil
 }
+
+func (c *Client) GetResponderAlerts(context context.Context, request *GetResponderAlertsRequest) (*GetResponderAlertsResult, error) {
+	result := &GetResponderAlertsResult{}
+	err := c.client.Exec(context, request, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

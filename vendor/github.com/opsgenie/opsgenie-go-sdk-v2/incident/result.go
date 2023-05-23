@@ -80,3 +80,8 @@ type Paging struct {
 	First string `json:"first"`
 	Last  string `json:"last"`
 }
+
+type GetResponderAlertsResult struct {
+	client.ResultMetadata
+	AlertIds []string `json:"data"`
+}
