@@ -153,6 +153,7 @@ type UpdateIntegrationRequest struct {
 	Responders                  []Responder
 	AddAlertDescription         *bool
 	AddAlertDetails             *bool
+	OwnerTeam                   *og.OwnerTeam `json:"ownerTeam,omitempty"`
 	Headers                     map[string]string
 	OtherFields
 }
