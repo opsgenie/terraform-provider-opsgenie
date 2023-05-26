@@ -315,10 +315,12 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		updateRequest.OwnerTeam = &og.OwnerTeam{
 			Id: ownerTeam,
 		}
-		updateRequest.Responders = append(updateRequest.Responders, integration.Responder{
-			Type: integration.ResponderType("team"),
-			Id:   ownerTeam,
-		})
+		if userProperties["isAdvanced"] == false {
+			updateRequest.Responders = append(updateRequest.Responders, integration.Responder{
+				Type: integration.ResponderType("team"),
+				Id:   ownerTeam,
+			})
+		}
 	}
 
 	log.Printf("[INFO] Updating OpsGenie api based integration '%s'", name)
