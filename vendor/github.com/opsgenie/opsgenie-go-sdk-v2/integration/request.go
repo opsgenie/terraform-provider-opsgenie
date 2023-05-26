@@ -397,6 +397,7 @@ type IntegrationAction struct {
 	Responders                       []Responder       `json:"responders,omitempty"`
 	Tags                             []string          `json:"tags,omitempty"`
 	ExtraProperties                  map[string]string `json:"extraProperties,omitempty"`
+	Recipients                       []Responder       `json:"recipients,omitempty"`
 }
 
 func (r *UpdateAllIntegrationActionsRequest) Validate() error {
