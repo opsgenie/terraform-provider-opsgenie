@@ -264,16 +264,12 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 						"until_minute": {
 							Type:     schema.TypeInt,
 							Optional: true,
-							// This should be from 0 to 23 but due to BUG in SDK it has to be more than 1
-							// https://github.com/opsgenie/opsgenie-go-sdk-v2/issues/29
-							ValidateFunc: validation.IntBetween(1, 59),
+							ValidateFunc: validation.IntBetween(0, 59),
 						},
 						"until_hour": {
 							Type:     schema.TypeInt,
 							Optional: true,
-							// This should be from 0 to 23 but due to BUG in SDK it has to be more than 1
-							// https://github.com/opsgenie/opsgenie-go-sdk-v2/issues/29
-							ValidateFunc: validation.IntBetween(1, 23),
+							ValidateFunc: validation.IntBetween(0, 23),
 						},
 						"duration": {
 							Type:     schema.TypeList,
