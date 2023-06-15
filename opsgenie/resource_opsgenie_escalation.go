@@ -181,7 +181,7 @@ func resourceOpsgenieEscalationUpdate(d *schema.ResourceData, meta interface{}) 
 		Rules:          expandOpsgenieEscalationRules(d),
 		Repeat:         expandOpsgenieEscalationRepeat(d),
 	}
-	if ownerTeam != "" {
+	if d.HasChange("owner_team_id") && ownerTeam != "" {
 		updateRequest.OwnerTeam = &og.OwnerTeam{
 			Id: ownerTeam,
 		}

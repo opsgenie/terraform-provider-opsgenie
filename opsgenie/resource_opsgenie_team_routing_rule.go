@@ -306,14 +306,16 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		return err
 	}
 
-	_, err = client.ChangeRoutingRuleOrder(context.Background(), &team.ChangeRoutingRuleOrderRequest{
-		RoutingRuleId:       d.Id(),
-		TeamIdentifierType:  team.Id,
-		TeamIdentifierValue: teamId,
-		Order:               &order,
-	})
-	if err != nil {
-		return err
+	if !isDefault {
+		_, err = client.ChangeRoutingRuleOrder(context.Background(), &team.ChangeRoutingRuleOrderRequest{
+			RoutingRuleId:       d.Id(),
+			TeamIdentifierType:  team.Id,
+			TeamIdentifierValue: teamId,
+			Order:               &order,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

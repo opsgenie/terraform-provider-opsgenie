@@ -623,7 +623,9 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 			action.IgnoreRespondersFromPayload = &ignoreRespondersFromPayload
 			action.IgnoreAlertActionsFromPayload = &ignoreAlertActionsFromPayload
 			action.IgnoreExtraPropertiesFromPayload = &ignoreExtraPropertiesFromPayload
-			action.Responders = expandOpsgenieActionResponders(inputMap["responders"].([]interface{}))
+			newResponders := expandOpsgenieActionResponders(inputMap["responders"].([]interface{}))
+			action.Responders = newResponders
+			action.Recipients = newResponders
 		}
 
 		actions = append(actions, action)

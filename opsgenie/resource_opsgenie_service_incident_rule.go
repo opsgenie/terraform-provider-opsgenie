@@ -49,7 +49,7 @@ func resourceOpsGenieServiceIncidentRule() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 						},
 						"conditions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -172,7 +172,7 @@ func resourceOpsGenieServiceIncidentRuleCreate(d *schema.ResourceData, meta inte
 	for _, v := range incident_rule {
 		config := v.(map[string]interface{})
 		createRequest.ConditionMatchType = og.ConditionMatchType(config["condition_match_type"].(string))
-		createRequest.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].([]interface{}))
+		createRequest.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].(*schema.Set))
 		createRequest.IncidentProperties = expandOpsGenieServiceIncidentRuleIncidentProperties(config["incident_properties"].([]interface{}))
 	}
 
@@ -236,7 +236,7 @@ func resourceOpsGenieServiceIncidentRuleUpdate(d *schema.ResourceData, meta inte
 	for _, v := range incident_rule {
 		config := v.(map[string]interface{})
 		updateRequest.ConditionMatchType = og.ConditionMatchType(config["condition_match_type"].(string))
-		updateRequest.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].([]interface{}))
+		updateRequest.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].(*schema.Set))
 		updateRequest.IncidentProperties = expandOpsGenieServiceIncidentRuleIncidentProperties(config["incident_properties"].([]interface{}))
 	}
 
@@ -286,13 +286,13 @@ func flattenOpsGenieServiceIncidentRules(input service.IncidentRuleResult) []map
 
 }
 
-func expandOpsGenieServiceIncidentRuleConditions(input []interface{}) []og.Condition {
-	conditions := make([]og.Condition, 0, len(input))
+func expandOpsGenieServiceIncidentRuleConditions(input *schema.Set) []og.Condition {
+	conditions := make([]og.Condition, 0, input.Len())
 	if input == nil {
 		return conditions
 	}
 
-	for _, v := range input {
+	for _, v := range input.List() {
 		condition := og.Condition{}
 		config := v.(map[string]interface{})
 		not_value := config["not"].(bool)

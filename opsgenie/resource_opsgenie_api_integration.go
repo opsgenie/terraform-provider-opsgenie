@@ -275,9 +275,9 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		log.Printf("Error occurred while performing GET for integration: %s", d.Id())
 		return err
 	}
-
 	userProperties := result.Data
 	userProperties["allowWriteAccess"] = d.Get("allow_write_access")
+	userProperties["responders"] = nil
 
 	if readOnlyFields, found := userProperties["_readOnly"]; found {
 		for _, key := range readOnlyFields.([]interface{}) {
@@ -292,6 +292,7 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	enabled := d.Get("enabled").(bool)
 	headers := expandOpsGenieWebhookHeaders(d)
+	ownerTeam := d.Get("owner_team_id").(string)
 
 	if integrationType == "" {
 		integrationType = ApiIntegrationType
@@ -308,6 +309,18 @@ func resourceOpsgenieApiIntegrationUpdate(d *schema.ResourceData, meta interface
 		OtherFields:                 userProperties,
 		WebhookUrl:                  webhookUrl,
 		Headers:                     headers,
+	}
+
+	if ownerTeam != "" {
+		updateRequest.OwnerTeam = &og.OwnerTeam{
+			Id: ownerTeam,
+		}
+		if userProperties["isAdvanced"] == false {
+			updateRequest.Responders = append(updateRequest.Responders, integration.Responder{
+				Type: integration.ResponderType("team"),
+				Id:   ownerTeam,
+			})
+		}
 	}
 
 	log.Printf("[INFO] Updating OpsGenie api based integration '%s'", name)
