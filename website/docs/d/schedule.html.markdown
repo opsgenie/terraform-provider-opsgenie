@@ -31,8 +31,6 @@ The following attributes are exported:
 
 * `id` - The ID of the Opsgenie Schedule.
 
-* `rules` - A Member block as documented below.
-
 * `description` - Timezone of schedule. Please look at [Supported Timezone Ids](https://docs.opsgenie.com/docs/supported-timezone-ids) for available timezones - Default: `America/New_York`.
 
 * `timezone` - The description of schedule.
