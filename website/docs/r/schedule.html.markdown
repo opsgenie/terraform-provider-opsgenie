@@ -34,8 +34,6 @@ The following arguments are supported:
 
 * `name` - (Required) Name of the schedule.
 
-* `rules` - (Required) A Member block as documented below.
-
 * `description` - (Optional) The description of schedule.
 
 * `timezone` -  (Optional) Timezone of schedule. Please look at [Supported Timezone Ids](https://docs.opsgenie.com/docs/supported-timezone-ids) for available timezones - Default: `America/New_York`.
