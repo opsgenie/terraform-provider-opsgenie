@@ -1,7 +1,3 @@
-## 0.6.19 (December 29, 2022)
-BUGFIX:
-* **Alert Policy:** Fix alert_description
-
 ## 0.6.18 (November 16, 2022)
 BUGFIX:
 * **Escalation:** Import repeat field bug fixed.
