@@ -203,6 +203,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 			"alert_description": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "{{description}}",
 			},
 			"entity": {
 				Type:     schema.TypeString,
