@@ -1,3 +1,26 @@
+## 0.6.23 (May 26, 2023)
+BUGFIX:
+* Bump up opsgenie-go-sdk-v2 to v1.2.1.
+* **Integration Action:** Added recipients to update in integration_actions responders.
+
+## 0.6.22 (May 23, 2022)
+IMPROVEMENTS:
+* Bump up opsgenie-go-sdk-v2 to v1.2.18.
+* **API Integration:** Added owner team update.
+
+## 0.6.21 (May 23, 2023)
+IMPROVEMENTS:
+* Bump up opsgenie-go-sdk-v2 to v1.2.16.
+
+## 0.6.20 (January 30, 2023)
+BUGFIX:
+* **Service Incident Rule:** Conditions is a set not an ordered list
+
+## 0.6.19 (January 25, 2023)
+BUGFIX:
+* **Team Routing Rule:** Stop sending routing rule order update if it's a default rule
+* **Escalation:** Fix updating escalation's owner team issue when using team based integration api key
+
 ## 0.6.18 (November 16, 2022)
 BUGFIX:
 * **Escalation:** Import repeat field bug fixed.
