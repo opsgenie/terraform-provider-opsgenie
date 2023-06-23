@@ -1,3 +1,42 @@
+## 0.6.25 (June 23, 2023)
+* IMPROVEMENTS:
+  * **Integration Action:** Updated documentation to show how to create alert integration action with multiline description using chomp function.
+  * **Schedule** Updated documentation by removing unused `rules` attribute.
+  * Updated `README` to correctly render Terraform logo.
+* BUGFIX:
+  * **Alert Policy:** 
+    * Fixed ignore_original_actions and ignore_original_details being switched.
+    * Added `{{description}}` as default value for `alert_description` field to solve [#290](https://github.com/opsgenie/terraform-provider-opsgenie/issues/290).
+  * **Team:** Fixed error message to better explain the restrictions around team names.
+
+
+## 0.6.24 (May 26, 2023)
+IMPROVEMENTS:
+* **Notification Policy:** Allow zeroes in until_hour/until_minute under notification_policy.delay_action
+
+## 0.6.23 (May 26, 2023)
+BUGFIX:
+* Bump up opsgenie-go-sdk-v2 to v1.2.1.
+* **Integration Action:** Added recipients to update in integration_actions responders.
+
+## 0.6.22 (May 23, 2022)
+IMPROVEMENTS:
+* Bump up opsgenie-go-sdk-v2 to v1.2.18.
+* **API Integration:** Added owner team update.
+
+## 0.6.21 (May 23, 2023)
+IMPROVEMENTS:
+* Bump up opsgenie-go-sdk-v2 to v1.2.16.
+
+## 0.6.20 (January 30, 2023)
+BUGFIX:
+* **Service Incident Rule:** Conditions is a set not an ordered list
+
+## 0.6.19 (January 25, 2023)
+BUGFIX:
+* **Team Routing Rule:** Stop sending routing rule order update if it's a default rule
+* **Escalation:** Fix updating escalation's owner team issue when using team based integration api key
+
 ## 0.6.18 (November 16, 2022)
 BUGFIX:
 * **Escalation:** Import repeat field bug fixed.
