@@ -1,3 +1,19 @@
+## 0.6.25 (June 23, 2023)
+* IMPROVEMENTS:
+  * **Integration Action:** Updated documentation to show how to create alert integration action with multiline description using chomp function.
+  * **Schedule** Updated documentation by removing unused `rules` attribute.
+  * Updated `README` to correctly render Terraform logo.
+* BUGFIX:
+  * **Alert Policy:** 
+    * Fixed ignore_original_actions and ignore_original_details being switched.
+    * Added `{{description}}` as default value for `alert_description` field to solve [#290](https://github.com/opsgenie/terraform-provider-opsgenie/issues/290).
+  * **Team:** Fixed error message to better explain the restrictions around team names.
+
+
+## 0.6.24 (May 26, 2023)
+IMPROVEMENTS:
+* **Notification Policy:** Allow zeroes in until_hour/until_minute under notification_policy.delay_action
+
 ## 0.6.23 (May 26, 2023)
 BUGFIX:
 * Bump up opsgenie-go-sdk-v2 to v1.2.1.
