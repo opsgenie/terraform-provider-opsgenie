@@ -1,3 +1,7 @@
+## 0.6.25 (June 29, 2023)
+* BUGFIX:
+  * **Notification Rule:**
+    * Fixed an issue where the users could not set the send_after value to 0 while creating a notification rule.
 ## 0.6.25 (June 23, 2023)
 * IMPROVEMENTS:
   * **Integration Action:** Updated documentation to show how to create alert integration action with multiline description using chomp function.
