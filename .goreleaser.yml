@@ -33,7 +33,7 @@ builds:
   binary: '{{ .ProjectName }}_v{{ .Version }}'
   hooks:
     post:
-      - cmd: "sh ./scripts/local-release.sh {{ .Version }} {{ .Path }} {{ .ProjectName }}"
+      - cmd: "sh ./scripts/local-release.sh {{ .Version }} {{ .Path }} {{.Os}} {{.Arch}}"
 archives:
 - format: zip
   name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'

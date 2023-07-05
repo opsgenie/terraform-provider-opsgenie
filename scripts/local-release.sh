@@ -2,8 +2,8 @@
 
 VERSION=$1
 FILE_PATH=$2
-PROJECT_NAME=$3
-FOLDER_NAME=$(echo "$FILE_PATH" | sed -E 's/(.*)\/dist\/terraform-provider-opsgenie_(.*)\/(.*)/\2/g')
+OS=$3
+ARCH=$4
 
-mkdir -p ~/terraform/providers/test.local/opsgenie/opsgenie/$VERSION/$FOLDER_NAME
-cp $FILE_PATH ~/terraform/providers/test.local/opsgenie/opsgenie/$VERSION/$FOLDER_NAME
+mkdir -p ~/terraform/providers/test.local/opsgenie/opsgenie/$VERSION/"$OS"_"$ARCH"
+cp $FILE_PATH ~/terraform/providers/test.local/opsgenie/opsgenie/$VERSION/"$OS"_"$ARCH"
