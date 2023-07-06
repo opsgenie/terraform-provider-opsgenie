@@ -62,3 +62,39 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 ```sh
 $ make testacc
 ```
+
+Testing the Provider from Local Registry Version
+------------------------------------------------
+* Create a `.terraformrc` file on your in your home folder using `vi ~/.terraformrc`
+* Add the local provider registry conf in `.terraformrc`
+```
+provider_installation {
+  filesystem_mirror {
+    path    = "~/terraform/providers"
+    include = ["test.local/*/*"]
+  }
+  direct {
+    exclude = ["test.local/*/*"]
+  }
+}
+```
+* Run `make build` on local (it will internally trigger a hook to write to `test.local` registry located in your `~/terraform/providers` folder)
+* You can create a terraform basic project of your own locally with `main.tf` file
+```
+terraform {
+  required_providers {
+    opsgenie = {
+      source  = "test.local/opsgenie/opsgenie"
+      version = "<local_version>"
+    }
+  }
+}
+
+# Configure the Opsgenie Provider
+provider "opsgenie" {
+  api_key = <api_key>
+  api_url = "api.opsgenie.com" # can be a stage instance url for devs
+}
+```
+* And, Add respective terraform change files which you want to apply on your OG instance
+* Run respective terraform commands to test the provider as per your convenience
