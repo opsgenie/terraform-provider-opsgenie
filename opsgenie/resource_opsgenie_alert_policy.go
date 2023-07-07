@@ -129,7 +129,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"time-of-day", "weekday-and-time-of-day"}, false),
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -161,7 +161,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 							},
 						},
 						"restriction": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -568,9 +568,9 @@ func expandOpsGenieAlertPolicyTimeRestriction(d []interface{}) *og.TimeRestricti
 	for _, v := range d {
 		config := v.(map[string]interface{})
 		timeRestriction.Type = og.RestrictionType(config["type"].(string))
-		if len(config["restrictions"].([]interface{})) > 0 {
-			restrictionList := make([]og.Restriction, 0, len(config["restrictions"].([]interface{})))
-			for _, v := range config["restrictions"].([]interface{}) {
+		if config["restrictions"].(*schema.Set).Len() > 0 {
+			restrictionList := make([]og.Restriction, 0, config["restrictions"].(*schema.Set).Len())
+			for _, v := range config["restrictions"].(*schema.Set).List() {
 				config := v.(map[string]interface{})
 				startHour := uint32(config["start_hour"].(int))
 				startMin := uint32(config["start_min"].(int))
@@ -589,7 +589,7 @@ func expandOpsGenieAlertPolicyTimeRestriction(d []interface{}) *og.TimeRestricti
 			timeRestriction.RestrictionList = restrictionList
 		} else {
 			restriction := og.Restriction{}
-			for _, v := range config["restriction"].([]interface{}) {
+			for _, v := range config["restriction"].(*schema.Set).List() {
 				config := v.(map[string]interface{})
 				startHour := uint32(config["start_hour"].(int))
 				startMin := uint32(config["start_min"].(int))
