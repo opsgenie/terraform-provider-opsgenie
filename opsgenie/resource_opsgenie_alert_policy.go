@@ -3,10 +3,11 @@ package opsgenie
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"strconv"
 
 	"log"
 	"strings"
@@ -70,7 +71,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 						},
 						"conditions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -535,19 +536,19 @@ func expandOpsGenieAlertPolicyFilter(input []interface{}) *og.Filter {
 	for _, v := range input {
 		config := v.(map[string]interface{})
 		filter.ConditionMatchType = og.ConditionMatchType(config["type"].(string))
-		filter.Conditions = expandOpsGenieAlertPolicyFilterConditions(config["conditions"].([]interface{}))
+		filter.Conditions = expandOpsGenieAlertPolicyFilterConditions(config["conditions"].(*schema.Set))
 	}
 	return &filter
 }
 
-func expandOpsGenieAlertPolicyFilterConditions(input []interface{}) []og.Condition {
-	conditions := make([]og.Condition, 0, len(input))
+func expandOpsGenieAlertPolicyFilterConditions(input *schema.Set) []og.Condition {
+	conditions := make([]og.Condition, 0, input.Len())
 	condition := og.Condition{}
 	if input == nil {
 		return conditions
 	}
 
-	for _, v := range input {
+	for _, v := range input.List() {
 		config := v.(map[string]interface{})
 		not_value := config["not"].(bool)
 		order := config["order"].(int)
