@@ -558,6 +558,9 @@ func validateStep(step *og.Step, actionType ActionType) error {
 	if step.Contact.MethodOfContact == "" {
 		return errors.New("Method cannot be empty.")
 	}
+	if (actionType == CreateAlert || actionType == AssignedAlert) && step.SendAfter == nil {
+		return errors.New("SendAfter cannot be empty.")
+	}
 
 	return nil
 }

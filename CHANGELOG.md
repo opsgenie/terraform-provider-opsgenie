@@ -1,3 +1,10 @@
+## 0.6.27 (July 11, 2023)
+* IMPROVEMENTS:
+  * **Alert Policy:**
+    * Added support for `escalation` and `schedule` type in `responders` field.
+  * **Dev Loop**
+    * Added a hook in goreleaser to generate the local terraform binary/exe to ease debugging.
+
 ## 0.6.26 (June 29, 2023)
 * BUGFIX:
   * **Notification Rule:**
@@ -13,7 +20,6 @@
     * Fixed ignore_original_actions and ignore_original_details being switched.
     * Added `{{description}}` as default value for `alert_description` field to solve [#290](https://github.com/opsgenie/terraform-provider-opsgenie/issues/290).
   * **Team:** Fixed error message to better explain the restrictions around team names.
-
 
 ## 0.6.24 (May 26, 2023)
 IMPROVEMENTS:

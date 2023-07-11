@@ -681,8 +681,8 @@ func ValidateDelayAction(action DelayAction) error {
 
 func ValidateResponders(responders *[]alert.Responder) error {
 	for _, responder := range *responders {
-		if responder.Type != alert.UserResponder && responder.Type != alert.TeamResponder {
-			return errors.New("responder type for alert policy should be one of team or user")
+		if responder.Type != alert.UserResponder && responder.Type != alert.TeamResponder && responder.Type != alert.EscalationResponder && responder.Type != alert.ScheduleResponder {
+			return errors.New("responder type for alert policy should be one of team, user, escalation or schedule")
 		}
 		if responder.Id == "" {
 			return errors.New("responder id should be provided")
