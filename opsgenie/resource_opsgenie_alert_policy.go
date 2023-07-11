@@ -245,7 +245,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 						"type": {
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "team", "escalation"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "team", "escalation", "schedule"}, false),
 						},
 						"name": {
 							Type:     schema.TypeString,
