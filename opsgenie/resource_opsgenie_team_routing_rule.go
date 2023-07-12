@@ -37,6 +37,11 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"is_default": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"team_id": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -249,8 +254,9 @@ func resourceOpsGenieTeamRoutingRuleRead(d *schema.ResourceData, meta interface{
 	if err != nil {
 		return err
 	}
-
+	d.Set("is_default", result.IsDefault)
 	d.Set("name", result.Name)
+	d.Set("order", result.Order)
 	d.Set("time_restriction", flattenOpsgenieTimeRestriction(result.TimeRestriction))
 	d.Set("notify", flattenOpsgenieNotify(result.Notify))
 	d.Set("criteria", flattenOpsgenieCriteria(result.Criteria))
@@ -265,11 +271,13 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		return err
 	}
 	name := d.Get("name").(string)
+	order := d.Get("order").(int)
 	teamId := d.Get("team_id").(string)
 	timezone := d.Get("timezone").(string)
 	timeRestriction := d.Get("time_restriction").([]interface{})
 	criteria := d.Get("criteria").([]interface{})
 	notify := d.Get("notify").([]interface{})
+	isDefault := d.Get("is_default").(bool)
 
 	expandedCriteria := expandOpsgenieCriteria(criteria)
 	if err := validateOpsgenieCriteria(expandedCriteria); err != nil {
@@ -281,7 +289,6 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		TeamIdentifierValue: teamId,
 		RoutingRuleId:       d.Id(),
 		Name:                name,
-		Timezone:            timezone,
 		Criteria:            expandedCriteria,
 		Notify:              expandOpsgenieNotify(notify),
 	}
@@ -289,11 +296,26 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		updateRequest.TimeRestriction = expandRoutingRuleTimeRestrictions(timeRestriction)
 	}
 
-	log.Printf("[INFO] Updating OpsGenie team routing rule '%s'", name)
+	if !isDefault {
+		updateRequest.Timezone = timezone
+	}
 
+	log.Printf("[INFO] Updating OpsGenie team routing rule '%s'", name)
 	_, err = client.UpdateRoutingRule(context.Background(), updateRequest)
 	if err != nil {
 		return err
+	}
+
+	if !isDefault {
+		_, err = client.ChangeRoutingRuleOrder(context.Background(), &team.ChangeRoutingRuleOrderRequest{
+			RoutingRuleId:       d.Id(),
+			TeamIdentifierType:  team.Id,
+			TeamIdentifierValue: teamId,
+			Order:               &order,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

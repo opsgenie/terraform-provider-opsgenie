@@ -79,7 +79,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 										Required: true,
 										ValidateFunc: validation.StringInSlice([]string{
 											"message", "alias", "description", "source", "entity", "tags",
-											"actions", "details", "extra-properties", "recipients", "teams", "priority",
+											"actions", "details", "extra-properties", "responders", "teams", "priority",
 										}, false),
 									},
 									"operation": {
@@ -203,6 +203,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 			"alert_description": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "{{description}}",
 			},
 			"entity": {
 				Type:     schema.TypeString,
@@ -244,7 +245,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 						"type": {
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "team"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "team", "escalation", "schedule"}, false),
 						},
 						"name": {
 							Type:     schema.TypeString,
@@ -308,8 +309,8 @@ func resourceOpsGenieAlertPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		AlertDescription:         alert_description,
 		Entity:                   entity,
 		Source:                   source,
-		IgnoreOriginalDetails:    &ignore_original_actions,
-		IgnoreOriginalActions:    &ignore_original_details,
+		IgnoreOriginalDetails:    &ignore_original_details,
+		IgnoreOriginalActions:    &ignore_original_actions,
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
 		Priority:                 alert.Priority(priority),
@@ -427,8 +428,8 @@ func resourceOpsGenieAlertPolicyUpdate(d *schema.ResourceData, meta interface{})
 		AlertDescription:         alert_description,
 		Entity:                   entity,
 		Source:                   source,
-		IgnoreOriginalDetails:    &ignore_original_actions,
-		IgnoreOriginalActions:    &ignore_original_details,
+		IgnoreOriginalDetails:    &ignore_original_details,
+		IgnoreOriginalActions:    &ignore_original_actions,
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
 		Priority:                 alert.Priority(priority),

@@ -174,19 +174,26 @@ func setConfiguration(opsGenieClient *OpsGenieClient, cfg *Config) {
 }
 
 func setLogger(conf *Config) {
-	if conf.Logger == nil {
-		conf.Logger = logrus.New()
-		if conf.LogLevel != (logrus.Level(0)) { // todo fix panic level
-			conf.Logger.SetLevel(conf.LogLevel)
-		}
-		conf.Logger.SetFormatter(
-			&logrus.TextFormatter{
-				ForceColors:     true,
-				FullTimestamp:   true,
-				TimestampFormat: time.RFC3339Nano,
-			},
-		)
+	// if user has already set logger, skip
+	if conf.Logger != nil {
+		return
 	}
+
+	// otherwise, create a new logger for the user
+	logger := logrus.New()
+	// set log level if user has specified one
+	if conf.LogLevel != (logrus.Level(0)) {
+		logger.SetLevel(conf.LogLevel)
+	}
+	logger.SetFormatter(
+		&logrus.TextFormatter{
+			ForceColors:     true,
+			FullTimestamp:   true,
+			TimestampFormat: time.RFC3339Nano,
+		},
+	)
+	conf.Logger = logger
+
 }
 
 func setRetryPolicy(opsGenieClient *OpsGenieClient, cfg *Config) {
@@ -230,7 +237,7 @@ func setRetryPolicy(opsGenieClient *OpsGenieClient, cfg *Config) {
 }
 
 func NewOpsGenieClient(cfg *Config) (*OpsGenieClient, error) {
-	UserAgentHeader = fmt.Sprintf("opsgenie-go-sdk-%s %s (%s/%s) - Terraform", Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	UserAgentHeader = fmt.Sprintf("opsgenie-go-sdk-%s %s (%s/%s)", Version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	opsGenieClient := &OpsGenieClient{
 		Config:          cfg,
 		RetryableClient: retryablehttp.NewClient(),
@@ -247,9 +254,8 @@ func NewOpsGenieClient(cfg *Config) (*OpsGenieClient, error) {
 }
 
 func printInfoLog(client *OpsGenieClient) {
-	client.Config.Logger.Infof("Client is configured with ApiUrl: %s, LogLevel: %s, RetryMaxCount: %v",
+	client.Config.Logger.Infof("Client is configured with ApiUrl: %s, RetryMaxCount: %v",
 		client.Config.OpsGenieAPIURL,
-		client.Config.Logger.GetLevel().String(),
 		client.RetryableClient.RetryMax)
 }
 

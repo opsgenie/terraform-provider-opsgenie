@@ -25,60 +25,78 @@ The actions that are supported are:
 resource "opsgenie_integration_action" "test_action" {
   integration_id = opsgenie_api_integration.test.id
 
-
   create {
     name = "create action"
     tags = ["CRITICAL", "SEV-0"]
     user = "Example-service"
     note = "{{note}}"
-	alias = "{{alias}}"
-	source = "{{source}}"
-	message = "{{message}}"
-	description = "{{description}}"
-	entity = "{{entity}}"
+	alias         = "{{alias}}"
+	source        = "{{source}}"
+	message       = "{{message}}"
+	description   = "{{description}}"
+	entity        = "{{entity}}"
 	alert_actions = ["Runbook ID#342"]
     
     filter {
       type = "match-all-conditions"
       conditions {
-        field = "priority"
-        operation = "equals"
+        field          = "priority"
+        operation      = "equals"
         expected_value = "P1"
       }
     }
     responders {
-      id = "${opsgenie_team.test.id}"
+      id   = "${opsgenie_team.test.id}"
       type = "team"
     }
   }
 
   create {
-    name = "Create medium priority alerts"
-    tags = ["SEVERE", "SEV-1"]
+    name = "create action with multiline description"
+    message       = "{{message}}"
+    description   = chomp(<<-EOT
+            This
+            is a multiline
+            description.
+        EOT
+    )
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field          = "priority"
+        operation      = "equals"
+        expected_value = "P1"
+      }
+    }
+  }
+
+  create {
+    name     = "Create medium priority alerts"
+    tags     = ["SEVERE", "SEV-1"]
     priority = "P3"
     filter {
       type = "match-all-conditions"
       conditions {
-        field = "priority"
-        operation = "equals"
+        field          = "priority"
+        operation      = "equals"
         expected_value = "P2"
       }
     }
   }
   
   create {
-    name = "Create alert with priority from message"
+    name            = "Create alert with priority from message"
     custom_priority = "{{message.substringAfter(\"[custom]\")}}"
     filter {
       type = "match-all-conditions"
       conditions {
-        field = "tags"
-        operation = "contains"
+        field          = "tags"
+        operation      = "contains"
         expected_value = "P5"
       }
       conditions {
-        field = "message"
-        operation = "Starts With"
+        field          = "message"
+        operation      = "starts-with"
         expected_value = "[custom]"
       }
     }
@@ -89,13 +107,13 @@ resource "opsgenie_integration_action" "test_action" {
     filter {
       type = "match-any-condition"
       conditions {
-        field = "priority"
-        operation = "equals"
+        field          = "priority"
+        operation      = "equals"
         expected_value = "P5"
       }
       conditions {
-        field = "message"
-        operation = "contains"
+        field          = "message"
+        operation      = "contains"
         expected_value = "DEBUG"
       }
     }
@@ -106,13 +124,14 @@ resource "opsgenie_integration_action" "test_action" {
     filter {
       type = "match-all-conditions"
       conditions {
-        field = "message"
-        operation = "contains"
+        field          = "message"
+	not            = true
+        operation      = "contains"
         expected_value = "TEST"
       }
       conditions {
-        field = "priority"
-        operation = "equals"
+        field          = "priority"
+        operation      = "equals"
         expected_value = "P5"
       }
     }
@@ -131,8 +150,8 @@ resource "opsgenie_integration_action" "test_action" {
     filter {
       type = "match-all-conditions"
       conditions {
-        field = "tags"
-        operation = "contains"
+        field          = "tags"
+        operation      = "contains"
         expected_value = "ignore"
       }
     }

@@ -14,7 +14,7 @@ Manages heartbeat within Opsgenie.
 
 ```hcl
 resource "opsgenie_heartbeat" "test" {
-	name           = "genieheartbeat-%s"
+	name           = "genieheartbeat-test"
 	description    = "test opsgenie heartbeat terraform"
 	interval_unit  = "minutes"
 	interval       = 10
