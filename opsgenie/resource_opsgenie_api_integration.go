@@ -51,6 +51,7 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 			"owner_team_id": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 			},
 			"api_key": {
 				Type:      schema.TypeString,

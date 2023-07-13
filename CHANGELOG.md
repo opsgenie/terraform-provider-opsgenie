@@ -1,3 +1,9 @@
+## 0.6.28 (July 13, 2023)
+* BUGFIX:
+  * **API Integration:**
+    * Fixes an issue where owner team could not be updated when the API integration is linked with an Integration action.
+
+
 ## 0.6.27 (July 11, 2023)
 * IMPROVEMENTS:
   * **Alert Policy:**
