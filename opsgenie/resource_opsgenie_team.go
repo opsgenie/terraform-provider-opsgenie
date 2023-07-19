@@ -52,7 +52,11 @@ func resourceOpsGenieTeam() *schema.Resource {
 							Type:     schema.TypeString,
 							Required: true,
 						},
-
+						"username": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"role": {
 							Type:     schema.TypeString,
 							Optional: true,
@@ -202,6 +206,7 @@ func flattenOpsGenieTeamMembers(input []team.Member) []map[string]interface{} {
 	for _, inputMember := range input {
 		outputMember := make(map[string]interface{})
 		outputMember["id"] = inputMember.User.ID
+		outputMember["username"] = inputMember.User.Username
 		outputMember["role"] = inputMember.Role
 		members = append(members, outputMember)
 	}

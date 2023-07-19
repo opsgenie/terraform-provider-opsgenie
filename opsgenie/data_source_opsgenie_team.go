@@ -32,6 +32,10 @@ func dataSourceOpsGenieTeam() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"username": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
 						"role": {
 							Type:     schema.TypeString,
 							Optional: true,
