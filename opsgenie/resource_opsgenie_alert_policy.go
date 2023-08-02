@@ -6,8 +6,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"strconv"
-
 	"log"
 	"strings"
 
@@ -225,6 +223,13 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"details": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"actions": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -316,6 +321,7 @@ func resourceOpsGenieAlertPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		Priority:                 alert.Priority(priority),
 		Actions:                  flattenOpsgenieAlertPolicyActions(d),
 		Tags:                     flattenOpsgenieAlertPolicyTags(d),
+		Details:                  flattenOpsgenieAlertPolicyDetails(d),
 	}
 
 	if len(d.Get("responders").([]interface{})) > 0 {
@@ -377,6 +383,7 @@ func resourceOpsGenieAlertPolicyRead(ctx context.Context, d *schema.ResourceData
 	d.Set("ignore_original_tags", policyRes.IgnoreOriginalTags)
 	d.Set("actions", policyRes.Actions)
 	d.Set("tags", policyRes.Tags)
+	d.Set("details", policyRes.Details)
 
 	if policyRes.Responders != nil {
 		d.Set("responders", flattenOpsGenieAlertPolicyResponders(policyRes.Responders))
@@ -435,6 +442,7 @@ func resourceOpsGenieAlertPolicyUpdate(d *schema.ResourceData, meta interface{})
 		Priority:                 alert.Priority(priority),
 		Actions:                  flattenOpsgenieAlertPolicyActions(d),
 		Tags:                     flattenOpsgenieAlertPolicyTags(d),
+		Details:                  flattenOpsgenieAlertPolicyDetails(d),
 	}
 
 	if len(d.Get("responders").([]interface{})) > 0 {
@@ -711,32 +719,16 @@ func flattenOpsgenieAlertPolicyActions(d *schema.ResourceData) []string {
 	return actions
 }
 
-func flattenOpsgenieAlertPolicyDetailsCreate(d *schema.ResourceData) []string {
-	input := d.Get("details").(*schema.Set)
-	details := make([]string, len(input.List()))
+func flattenOpsgenieAlertPolicyDetails(d *schema.ResourceData) map[string]string {
+	input := d.Get("details").(map[string]interface{})
+	details := make(map[string]string)
 
 	if input == nil {
 		return details
 	}
 
-	for k, v := range input.List() {
+	for k, v := range input {
 		details[k] = v.(string)
-	}
-
-	return details
-}
-
-func flattenOpsgenieAlertPolicyDetailsUpdate(d *schema.ResourceData) map[string]interface{} {
-	input := d.Get("details").(*schema.Set)
-	details := make(map[string]interface{}, len(input.List()))
-
-	if input == nil {
-		return details
-	}
-
-	for k, v := range input.List() {
-		index := strconv.Itoa(k)
-		details[index] = v
 	}
 
 	return details
