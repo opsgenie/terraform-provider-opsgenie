@@ -73,6 +73,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 						"send_after": {
 							Type:     schema.TypeInt,
 							Optional: true,
+							Default: 0,
 						},
 						"contact": {
 							Type:     schema.TypeList,
@@ -440,7 +441,7 @@ func expandOpsGenieNotificationRuleSteps(input []interface{}) []*og.Step {
 		element := og.Step{}
 		element.Enabled = &enabled
 		element.Contact = expandOpsGenieNotificationRuleStepsContact(config["contact"].([]interface{}))
-		if config["send_after"].(int) > 0 {
+		if config["send_after"].(int) >= 0 {
 			element.SendAfter = &og.SendAfter{
 				TimeUnit:   "minute",
 				TimeAmount: uint32(config["send_after"].(int)),
