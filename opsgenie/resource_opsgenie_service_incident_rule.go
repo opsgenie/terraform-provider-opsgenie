@@ -209,12 +209,20 @@ func resourceOpsGenieServiceIncidentRuleRead(d *schema.ResourceData, meta interf
 		}
 	}
 
+	incidentRuleFound := false
 	for _, v := range incident_rule_res.IncidentRule {
 		if v.Id == incident_rule_id {
 			d.Set("service_id", service_id)
 			d.Set("incident_rule", flattenOpsGenieServiceIncidentRules(v))
+			incidentRuleFound = true
 		}
 	}
+
+	if !incidentRuleFound {
+		log.Printf("[WARN] Incident Rule with id: %s not found", d.Id())
+		d.SetId("")
+	}
+
 	return nil
 }
 
