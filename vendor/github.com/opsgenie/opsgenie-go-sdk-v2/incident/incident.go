@@ -62,6 +62,15 @@ func (c *Client) List(context context.Context, request *ListRequest) (*ListResul
 	return result, nil
 }
 
+func (c *Client) Resolve(context context.Context, request *ResolveRequest) (*AsyncResult, error) {
+	result := &AsyncResult{}
+	err := c.client.Exec(context, request, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 func (c *Client) Close(context context.Context, request *CloseRequest) (*AsyncResult, error) {
 	result := &AsyncResult{}
 	err := c.client.Exec(context, request, result)
@@ -163,6 +172,15 @@ func (c *Client) ListLogs(context context.Context, request *ListLogsRequest) (*L
 
 func (c *Client) ListNotes(context context.Context, request *ListNotesRequest) (*ListNotesResult, error) {
 	result := &ListNotesResult{}
+	err := c.client.Exec(context, request, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (c *Client) GetResponderAlerts(context context.Context, request *GetResponderAlertsRequest) (*GetResponderAlertsResult, error) {
+	result := &GetResponderAlertsResult{}
 	err := c.client.Exec(context, request, result)
 	if err != nil {
 		return nil, err

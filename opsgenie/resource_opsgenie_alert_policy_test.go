@@ -206,6 +206,7 @@ func testAccOpsGenieAlertPolicy_complete(randomTeam, randomAlertPolicyName strin
 	  name               = "genie-alert-policy-%s"
 	  policy_description = "Perfect Alert policy for the team."
 	  message = "This is a test message"
+      alert_description = "Test Description"
 	  team_id = opsgenie_team.test.id
 	  filter {}
 	  time_restriction {

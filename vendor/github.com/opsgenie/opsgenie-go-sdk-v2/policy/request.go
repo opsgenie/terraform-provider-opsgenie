@@ -15,7 +15,7 @@ type CreateAlertPolicyRequest struct {
 	Message                  string             `json:"message,omitempty"`
 	Continue                 *bool              `json:"continue,omitempty"`
 	Alias                    string             `json:"alias,omitempty"`
-	AlertDescription         string             `json:"alertDescription,omitempty"`
+	AlertDescription         string             `json:"description,omitempty"`
 	Entity                   string             `json:"entity,omitempty"`
 	Source                   string             `json:"source,omitempty"`
 	IgnoreOriginalDetails    *bool              `json:"ignoreOriginalDetails,omitempty"`
@@ -210,7 +210,7 @@ type UpdateAlertPolicyRequest struct {
 	Message                  string                 `json:"message,omitempty"`
 	Continue                 *bool                  `json:"continue,omitempty"`
 	Alias                    string                 `json:"alias,omitempty"`
-	AlertDescription         string                 `json:"alertDescription,omitempty"`
+	AlertDescription         string                 `json:"description,omitempty"`
 	Entity                   string                 `json:"entity,omitempty"`
 	Source                   string                 `json:"source,omitempty"`
 	IgnoreOriginalDetails    *bool                  `json:"ignoreOriginalDetails,omitempty"`
@@ -257,9 +257,9 @@ func (r *UpdateAlertPolicyRequest) ResourcePath() string {
 }
 
 func (r *UpdateAlertPolicyRequest) RequestParams() map[string]string {
-        params := make(map[string]string)
-        params["teamId"] = r.TeamId
-        return params
+	params := make(map[string]string)
+	params["teamId"] = r.TeamId
+	return params
 }
 
 func (r *UpdateAlertPolicyRequest) Method() string {
@@ -681,8 +681,8 @@ func ValidateDelayAction(action DelayAction) error {
 
 func ValidateResponders(responders *[]alert.Responder) error {
 	for _, responder := range *responders {
-		if responder.Type != alert.UserResponder && responder.Type != alert.TeamResponder {
-			return errors.New("responder type for alert policy should be one of team or user")
+		if responder.Type != alert.UserResponder && responder.Type != alert.TeamResponder && responder.Type != alert.EscalationResponder && responder.Type != alert.ScheduleResponder {
+			return errors.New("responder type for alert policy should be one of team, user, escalation or schedule")
 		}
 		if responder.Id == "" {
 			return errors.New("responder id should be provided")

@@ -87,7 +87,7 @@ func resourceOpsgenieHeartbeatCreate(d *schema.ResourceData, meta interface{}) e
 		IntervalUnit:  heartbeat.Unit(intervalUnit),
 		Enabled:       &enabled,
 		AlertMessage:  alertMessage,
-		AlertTag:      flattenTags(d),
+		AlertTag:      flattenTags(d, "alert_tags"),
 		AlertPriority: alertPriority,
 	}
 	if ownerTeamId != "" {
@@ -151,7 +151,7 @@ func resourceOpsgenieHeartbeatUpdate(d *schema.ResourceData, meta interface{}) e
 		IntervalUnit:  heartbeat.Unit(intervalUnit),
 		Enabled:       &enabled,
 		AlertMessage:  alertMessage,
-		AlertTag:      flattenTags(d),
+		AlertTag:      flattenTags(d, "alert_tags"),
 		AlertPriority: alertPriority,
 	}
 	if ownerTeamId != "" {
@@ -182,26 +182,11 @@ func resourceOpsgenieHeartbeatDelete(d *schema.ResourceData, meta interface{}) e
 	return nil
 }
 
-func flattenTags(d *schema.ResourceData) []string {
-	input := d.Get("alert_tags").(*schema.Set)
-	tags := make([]string, len(input.List()))
-
-	if input == nil {
-		return tags
-	}
-
-	for k, v := range input.List() {
-		tags[k] = v.(string)
-	}
-
-	return tags
-}
-
 func validateOpsgenieHeartbeat(v interface{}, k string) (ws []string, errors []error) {
 	value := v.(string)
-	if !regexp.MustCompile(`^[a-zA-Z0-9_-]+$`).MatchString(value) {
+	if !regexp.MustCompile(`^[a-zA-Z0-9._-]+$`).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
-			"only alpha numeric characters and underscores are allowed in %q: %q", k, value))
+			"only alpha numeric characters, underscores (_), dashes (-) and periods (.) are allowed in %q: %q", k, value))
 	}
 
 	if len(value) >= 100 {

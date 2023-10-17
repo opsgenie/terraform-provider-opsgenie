@@ -78,7 +78,7 @@ The following arguments are supported:
 
 * `suppress_notifications` - (Optional) If enabled, notifications that come from alerts will be suppressed. Default: `false`.
 
-* `owner_team_id` - (Optional) Owner team id of the integration.
+* `owner_team_id` - (Optional, Forces new resource) Owner team id of the integration. If changed, this will recreate a new API integration, which will probably have a different API key.
 
 * `responders` - (Optional)  User, schedule, teams or escalation names to calculate which users will receive the notifications of the alert.
 
