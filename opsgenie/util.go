@@ -66,10 +66,26 @@ func convertStringMapToInterfaceMap(old map[string]string) map[string]interface{
 	}
 	return new
 }
+
 func convertStringSliceToInterfaceSlice(old []string) []interface{} {
 	new := make([]interface{}, len(old))
 	for k, v := range old {
 		new[k] = v
 	}
 	return new
+}
+
+func flattenTags(d *schema.ResourceData, fieldName string) []string {
+	input := d.Get(fieldName).(*schema.Set)
+	tags := make([]string, len(input.List()))
+
+	if input == nil {
+		return tags
+	}
+
+	for k, v := range input.List() {
+		tags[k] = v.(string)
+	}
+
+	return tags
 }

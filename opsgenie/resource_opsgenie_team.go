@@ -44,7 +44,7 @@ func resourceOpsGenieTeam() *schema.Resource {
 				Default:  false,
 			},
 			"member": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -52,7 +52,11 @@ func resourceOpsGenieTeam() *schema.Resource {
 							Type:     schema.TypeString,
 							Required: true,
 						},
-
+						"username": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+						},
 						"role": {
 							Type:     schema.TypeString,
 							Optional: true,
@@ -78,7 +82,7 @@ func resourceOpsGenieTeamCreate(d *schema.ResourceData, meta interface{}) error 
 		Description: description,
 	}
 
-	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
+	if d.Get("member").(*schema.Set).Len() > 0 && !d.Get("ignore_members").(bool) {
 		createRequest.Members = expandOpsGenieTeamMembers(d)
 	}
 
@@ -164,7 +168,7 @@ func resourceOpsGenieTeamUpdate(d *schema.ResourceData, meta interface{}) error 
 		Description: description,
 	}
 
-	if len(d.Get("member").([]interface{})) > 0 && !d.Get("ignore_members").(bool) {
+	if d.Get("member").(*schema.Set).Len() > 0 && !d.Get("ignore_members").(bool) {
 		updateRequest.Members = expandOpsGenieTeamMembers(d)
 	}
 
@@ -202,6 +206,7 @@ func flattenOpsGenieTeamMembers(input []team.Member) []map[string]interface{} {
 	for _, inputMember := range input {
 		outputMember := make(map[string]interface{})
 		outputMember["id"] = inputMember.User.ID
+		outputMember["username"] = inputMember.User.Username
 		outputMember["role"] = inputMember.Role
 		members = append(members, outputMember)
 	}
@@ -210,14 +215,14 @@ func flattenOpsGenieTeamMembers(input []team.Member) []map[string]interface{} {
 }
 
 func expandOpsGenieTeamMembers(d *schema.ResourceData) []team.Member {
-	input := d.Get("member").([]interface{})
-	members := make([]team.Member, 0, len(input))
+	input := d.Get("member").(*schema.Set)
+	members := make([]team.Member, 0, input.Len())
 
 	if input == nil {
 		return members
 	}
 
-	for _, v := range input {
+	for _, v := range input.List() {
 		config := v.(map[string]interface{})
 
 		userId := config["id"].(string)
@@ -240,7 +245,7 @@ func validateOpsGenieTeamName(v interface{}, k string) (ws []string, errors []er
 	value := v.(string)
 	if !regexp.MustCompile(`^[a-zA-Z 0-9_.-]+$`).MatchString(value) {
 		errors = append(errors, fmt.Errorf(
-			"only alpha numeric characters, dots and underscores are allowed in %q: %q", k, value))
+			"only alphanumeric characters, dots, spaces, hyphens, and underscores are allowed in %q: %q", k, value))
 	}
 
 	if len(value) >= 100 {

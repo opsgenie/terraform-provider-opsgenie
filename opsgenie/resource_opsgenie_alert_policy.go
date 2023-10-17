@@ -3,10 +3,11 @@ package opsgenie
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"strconv"
 
 	"log"
 	"strings"
@@ -70,7 +71,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 						},
 						"conditions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -79,7 +80,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 										Required: true,
 										ValidateFunc: validation.StringInSlice([]string{
 											"message", "alias", "description", "source", "entity", "tags",
-											"actions", "details", "extra-properties", "recipients", "teams", "priority",
+											"actions", "details", "extra-properties", "responders", "teams", "priority",
 										}, false),
 									},
 									"operation": {
@@ -128,7 +129,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"time-of-day", "weekday-and-time-of-day"}, false),
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -160,7 +161,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 							},
 						},
 						"restriction": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -203,6 +204,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 			"alert_description": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Default:  "{{description}}",
 			},
 			"entity": {
 				Type:     schema.TypeString,
@@ -237,14 +239,14 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Default:  false,
 			},
 			"responders": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"user", "team"}, false),
+							ValidateFunc: validation.StringInSlice([]string{"user", "team", "escalation", "schedule"}, false),
 						},
 						"name": {
 							Type:     schema.TypeString,
@@ -308,16 +310,16 @@ func resourceOpsGenieAlertPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		AlertDescription:         alert_description,
 		Entity:                   entity,
 		Source:                   source,
-		IgnoreOriginalDetails:    &ignore_original_actions,
-		IgnoreOriginalActions:    &ignore_original_details,
+		IgnoreOriginalDetails:    &ignore_original_details,
+		IgnoreOriginalActions:    &ignore_original_actions,
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
 		Priority:                 alert.Priority(priority),
 		Actions:                  flattenOpsgenieAlertPolicyActions(d),
-		Tags:                     flattenOpsgenieAlertPolicyTags(d),
+		Tags:                     flattenTags(d, "tags"),
 	}
 
-	if len(d.Get("responders").([]interface{})) > 0 {
+	if d.Get("responders").(*schema.Set).Len() > 0 {
 		createRequest.Responders = expandOpsGenieAlertPolicyResponders(d)
 	}
 
@@ -427,16 +429,16 @@ func resourceOpsGenieAlertPolicyUpdate(d *schema.ResourceData, meta interface{})
 		AlertDescription:         alert_description,
 		Entity:                   entity,
 		Source:                   source,
-		IgnoreOriginalDetails:    &ignore_original_actions,
-		IgnoreOriginalActions:    &ignore_original_details,
+		IgnoreOriginalDetails:    &ignore_original_details,
+		IgnoreOriginalActions:    &ignore_original_actions,
 		IgnoreOriginalResponders: &ignore_original_responders,
 		IgnoreOriginalTags:       &ignore_original_tags,
 		Priority:                 alert.Priority(priority),
 		Actions:                  flattenOpsgenieAlertPolicyActions(d),
-		Tags:                     flattenOpsgenieAlertPolicyTags(d),
+		Tags:                     flattenTags(d, "tags"),
 	}
 
-	if len(d.Get("responders").([]interface{})) > 0 {
+	if d.Get("responders").(*schema.Set).Len() > 0 {
 		updateRequest.Responders = expandOpsGenieAlertPolicyResponders(d)
 	}
 
@@ -498,14 +500,14 @@ func expandOpsGenieAlertPolicyRequestMainFields(d *schema.ResourceData) *policy.
 }
 
 func expandOpsGenieAlertPolicyResponders(d *schema.ResourceData) *[]alert.Responder {
-	input := d.Get("responders").([]interface{})
-	responders := make([]alert.Responder, 0, len(input))
+	input := d.Get("responders").(*schema.Set)
+	responders := make([]alert.Responder, 0, input.Len())
 
 	if input == nil {
 		return &responders
 	}
 
-	for _, v := range input {
+	for _, v := range input.List() {
 		config := v.(map[string]interface{})
 		responderID := config["id"].(string)
 		name := config["name"].(string)
@@ -534,19 +536,19 @@ func expandOpsGenieAlertPolicyFilter(input []interface{}) *og.Filter {
 	for _, v := range input {
 		config := v.(map[string]interface{})
 		filter.ConditionMatchType = og.ConditionMatchType(config["type"].(string))
-		filter.Conditions = expandOpsGenieAlertPolicyFilterConditions(config["conditions"].([]interface{}))
+		filter.Conditions = expandOpsGenieAlertPolicyFilterConditions(config["conditions"].(*schema.Set))
 	}
 	return &filter
 }
 
-func expandOpsGenieAlertPolicyFilterConditions(input []interface{}) []og.Condition {
-	conditions := make([]og.Condition, 0, len(input))
+func expandOpsGenieAlertPolicyFilterConditions(input *schema.Set) []og.Condition {
+	conditions := make([]og.Condition, 0, input.Len())
 	condition := og.Condition{}
 	if input == nil {
 		return conditions
 	}
 
-	for _, v := range input {
+	for _, v := range input.List() {
 		config := v.(map[string]interface{})
 		not_value := config["not"].(bool)
 		order := config["order"].(int)
@@ -566,9 +568,9 @@ func expandOpsGenieAlertPolicyTimeRestriction(d []interface{}) *og.TimeRestricti
 	for _, v := range d {
 		config := v.(map[string]interface{})
 		timeRestriction.Type = og.RestrictionType(config["type"].(string))
-		if len(config["restrictions"].([]interface{})) > 0 {
-			restrictionList := make([]og.Restriction, 0, len(config["restrictions"].([]interface{})))
-			for _, v := range config["restrictions"].([]interface{}) {
+		if config["restrictions"].(*schema.Set).Len() > 0 {
+			restrictionList := make([]og.Restriction, 0, config["restrictions"].(*schema.Set).Len())
+			for _, v := range config["restrictions"].(*schema.Set).List() {
 				config := v.(map[string]interface{})
 				startHour := uint32(config["start_hour"].(int))
 				startMin := uint32(config["start_min"].(int))
@@ -587,7 +589,7 @@ func expandOpsGenieAlertPolicyTimeRestriction(d []interface{}) *og.TimeRestricti
 			timeRestriction.RestrictionList = restrictionList
 		} else {
 			restriction := og.Restriction{}
-			for _, v := range config["restriction"].([]interface{}) {
+			for _, v := range config["restriction"].(*schema.Set).List() {
 				config := v.(map[string]interface{})
 				startHour := uint32(config["start_hour"].(int))
 				startMin := uint32(config["start_min"].(int))
@@ -678,21 +680,6 @@ func flattenOpsgenieAlertPolicyTimeRestriction(input *og.TimeRestriction) []map[
 	element["type"] = input.Type
 	output = append(output, element)
 	return output
-}
-
-func flattenOpsgenieAlertPolicyTags(d *schema.ResourceData) []string {
-	input := d.Get("tags").(*schema.Set)
-	tags := make([]string, len(input.List()))
-
-	if input == nil {
-		return tags
-	}
-
-	for k, v := range input.List() {
-		tags[k] = v.(string)
-	}
-
-	return tags
 }
 
 func flattenOpsgenieAlertPolicyActions(d *schema.ResourceData) []string {
