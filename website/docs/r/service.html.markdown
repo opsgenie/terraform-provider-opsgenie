@@ -34,6 +34,9 @@ The following arguments are supported:
 
 * `description` - (Optional) Description field of the service that is generally used to provide a detailed information about the service.
 
+* `tags` - (Optional) Tags for the service, with a maximum of 20 tags per service.
+
+
 ## Attributes Reference
 
 The following attributes are exported:
