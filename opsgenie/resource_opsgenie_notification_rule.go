@@ -73,7 +73,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 						"send_after": {
 							Type:     schema.TypeInt,
 							Optional: true,
-							Default: 0,
+							Default:  0,
 						},
 						"contact": {
 							Type:     schema.TypeList,
