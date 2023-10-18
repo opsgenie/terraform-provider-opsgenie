@@ -173,7 +173,7 @@ github.com/mitchellh/reflectwalk
 # github.com/oklog/run v1.0.0
 ## explicit
 github.com/oklog/run
-# github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.21
+# github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.22
 ## explicit; go 1.12
 github.com/opsgenie/opsgenie-go-sdk-v2/alert
 github.com/opsgenie/opsgenie-go-sdk-v2/client
