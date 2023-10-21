@@ -61,7 +61,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 				},
 			},
 			"steps": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -285,8 +285,8 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 		createRequest.Schedules = expandOpsGenieNotificationRuleSchedules(d.Get("schedules").([]interface{}))
 	}
 
-	if len(d.Get("steps").([]interface{})) > 0 {
-		createRequest.Steps = expandOpsGenieNotificationRuleSteps(d.Get("steps").([]interface{}))
+	if d.Get("steps").(*schema.Set).Len() > 0 {
+		createRequest.Steps = expandOpsGenieNotificationRuleSteps(d.Get("steps").(*schema.Set))
 	}
 
 	if len(timeRestriction) > 0 {
@@ -380,8 +380,8 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 		updateRequest.Schedules = expandOpsGenieNotificationRuleSchedules(d.Get("schedules").([]interface{}))
 	}
 
-	if len(d.Get("steps").([]interface{})) > 0 {
-		updateRequest.Steps = expandOpsGenieNotificationRuleSteps(d.Get("steps").([]interface{}))
+	if d.Get("steps").(*schema.Set).Len() > 0 {
+		updateRequest.Steps = expandOpsGenieNotificationRuleSteps(d.Get("steps").(*schema.Set))
 	}
 
 	if len(timeRestriction) > 0 {
@@ -430,12 +430,13 @@ func expandOpsGenieNotificationRuleNotificationTime(input *schema.Set) []notific
 	return output
 }
 
-func expandOpsGenieNotificationRuleSteps(input []interface{}) []*og.Step {
-	output := make([]*og.Step, 0)
+func expandOpsGenieNotificationRuleSteps(input *schema.Set) []*og.Step {
+	output := make([]*og.Step, 0, input.Len())
 	if input == nil {
 		return output
 	}
-	for _, v := range input {
+
+	for _, v := range input.List() {
 		config := v.(map[string]interface{})
 		enabled := config["enabled"].(bool)
 		element := og.Step{}

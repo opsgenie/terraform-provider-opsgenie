@@ -70,6 +70,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 			"filter": {
 				Type:     schema.TypeList,
 				Required: true,
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
@@ -79,7 +80,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 						},
 						"conditions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -129,6 +130,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 			"time_restriction": {
 				Type:     schema.TypeList,
 				Optional: true,
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
@@ -137,8 +139,10 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"time-of-day", "weekday-and-time-of-day"}, false),
 						},
 						"restrictions": {
-							Type:     schema.TypeList,
-							Optional: true,
+							Type:          schema.TypeList,
+							Optional:      true,
+							MaxItems:      1,
+							ConflictsWith: []string{"time_restriction.0.restriction"},
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"start_day": {
@@ -169,8 +173,10 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							},
 						},
 						"restriction": {
-							Type:     schema.TypeList,
-							Optional: true,
+							Type:          schema.TypeList,
+							Optional:      true,
+							MaxItems:      1,
+							ConflictsWith: []string{"time_restriction.0.restrictions"},
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"start_hour": {
@@ -546,19 +552,19 @@ func expandOpsGenieNotificationPolicyFilter(input []interface{}) *og.Filter {
 	for _, v := range input {
 		config := v.(map[string]interface{})
 		filter.ConditionMatchType = og.ConditionMatchType(config["type"].(string))
-		filter.Conditions = expandOpsGenieNotificationPolicyFilterConditions(config["conditions"].([]interface{}))
+		filter.Conditions = expandOpsGenieNotificationPolicyFilterConditions(config["conditions"].(*schema.Set))
 	}
 	return &filter
 }
 
-func expandOpsGenieNotificationPolicyFilterConditions(input []interface{}) []og.Condition {
-	conditions := make([]og.Condition, 0, len(input))
+func expandOpsGenieNotificationPolicyFilterConditions(input *schema.Set) []og.Condition {
+	conditions := make([]og.Condition, 0, input.Len())
 	condition := og.Condition{}
 	if input == nil {
 		return conditions
 	}
 
-	for _, v := range input {
+	for _, v := range input.List() {
 		config := v.(map[string]interface{})
 		not_value := config["not"].(bool)
 		order := config["order"].(int)
