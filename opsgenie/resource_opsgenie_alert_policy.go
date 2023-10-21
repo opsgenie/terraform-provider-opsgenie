@@ -119,75 +119,7 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 					},
 				},
 			},
-			"time_restriction": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"type": {
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"time-of-day", "weekday-and-time-of-day"}, false),
-						},
-						"restrictions": {
-							Type:     schema.TypeSet,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_day": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"end_day": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"start_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"start_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-								},
-							},
-						},
-						"restriction": {
-							Type:     schema.TypeSet,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"start_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
+			"time_restriction": timeRestrictionSchema(),
 			"message": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -394,7 +326,7 @@ func resourceOpsGenieAlertPolicyRead(ctx context.Context, d *schema.ResourceData
 
 	if policyRes.MainFields.TimeRestriction != nil {
 		log.Printf("[DEBUG] 'policy.MainFields.TimeRestriction' is not 'nil'.")
-		d.Set("time_restriction", flattenOpsgenieAlertPolicyTimeRestriction(policyRes.MainFields.TimeRestriction))
+		d.Set("time_restriction", flattenOpsgenieTimeRestriction(policyRes.MainFields.TimeRestriction))
 	} else {
 		log.Printf("[DEBUG] 'policy.MainFields.TimeRestriction' is 'nil'.")
 		d.Set("time_restriction", nil)
@@ -495,7 +427,7 @@ func expandOpsGenieAlertPolicyRequestMainFields(d *schema.ResourceData) *policy.
 		fields.Filter = expandOpsGenieAlertPolicyFilter(d.Get("filter").([]interface{}))
 	}
 	if len(d.Get("time_restriction").([]interface{})) > 0 {
-		fields.TimeRestriction = expandOpsGenieAlertPolicyTimeRestriction(d.Get("time_restriction").([]interface{}))
+		fields.TimeRestriction = expandOpsGenieTimeRestriction(d.Get("time_restriction").([]interface{}))
 	}
 	return &fields
 }
@@ -564,52 +496,6 @@ func expandOpsGenieAlertPolicyFilterConditions(input *schema.Set) []og.Condition
 	return conditions
 }
 
-func expandOpsGenieAlertPolicyTimeRestriction(d []interface{}) *og.TimeRestriction {
-	timeRestriction := og.TimeRestriction{}
-	for _, v := range d {
-		config := v.(map[string]interface{})
-		timeRestriction.Type = og.RestrictionType(config["type"].(string))
-		if config["restrictions"].(*schema.Set).Len() > 0 {
-			restrictionList := make([]og.Restriction, 0, config["restrictions"].(*schema.Set).Len())
-			for _, v := range config["restrictions"].(*schema.Set).List() {
-				config := v.(map[string]interface{})
-				startHour := uint32(config["start_hour"].(int))
-				startMin := uint32(config["start_min"].(int))
-				endHour := uint32(config["end_hour"].(int))
-				endMin := uint32(config["end_min"].(int))
-				restriction := og.Restriction{
-					StartDay:  og.Day(config["start_day"].(string)),
-					StartHour: &startHour,
-					StartMin:  &startMin,
-					EndHour:   &endHour,
-					EndDay:    og.Day(config["end_day"].(string)),
-					EndMin:    &endMin,
-				}
-				restrictionList = append(restrictionList, restriction)
-			}
-			timeRestriction.RestrictionList = restrictionList
-		} else {
-			restriction := og.Restriction{}
-			for _, v := range config["restriction"].(*schema.Set).List() {
-				config := v.(map[string]interface{})
-				startHour := uint32(config["start_hour"].(int))
-				startMin := uint32(config["start_min"].(int))
-				endHour := uint32(config["end_hour"].(int))
-				endMin := uint32(config["end_min"].(int))
-				restriction = og.Restriction{
-					StartHour: &startHour,
-					StartMin:  &startMin,
-					EndHour:   &endHour,
-					EndMin:    &endMin,
-				}
-			}
-
-			timeRestriction.Restriction = restriction
-		}
-	}
-	return &timeRestriction
-}
-
 func flattenOpsGenieAlertPolicyResponders(input *[]alert.Responder) []map[string]interface{} {
 	output := make([]map[string]interface{}, 0, len(*input))
 	for _, v := range *input {
@@ -649,37 +535,6 @@ func flattenOpsGenieAlertPolicyFilterConditions(input []og.Condition) []map[stri
 		output = append(output, element)
 	}
 
-	return output
-}
-
-func flattenOpsgenieAlertPolicyTimeRestriction(input *og.TimeRestriction) []map[string]interface{} {
-	output := make([]map[string]interface{}, 0, 1)
-	element := make(map[string]interface{})
-	if len(input.RestrictionList) > 0 {
-		restrictions := make([]map[string]interface{}, 0, len(input.RestrictionList))
-		for _, r := range input.RestrictionList {
-			restrictionMap := make(map[string]interface{})
-			restrictionMap["start_min"] = r.StartMin
-			restrictionMap["start_hour"] = r.StartHour
-			restrictionMap["start_day"] = r.StartDay
-			restrictionMap["end_min"] = r.EndMin
-			restrictionMap["end_hour"] = r.EndHour
-			restrictionMap["end_day"] = r.EndDay
-			restrictions = append(restrictions, restrictionMap)
-		}
-		element["restrictions"] = restrictions
-	} else {
-		restriction := make([]map[string]interface{}, 0, 1)
-		restrictionMap := make(map[string]interface{})
-		restrictionMap["start_min"] = input.Restriction.StartMin
-		restrictionMap["start_hour"] = input.Restriction.StartHour
-		restrictionMap["end_min"] = input.Restriction.EndMin
-		restrictionMap["end_hour"] = input.Restriction.EndHour
-		restriction = append(restriction, restrictionMap)
-		element["restriction"] = restriction
-	}
-	element["type"] = input.Type
-	output = append(output, element)
 	return output
 }
 

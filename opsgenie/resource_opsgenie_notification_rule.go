@@ -122,74 +122,7 @@ func resourceOpsGenieNotificationRule() *schema.Resource {
 					},
 				},
 			},
-			"time_restriction": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"type": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"restrictions": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_day": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"end_day": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"start_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"start_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-								},
-							},
-						},
-						"restriction": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"start_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
+			"time_restriction": timeRestrictionSchema(),
 			"schedules": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -290,7 +223,7 @@ func resourceOpsGenieNotificationRuleCreate(d *schema.ResourceData, meta interfa
 	}
 
 	if len(timeRestriction) > 0 {
-		createRequest.TimeRestriction = expandNotificationRuleRestrictions(timeRestriction)
+		createRequest.TimeRestriction = expandOpsGenieTimeRestriction(timeRestriction)
 	}
 
 	log.Printf("[INFO] Creating Notification Rule '%s' for User: '%s'", d.Get("name").(string), d.Get("username").(string))
@@ -331,7 +264,7 @@ func resourceOpsGenieNotificationRuleRead(d *schema.ResourceData, meta interface
 		d.Set("schedules", flattenNotificationSchedules(rule.Schedules))
 	}
 	if rule.TimeRestriction != nil {
-		d.Set("time_restriction", flattenOpsgenieNotificationRuleTimeRestriction(rule.TimeRestriction))
+		d.Set("time_restriction", flattenOpsgenieTimeRestriction(rule.TimeRestriction))
 	} else {
 		d.Set("time_restriction", nil)
 	}
@@ -385,7 +318,7 @@ func resourceOpsGenieNotificationRuleUpdate(d *schema.ResourceData, meta interfa
 	}
 
 	if len(timeRestriction) > 0 {
-		updateRequest.TimeRestriction = expandNotificationRuleRestrictions(timeRestriction)
+		updateRequest.TimeRestriction = expandOpsGenieTimeRestriction(timeRestriction)
 	}
 
 	log.Printf("[INFO] Updating Notification Rule '%s' for User: '%s'", d.Get("name").(string), d.Get("username").(string))
@@ -498,59 +431,6 @@ func expandOpsGenieNotificationRuleRepeat(input []interface{}) *notification.Rep
 		repeat.Enabled = &repeatEnabled
 	}
 	return &repeat
-}
-func expandNotificationRuleRestrictions(d []interface{}) *og.TimeRestriction {
-	timeRestriction := og.TimeRestriction{}
-
-	for _, v := range d {
-		config := v.(map[string]interface{})
-
-		timeRestrictionType := config["type"].(string)
-		timeRestriction.Type = og.RestrictionType(timeRestrictionType)
-
-		if len(config["restrictions"].([]interface{})) > 0 {
-			timeRestriction.RestrictionList = expandOpsgenieRestrictions(config["restrictions"].([]interface{}))
-		} else {
-			timeRestriction.Restriction = expandOpsgenieRestriction(config["restriction"].([]interface{}))
-		}
-	}
-
-	return &timeRestriction
-}
-
-func flattenOpsgenieNotificationRuleTimeRestriction(input *og.TimeRestriction) []map[string]interface{} {
-	rules := make([]map[string]interface{}, 0, 1)
-	out := make(map[string]interface{})
-	out["type"] = input.Type
-
-	if len(input.RestrictionList) > 0 {
-		restrictions := make([]map[string]interface{}, 0, len(input.RestrictionList))
-		for _, r := range input.RestrictionList {
-			restrictionMap := make(map[string]interface{})
-			restrictionMap["start_day"] = r.StartDay
-			restrictionMap["end_day"] = r.EndDay
-			restrictionMap["start_hour"] = r.StartHour
-			restrictionMap["start_min"] = r.StartMin
-			restrictionMap["end_hour"] = r.EndHour
-			restrictionMap["end_min"] = r.EndMin
-			restrictions = append(restrictions, restrictionMap)
-		}
-		out["restrictions"] = restrictions
-		rules = append(rules, out)
-		return rules
-	} else {
-		restriction := make(map[string]interface{})
-		//IF RESTRICTION
-		restriction["start_hour"] = input.Restriction.StartHour
-		restriction["start_min"] = input.Restriction.StartMin
-		restriction["end_hour"] = input.Restriction.EndHour
-		restriction["end_min"] = input.Restriction.EndMin
-
-		out["restriction"] = []map[string]interface{}{restriction}
-		rules = append(rules, out)
-
-		return rules
-	}
 }
 
 func expandOpsGenieNotificationRuleSchedules(input []interface{}) []notification.Schedule {
