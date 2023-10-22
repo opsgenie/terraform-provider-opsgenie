@@ -13,22 +13,28 @@ import (
 	"github.com/opsgenie/opsgenie-go-sdk-v2/policy"
 )
 
-var (
-	duration = &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"time_unit": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Default:      "minutes",
-				ValidateFunc: validation.StringInSlice([]string{"days", "hours", "minutes"}, false),
-			},
-			"time_amount": {
-				Type:     schema.TypeInt,
-				Required: true,
+func durationSchema(required bool, description string) *schema.Schema {
+	return &schema.Schema{
+		Type:        schema.TypeList,
+		Required:    required,
+		Optional:    !required,
+		Description: description,
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"time_unit": {
+					Type:         schema.TypeString,
+					Optional:     true,
+					Default:      "minutes",
+					ValidateFunc: validation.StringInSlice([]string{"days", "hours", "minutes"}, false),
+				},
+				"time_amount": {
+					Type:     schema.TypeInt,
+					Required: true,
+				},
 			},
 		},
 	}
-)
+}
 
 func resourceOpsGenieNotificationPolicy() *schema.Resource {
 	return &schema.Resource{
@@ -129,28 +135,23 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 			},
 			"time_restriction": timeRestrictionSchema(),
 			"auto_close_action": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:         schema.TypeList,
+				Optional:     true,
+				MaxItems:     1,
+				AtLeastOneOf: []string{"auto_close_action", "auto_restart_action", "de_duplication_action", "delay_action", "suppress"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"duration": {
-							Type:     schema.TypeList,
-							Required: true,
-							Elem:     duration,
-						},
+						"duration": durationSchema(true, ""),
 					},
 				},
 			},
 			"auto_restart_action": {
 				Type:     schema.TypeList,
 				Optional: true,
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"duration": {
-							Type:     schema.TypeList,
-							Required: true,
-							Elem:     duration,
-						},
+						"duration": durationSchema(true, ""),
 						"max_repeat_count": {
 							Type:     schema.TypeInt,
 							Required: true,
@@ -159,8 +160,10 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 				},
 			},
 			"de_duplication_action": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:          schema.TypeList,
+				Optional:      true,
+				MaxItems:      1,
+				ConflictsWith: []string{"delay_action", "suppress"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"de_duplication_action_type": {
@@ -172,18 +175,15 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							Type:     schema.TypeInt,
 							Required: true,
 						},
-						"duration": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem:     duration,
-						},
+						"duration": durationSchema(false, "Required when `de_duplication_action_type = \"frequency-based\"`"),
 					},
 				},
 			},
 			"delay_action": {
 				Type:          schema.TypeList,
 				Optional:      true,
-				ConflictsWith: []string{"suppress"},
+				MaxItems:      1,
+				ConflictsWith: []string{"de_duplication_action", "suppress"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"delay_option": {
@@ -204,23 +204,24 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							Optional:     true,
 							ValidateFunc: validation.IntBetween(0, 23),
 						},
-						"duration": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem:     duration,
-						},
+						"duration": durationSchema(false, "Required when `delay_option = \"for-duration\"`"),
 					},
 				},
 			},
 			"suppress": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:          schema.TypeBool,
+				Optional:      true,
+				ConflictsWith: []string{"delay_action", "de_duplication_action"},
 			},
 		},
 	}
 }
 
 func resourceOpsGenieNotificationPolicyCreate(d *schema.ResourceData, meta interface{}) error {
+	err := resourceOpsGenieNotificationPolicyMultiValueValidation(d)
+	if err != nil {
+		return err
+	}
 	client, err := policy.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
@@ -320,6 +321,10 @@ func resourceOpsGenieNotificationPolicyRead(d *schema.ResourceData, meta interfa
 }
 
 func resourceOpsGenieNotificationPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
+	err := resourceOpsGenieNotificationPolicyMultiValueValidation(d)
+	if err != nil {
+		return err
+	}
 	client, err := policy.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
@@ -370,6 +375,29 @@ func resourceOpsGenieNotificationPolicyDelete(d *schema.ResourceData, meta inter
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func resourceOpsGenieNotificationPolicyMultiValueValidation(d *schema.ResourceData) error {
+	if de_dupe_actions := d.Get("de_duplication_action").([]interface{}); len(de_dupe_actions) == 1 {
+		de_dupe_action := de_dupe_actions[0].(map[string]interface{})
+		de_dupe_action_type := de_dupe_action["de_duplication_action_type"].(string)
+		de_dupe_durations := de_dupe_action["duration"].([]interface{})
+
+		if de_dupe_action_type == "frequency-based" && len(de_dupe_durations) != 1 {
+			return fmt.Errorf("%s: de_duplication_action.duration is required when de_duplication_action_type = 'frequency-based'", d.Id())
+		}
+	}
+
+	if delay_actions := d.Get("delay_action").([]interface{}); len(delay_actions) == 1 {
+		delay_action := delay_actions[0].(map[string]interface{})
+		delay_action_type := delay_action["delay_option"].(string)
+
+		if delay_action_type == "for-duration" && len(delay_action["duration"].([]interface{})) != 1 {
+			return fmt.Errorf("%s: delay_action.%s is required when delay_option = 'for-duration'", d.Id(), "duration")
+		}
+	}
+
 	return nil
 }
 
