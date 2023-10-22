@@ -14,6 +14,9 @@ dev: fmt
 setup:
 	@sh -c "'$(CURDIR)/scripts/setup.sh'"
 
+clean:
+	rm $(HOME)/.terraformrc
+
 test: fmtcheck
 	go test -i $(TEST) || exit 1
 	echo $(TEST) | \
