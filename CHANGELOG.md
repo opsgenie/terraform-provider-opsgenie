@@ -1,8 +1,22 @@
+## 0.6.34 (November 06, 2023)
+* BUGFIX: [#404](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/404)
+  * **Notification Policy:**
+    * Fixed perpetual drift for policies when filters contain more than one condition.
+  * **time_restriction:**
+    * Fixed perpetual drift for `notification/alert policies`, `notification/team_routing rules` and `schedule_rotation` containing `time_restriction` blocks.
+  * **Notification Rule:**
+    * Fixed perpetual drift for rules when they contain more than one step.
+
+* IMPROVEMENTS: [#404](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/404)
+  * **time_restriction:**
+    * Added further schema validation to make it easier to type valid `time_restriction` blocks when using the `terraform-ls` language server.
+  * **Notification Policy:**
+    * Added further schema validation to make it easier to add multiple `action` blocks when using the `terraform-ls` language server.
+
 ## 0.6.28 (July 13, 2023)
 * BUGFIX:
   * **API Integration:**
     * Fixes an issue where owner team could not be updated when the API integration is linked with an Integration action.
-
 
 ## 0.6.27 (July 11, 2023)
 * IMPROVEMENTS:
