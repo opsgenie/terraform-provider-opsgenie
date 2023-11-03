@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"testing"
 
@@ -114,6 +115,55 @@ func TestAccOpsGenieIntegrationAction_complete(t *testing.T) {
 			},
 		},
 	})
+}
+
+func TestAccOpsGenieIntegrationAction_extraProperties(t *testing.T) {
+	rString := acctest.RandString(6)
+
+	config := testAccOpsGenieIntegrationAction_extraProperties(rString)
+
+	resource.Test(t, resource.TestCase{
+		ProviderFactories: providerFactories,
+		CheckDestroy:      testCheckOpsGenieIntegrationActionDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOpsGenieIntegrationActionExists("opsgenie_integration_action.test"),
+					testCheckOpsGenieIntegrationActionHasExtraProperties("opsgenie_integration_action.test"),
+				),
+			},
+		},
+	})
+}
+
+func testCheckOpsGenieIntegrationActionHasExtraProperties(name string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+
+		rs, ok := s.RootModule().Resources[name]
+		if !ok {
+			return fmt.Errorf("Not found: %s", name)
+		}
+
+		client, err := integration.NewClient(testAccProvider.Meta().(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+		Id := rs.Primary.Attributes["id"]
+
+		req := integration.GetIntegrationActionsRequest{
+			Id: Id,
+		}
+
+		r, err := client.GetActions(context.Background(), &req)
+		if err != nil {
+			return fmt.Errorf("Bad: ApiIntegration with id %q does not exist", Id)
+		}
+		if r.Create[0].Filter.Conditions[0].Field != "extra_properties_key_prefix-TEST_KEY" {
+			return fmt.Errorf("Bad: ApiIntegration with id %q does not have a condition with key 'TEST_KEY'. Got '%s' instead", Id, r.Create[0].Filter.Conditions[0].Key)
+		}
+		return nil
+	}
 }
 
 func testCheckOpsGenieIntegrationActionDestroy(s *terraform.State) error {
@@ -400,4 +450,28 @@ resource "opsgenie_integration_action" "test_email" {
   }
 }
 `, rString, rString, rString, rString, rString, rString)
+}
+
+func testAccOpsGenieIntegrationAction_extraProperties(rString string) string {
+	return fmt.Sprintf(`
+resource "opsgenie_integration_action" "test" {
+  integration_id = opsgenie_api_integration.test.id
+  create {
+    name = "Test close action"
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field = "extra-properties"
+        operation = "equals"
+        expected_value = "TEST_VALUE"
+        key = "TEST_KEY"
+      }
+    }
+  }
+}
+resource "opsgenie_api_integration" "test" {
+  type = "API"
+  name = "genieintegration-%s"
+}
+`, rString)
 }
