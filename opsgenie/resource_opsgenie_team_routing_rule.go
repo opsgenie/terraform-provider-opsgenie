@@ -123,74 +123,7 @@ func resourceOpsGenieTeamRoutingRule() *schema.Resource {
 					},
 				},
 			},
-			"time_restriction": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"type": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"restrictions": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_day": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"end_day": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"start_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"start_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-								},
-							},
-						},
-						"restriction": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"start_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
+			"time_restriction": timeRestrictionSchema(),
 		},
 	}
 }
@@ -224,7 +157,7 @@ func resourceOpsGenieTeamRoutingRuleCreate(d *schema.ResourceData, meta interfac
 	}
 
 	if len(timeRestriction) > 0 {
-		createRequest.TimeRestriction = expandRoutingRuleTimeRestrictions(timeRestriction)
+		createRequest.TimeRestriction = expandOpsGenieTimeRestriction(timeRestriction)
 	}
 
 	log.Printf("[INFO] Creating OpsGenie team routing rule '%s'", name)
@@ -257,7 +190,7 @@ func resourceOpsGenieTeamRoutingRuleRead(d *schema.ResourceData, meta interface{
 	d.Set("is_default", result.IsDefault)
 	d.Set("name", result.Name)
 	d.Set("order", result.Order)
-	d.Set("time_restriction", flattenOpsgenieTimeRestriction(result.TimeRestriction))
+	d.Set("time_restriction", flattenOpsgenieTimeRestriction(&result.TimeRestriction))
 	d.Set("notify", flattenOpsgenieNotify(result.Notify))
 	d.Set("criteria", flattenOpsgenieCriteria(result.Criteria))
 	d.Set("timezone", result.Timezone)
@@ -293,7 +226,7 @@ func resourceOpsGenieTeamRoutingRuleUpdate(d *schema.ResourceData, meta interfac
 		Notify:              expandOpsgenieNotify(notify),
 	}
 	if len(timeRestriction) > 0 {
-		updateRequest.TimeRestriction = expandRoutingRuleTimeRestrictions(timeRestriction)
+		updateRequest.TimeRestriction = expandOpsGenieTimeRestriction(timeRestriction)
 	}
 
 	if !isDefault {
@@ -372,58 +305,6 @@ func flattenOpsgenieCriteria(input og.Criteria) []map[string]interface{} {
 	out["conditions"] = conditions
 	rules = append(rules, out)
 	return rules
-}
-func expandRoutingRuleTimeRestrictions(d []interface{}) *og.TimeRestriction {
-	timeRestriction := og.TimeRestriction{}
-	for _, v := range d {
-		config := v.(map[string]interface{})
-
-		timeRestrictionType := config["type"].(string)
-		timeRestriction.Type = og.RestrictionType(timeRestrictionType)
-
-		if len(config["restrictions"].([]interface{})) > 0 {
-			timeRestriction.RestrictionList = expandOpsgenieRestrictions(config["restrictions"].([]interface{}))
-		} else {
-			timeRestriction.Restriction = expandOpsgenieRestriction(config["restriction"].([]interface{}))
-		}
-	}
-
-	return &timeRestriction
-}
-
-func flattenOpsgenieTimeRestriction(input og.TimeRestriction) []map[string]interface{} {
-	rules := make([]map[string]interface{}, 0, 1)
-	out := make(map[string]interface{})
-	out["type"] = input.Type
-
-	if len(input.RestrictionList) > 0 {
-		restrictions := make([]map[string]interface{}, 0, len(input.RestrictionList))
-		for _, r := range input.RestrictionList {
-			restrictionMap := make(map[string]interface{})
-			restrictionMap["start_min"] = r.StartMin
-			restrictionMap["start_hour"] = r.StartHour
-			restrictionMap["start_day"] = r.StartDay
-			restrictionMap["end_min"] = r.EndMin
-			restrictionMap["end_hour"] = r.EndHour
-			restrictionMap["end_day"] = r.EndDay
-			restrictions = append(restrictions, restrictionMap)
-		}
-		out["restrictions"] = restrictions
-		rules = append(rules, out)
-		return rules
-	} else {
-		restriction := make(map[string]interface{})
-		//IF RESTRICTION
-		restriction["end_hour"] = input.Restriction.EndHour
-		restriction["end_min"] = input.Restriction.EndMin
-		restriction["start_hour"] = input.Restriction.StartHour
-		restriction["start_min"] = input.Restriction.StartMin
-
-		//IF restrictions
-		out["restriction"] = restriction
-		rules = append(rules, out)
-		return rules
-	}
 }
 
 func expandOpsgenieNotify(input []interface{}) *team.Notify {
