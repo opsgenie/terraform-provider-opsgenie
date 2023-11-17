@@ -78,7 +78,7 @@ The following arguments are supported:
 
 * `criteria` - (Optional) You can refer Criteria for detailed information about criteria and its fields
 
-* `timeRestriction` - (Optional) You can refer Time Restriction for detailed information about time restriction and its fields.
+* `time_restriction` - (Optional) You can refer Time Restriction for detailed information about time restriction and its fields.
 
 * `notify` - (Required) Target entity of schedule, escalation, or the reserved word none which will be notified in routing rule. The possible values are: `schedule`, `escalation`, `none`
 
