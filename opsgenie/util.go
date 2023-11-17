@@ -141,6 +141,11 @@ func expandOpsGenieTimeRestriction(d []interface{}) *og.TimeRestriction {
 
 func flattenOpsgenieTimeRestriction(input *og.TimeRestriction) []map[string]interface{} {
 	output := make([]map[string]interface{}, 0, 1)
+	if input == nil || input.Type == "" {
+		// If type is not set, time restriction should be empty.
+		return output
+	}
+
 	element := make(map[string]interface{})
 
 	if len(input.RestrictionList) > 0 {
