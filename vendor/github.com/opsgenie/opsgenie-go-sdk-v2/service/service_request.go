@@ -45,6 +45,7 @@ type UpdateRequest struct {
 	Name        string     `json:"name,omitempty"`
 	Description string     `json:"description,omitempty"`
 	Visibility  Visibility `json:"visibility,omitempty"`
+	Tags        []string   `json:"tags,omitempty"`
 }
 
 func (r *UpdateRequest) Validate() error {

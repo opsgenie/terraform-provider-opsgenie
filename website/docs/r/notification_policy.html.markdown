@@ -29,6 +29,7 @@ resource "opsgenie_notification_policy" "test" {
     until_hour   = 9
   }
   filter {}
+}
 ```
 
 ## Argument Reference
@@ -66,7 +67,7 @@ The `filter` block supports:
 
 The `conditions` block supports:
 
-* `field` - (Required) Specifies which alert field will be used in condition. Possible values are `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `recipients`, `teams`, `priority`
+* `field` - (Required) Specifies which alert field will be used in condition. Possible values are `message`, `alias`, `description`, `source`, `entity`, `tags`, `actions`, `details`, `extra-properties`, `responders`, `teams`, `priority`
 
 * `operation` - (Required) It is the operation that will be executed for the given field and key. Possible operations are `matches`, `contains`, `starts-with`, `ends-with`, `equals`, `contains-key`, `contains-value`, `greater-than`, `less-than`, `is-empty`, `equals-ignore-whitespace`.
 

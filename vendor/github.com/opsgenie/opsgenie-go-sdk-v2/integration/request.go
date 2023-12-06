@@ -153,6 +153,7 @@ type UpdateIntegrationRequest struct {
 	Responders                  []Responder
 	AddAlertDescription         *bool
 	AddAlertDetails             *bool
+	OwnerTeam                   *og.OwnerTeam `json:"ownerTeam,omitempty"`
 	Headers                     map[string]string
 	OtherFields
 }
@@ -396,6 +397,7 @@ type IntegrationAction struct {
 	Responders                       []Responder       `json:"responders,omitempty"`
 	Tags                             []string          `json:"tags,omitempty"`
 	ExtraProperties                  map[string]string `json:"extraProperties,omitempty"`
+	Recipients                       []Responder       `json:"recipients,omitempty"`
 }
 
 func (r *UpdateAllIntegrationActionsRequest) Validate() error {

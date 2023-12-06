@@ -772,6 +772,61 @@ func (r *ListNotesRequest) RequestParams() map[string]string {
 	return params
 }
 
+type GetResponderAlertsRequest struct {
+	client.BaseRequest
+	Identifier IdentifierType
+	Id         string
+	Limit      int
+	Offset     int
+	Order      Order
+	Direction  string
+}
+
+func (r *GetResponderAlertsRequest) Validate() error {
+	if r.Id == "" {
+		return errors.New("Incident ID cannot be blank.")
+	}
+	if r.Identifier != "" && r.Identifier != Id && r.Identifier != Tiny {
+		return errors.New("Identifier type should be one of these: 'Id', 'Tiny' or empty.")
+	}
+	return nil
+}
+
+func (r *GetResponderAlertsRequest) ResourcePath() string {
+	return "/v1/incidents/" + r.Id + "/responder-alert-ids"
+}
+
+func (r *GetResponderAlertsRequest) Method() string {
+	return http.MethodGet
+}
+
+func (r *GetResponderAlertsRequest) RequestParams() map[string]string {
+
+	params := make(map[string]string)
+
+	if r.Identifier == Tiny {
+		params["identifierType"] = "tiny"
+	} else {
+		params["identifierType"] = "id"
+	}
+
+	if r.Limit != 0 {
+		params["limit"] = strconv.Itoa(r.Limit)
+	}
+	if r.Offset != 0 {
+		params["offset"] = strconv.Itoa(r.Offset)
+	}
+	if r.Direction != "" {
+		params["direction"] = r.Direction
+
+	}
+	if r.Order != "" {
+		params["order"] = string(r.Order)
+	}
+
+	return params
+}
+
 type IdentifierType string
 type ResponderType string
 type Priority string
@@ -806,6 +861,7 @@ type Responder struct {
 	Type ResponderType `json:"type,omitempty"`
 	Name string        `json:"name,omitempty"`
 	Id   string        `json:"id,omitempty"`
+	Username string    `json:"username,omitempty"`
 }
 
 func validateResponders(responders []Responder) error {
@@ -816,8 +872,11 @@ func validateResponders(responders []Responder) error {
 		if !(responder.Type == User || responder.Type == Team) {
 			return errors.New("Responder type should be one of these: 'User', 'Team'.")
 		}
-		if responder.Name == "" && responder.Id == "" {
-			return errors.New("For responder either name or id must be provided.")
+		if responder.Type == User && responder.Username == "" && responder.Id == "" {
+			return errors.New("For responder type user either username or id must be provided.")
+		}
+		if responder.Type == Team && responder.Name == "" && responder.Id == "" {
+			return errors.New("For responder type team either team name or id must be provided.")
 		}
 	}
 	return nil

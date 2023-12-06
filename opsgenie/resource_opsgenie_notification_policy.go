@@ -13,22 +13,28 @@ import (
 	"github.com/opsgenie/opsgenie-go-sdk-v2/policy"
 )
 
-var (
-	duration = &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"time_unit": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				Default:      "minutes",
-				ValidateFunc: validation.StringInSlice([]string{"days", "hours", "minutes"}, false),
-			},
-			"time_amount": {
-				Type:     schema.TypeInt,
-				Required: true,
+func durationSchema(required bool, description string) *schema.Schema {
+	return &schema.Schema{
+		Type:        schema.TypeList,
+		Required:    required,
+		Optional:    !required,
+		Description: description,
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"time_unit": {
+					Type:         schema.TypeString,
+					Optional:     true,
+					Default:      "minutes",
+					ValidateFunc: validation.StringInSlice([]string{"days", "hours", "minutes"}, false),
+				},
+				"time_amount": {
+					Type:     schema.TypeInt,
+					Required: true,
+				},
 			},
 		},
 	}
-)
+}
 
 func resourceOpsGenieNotificationPolicy() *schema.Resource {
 	return &schema.Resource{
@@ -70,6 +76,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 			"filter": {
 				Type:     schema.TypeList,
 				Required: true,
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
@@ -79,7 +86,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 						},
 						"conditions": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -88,7 +95,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 										Required: true,
 										ValidateFunc: validation.StringInSlice([]string{
 											"message", "alias", "description", "source", "entity", "tags",
-											"actions", "details", "extra-properties", "recipients", "teams", "priority",
+											"actions", "details", "extra-properties", "responders", "teams", "priority",
 										}, false),
 									},
 									"operation": {
@@ -126,98 +133,25 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 					},
 				},
 			},
-			"time_restriction": {
-				Type:     schema.TypeList,
-				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"type": {
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"time-of-day", "weekday-and-time-of-day"}, false),
-						},
-						"restrictions": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_day": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"end_day": {
-										Type:     schema.TypeString,
-										Required: true,
-									},
-									"start_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"start_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-								},
-							},
-						},
-						"restriction": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem: &schema.Resource{
-								Schema: map[string]*schema.Schema{
-									"start_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"start_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_hour": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-									"end_min": {
-										Type:     schema.TypeInt,
-										Required: true,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
+			"time_restriction": timeRestrictionSchema(),
 			"auto_close_action": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:         schema.TypeList,
+				Optional:     true,
+				MaxItems:     1,
+				AtLeastOneOf: []string{"auto_close_action", "auto_restart_action", "de_duplication_action", "delay_action", "suppress"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"duration": {
-							Type:     schema.TypeList,
-							Required: true,
-							Elem:     duration,
-						},
+						"duration": durationSchema(true, ""),
 					},
 				},
 			},
 			"auto_restart_action": {
 				Type:     schema.TypeList,
 				Optional: true,
+				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"duration": {
-							Type:     schema.TypeList,
-							Required: true,
-							Elem:     duration,
-						},
+						"duration": durationSchema(true, ""),
 						"max_repeat_count": {
 							Type:     schema.TypeInt,
 							Required: true,
@@ -226,8 +160,10 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 				},
 			},
 			"de_duplication_action": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:          schema.TypeList,
+				Optional:      true,
+				MaxItems:      1,
+				ConflictsWith: []string{"delay_action", "suppress"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"de_duplication_action_type": {
@@ -239,18 +175,15 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							Type:     schema.TypeInt,
 							Required: true,
 						},
-						"duration": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem:     duration,
-						},
+						"duration": durationSchema(false, "Required when `de_duplication_action_type = \"frequency-based\"`"),
 					},
 				},
 			},
 			"delay_action": {
 				Type:          schema.TypeList,
 				Optional:      true,
-				ConflictsWith: []string{"suppress"},
+				MaxItems:      1,
+				ConflictsWith: []string{"de_duplication_action", "suppress"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"delay_option": {
@@ -262,36 +195,33 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 							}, false),
 						},
 						"until_minute": {
-							Type:     schema.TypeInt,
-							Optional: true,
-							// This should be from 0 to 23 but due to BUG in SDK it has to be more than 1
-							// https://github.com/opsgenie/opsgenie-go-sdk-v2/issues/29
-							ValidateFunc: validation.IntBetween(1, 59),
+							Type:         schema.TypeInt,
+							Optional:     true,
+							ValidateFunc: validation.IntBetween(0, 59),
 						},
 						"until_hour": {
-							Type:     schema.TypeInt,
-							Optional: true,
-							// This should be from 0 to 23 but due to BUG in SDK it has to be more than 1
-							// https://github.com/opsgenie/opsgenie-go-sdk-v2/issues/29
-							ValidateFunc: validation.IntBetween(1, 23),
+							Type:         schema.TypeInt,
+							Optional:     true,
+							ValidateFunc: validation.IntBetween(0, 23),
 						},
-						"duration": {
-							Type:     schema.TypeList,
-							Optional: true,
-							Elem:     duration,
-						},
+						"duration": durationSchema(false, "Required when `delay_option = \"for-duration\"`"),
 					},
 				},
 			},
 			"suppress": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:          schema.TypeBool,
+				Optional:      true,
+				ConflictsWith: []string{"delay_action", "de_duplication_action"},
 			},
 		},
 	}
 }
 
 func resourceOpsGenieNotificationPolicyCreate(d *schema.ResourceData, meta interface{}) error {
+	err := resourceOpsGenieNotificationPolicyMultiValueValidation(d)
+	if err != nil {
+		return err
+	}
 	client, err := policy.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
@@ -381,7 +311,7 @@ func resourceOpsGenieNotificationPolicyRead(d *schema.ResourceData, meta interfa
 	}
 	if policy.MainFields.TimeRestriction != nil {
 		log.Printf("[DEBUG] 'policy.MainFields.TimeRestriction' is not 'nil'.")
-		d.Set("time_restriction", flattenOpsgenieNotificationPolicyTimeRestriction(policy.MainFields.TimeRestriction))
+		d.Set("time_restriction", flattenOpsgenieTimeRestriction(policy.MainFields.TimeRestriction))
 	} else {
 		log.Printf("[DEBUG] 'policy.MainFields.TimeRestriction' is 'nil'.")
 		d.Set("time_restriction", nil)
@@ -391,6 +321,10 @@ func resourceOpsGenieNotificationPolicyRead(d *schema.ResourceData, meta interfa
 }
 
 func resourceOpsGenieNotificationPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
+	err := resourceOpsGenieNotificationPolicyMultiValueValidation(d)
+	if err != nil {
+		return err
+	}
 	client, err := policy.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
@@ -444,6 +378,29 @@ func resourceOpsGenieNotificationPolicyDelete(d *schema.ResourceData, meta inter
 	return nil
 }
 
+func resourceOpsGenieNotificationPolicyMultiValueValidation(d *schema.ResourceData) error {
+	if de_dupe_actions := d.Get("de_duplication_action").([]interface{}); len(de_dupe_actions) == 1 {
+		de_dupe_action := de_dupe_actions[0].(map[string]interface{})
+		de_dupe_action_type := de_dupe_action["de_duplication_action_type"].(string)
+		de_dupe_durations := de_dupe_action["duration"].([]interface{})
+
+		if de_dupe_action_type == "frequency-based" && len(de_dupe_durations) != 1 {
+			return fmt.Errorf("%s: de_duplication_action.duration is required when de_duplication_action_type = 'frequency-based'", d.Id())
+		}
+	}
+
+	if delay_actions := d.Get("delay_action").([]interface{}); len(delay_actions) == 1 {
+		delay_action := delay_actions[0].(map[string]interface{})
+		delay_action_type := delay_action["delay_option"].(string)
+
+		if delay_action_type == "for-duration" && len(delay_action["duration"].([]interface{})) != 1 {
+			return fmt.Errorf("%s: delay_action.%s is required when delay_option = 'for-duration'", d.Id(), "duration")
+		}
+	}
+
+	return nil
+}
+
 func expandOpsGenieNotificationPolicyRequestMainFields(d *schema.ResourceData) *policy.MainFields {
 	enabled := d.Get("enabled").(bool)
 	fields := policy.MainFields{
@@ -456,7 +413,7 @@ func expandOpsGenieNotificationPolicyRequestMainFields(d *schema.ResourceData) *
 		fields.Filter = expandOpsGenieNotificationPolicyFilter(d.Get("filter").([]interface{}))
 	}
 	if len(d.Get("time_restriction").([]interface{})) > 0 {
-		fields.TimeRestriction = expandOpsGenieNotificationPolicyTimeRestriction(d.Get("time_restriction").([]interface{}))
+		fields.TimeRestriction = expandOpsGenieTimeRestriction(d.Get("time_restriction").([]interface{}))
 	}
 	return &fields
 }
@@ -550,19 +507,19 @@ func expandOpsGenieNotificationPolicyFilter(input []interface{}) *og.Filter {
 	for _, v := range input {
 		config := v.(map[string]interface{})
 		filter.ConditionMatchType = og.ConditionMatchType(config["type"].(string))
-		filter.Conditions = expandOpsGenieNotificationPolicyFilterConditions(config["conditions"].([]interface{}))
+		filter.Conditions = expandOpsGenieNotificationPolicyFilterConditions(config["conditions"].(*schema.Set))
 	}
 	return &filter
 }
 
-func expandOpsGenieNotificationPolicyFilterConditions(input []interface{}) []og.Condition {
-	conditions := make([]og.Condition, 0, len(input))
+func expandOpsGenieNotificationPolicyFilterConditions(input *schema.Set) []og.Condition {
+	conditions := make([]og.Condition, 0, input.Len())
 	condition := og.Condition{}
 	if input == nil {
 		return conditions
 	}
 
-	for _, v := range input {
+	for _, v := range input.List() {
 		config := v.(map[string]interface{})
 		not_value := config["not"].(bool)
 		order := config["order"].(int)
@@ -575,52 +532,6 @@ func expandOpsGenieNotificationPolicyFilterConditions(input []interface{}) []og.
 		conditions = append(conditions, condition)
 	}
 	return conditions
-}
-
-func expandOpsGenieNotificationPolicyTimeRestriction(d []interface{}) *og.TimeRestriction {
-	timeRestriction := og.TimeRestriction{}
-	for _, v := range d {
-		config := v.(map[string]interface{})
-		timeRestriction.Type = og.RestrictionType(config["type"].(string))
-		if len(config["restrictions"].([]interface{})) > 0 {
-			restrictionList := make([]og.Restriction, 0, len(config["restrictions"].([]interface{})))
-			for _, v := range config["restrictions"].([]interface{}) {
-				config := v.(map[string]interface{})
-				startHour := uint32(config["start_hour"].(int))
-				startMin := uint32(config["start_min"].(int))
-				endHour := uint32(config["end_hour"].(int))
-				endMin := uint32(config["end_min"].(int))
-				restriction := og.Restriction{
-					StartDay:  og.Day(config["start_day"].(string)),
-					StartHour: &startHour,
-					StartMin:  &startMin,
-					EndHour:   &endHour,
-					EndDay:    og.Day(config["end_day"].(string)),
-					EndMin:    &endMin,
-				}
-				restrictionList = append(restrictionList, restriction)
-			}
-			timeRestriction.RestrictionList = restrictionList
-		} else {
-			restriction := og.Restriction{}
-			for _, v := range config["restriction"].([]interface{}) {
-				config := v.(map[string]interface{})
-				startHour := uint32(config["start_hour"].(int))
-				startMin := uint32(config["start_min"].(int))
-				endHour := uint32(config["end_hour"].(int))
-				endMin := uint32(config["end_min"].(int))
-				restriction = og.Restriction{
-					StartHour: &startHour,
-					StartMin:  &startMin,
-					EndHour:   &endHour,
-					EndMin:    &endMin,
-				}
-			}
-
-			timeRestriction.Restriction = restriction
-		}
-	}
-	return &timeRestriction
 }
 
 func flattenOpsGenieNotificationPolicyDuration(input *policy.Duration) []map[string]interface{} {
@@ -703,36 +614,5 @@ func flattenOpsGenieNotificationPolicyFilterConditions(input []og.Condition) []m
 		output = append(output, element)
 	}
 
-	return output
-}
-
-func flattenOpsgenieNotificationPolicyTimeRestriction(input *og.TimeRestriction) []map[string]interface{} {
-	output := make([]map[string]interface{}, 0, 1)
-	element := make(map[string]interface{})
-	if len(input.RestrictionList) > 0 {
-		restrictions := make([]map[string]interface{}, 0, len(input.RestrictionList))
-		for _, r := range input.RestrictionList {
-			restrictionMap := make(map[string]interface{})
-			restrictionMap["start_min"] = r.StartMin
-			restrictionMap["start_hour"] = r.StartHour
-			restrictionMap["start_day"] = r.StartDay
-			restrictionMap["end_min"] = r.EndMin
-			restrictionMap["end_hour"] = r.EndHour
-			restrictionMap["end_day"] = r.EndDay
-			restrictions = append(restrictions, restrictionMap)
-		}
-		element["restrictions"] = restrictions
-	} else {
-		restriction := make([]map[string]interface{}, 0, 1)
-		restrictionMap := make(map[string]interface{})
-		restrictionMap["start_min"] = input.Restriction.StartMin
-		restrictionMap["start_hour"] = input.Restriction.StartHour
-		restrictionMap["end_min"] = input.Restriction.EndMin
-		restrictionMap["end_hour"] = input.Restriction.EndHour
-		restriction = append(restriction, restrictionMap)
-		element["restriction"] = restriction
-	}
-	element["type"] = input.Type
-	output = append(output, element)
 	return output
 }

@@ -52,6 +52,25 @@ resource "opsgenie_integration_action" "test_action" {
   }
 
   create {
+    name = "create action with multiline description"
+    message       = "{{message}}"
+    description   = chomp(<<-EOT
+            This
+            is a multiline
+            description.
+        EOT
+    )
+    filter {
+      type = "match-all-conditions"
+      conditions {
+        field          = "priority"
+        operation      = "equals"
+        expected_value = "P1"
+      }
+    }
+  }
+
+  create {
     name     = "Create medium priority alerts"
     tags     = ["SEVERE", "SEV-1"]
     priority = "P3"
