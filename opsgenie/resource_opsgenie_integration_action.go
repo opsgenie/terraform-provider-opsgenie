@@ -599,7 +599,14 @@ func expandOpsgenieIntegrationActions(input interface{}) []integration.Integrati
 			action.CustomPriority = customPriority.(string)
 		}
 		filters := expandOpsgenieFilter(inputMap["filter"].([]interface{}))
-		action.Filter = &filters
+
+		// If a filter is not included in the resource, this will still set an empty filter. `omitempty` will
+		// only leave out the key when marshaling the Json if its value is `nil`
+		if filters.ConditionMatchType == "" && len(filters.Conditions) == 0 {
+			action.Filter = nil
+		} else {
+			action.Filter = &filters
+		}
 
 		if action.Type == integration.Create {
 			action.Source = inputMap["source"].(string)
