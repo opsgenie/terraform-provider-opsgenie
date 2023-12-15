@@ -7,6 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
+	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
 )
 
 // handleNonExistentResource is a wrapper of resourceFunc that
@@ -88,4 +89,90 @@ func flattenTags(d *schema.ResourceData, fieldName string) []string {
 	}
 
 	return tags
+}
+
+func expandOpsGenieTimeRestriction(d []interface{}) *og.TimeRestriction {
+	timeRestriction := og.TimeRestriction{}
+
+	for _, v := range d {
+		config := v.(map[string]interface{})
+		timeRestriction.Type = og.RestrictionType(config["type"].(string))
+
+		if config["restrictions"].(*schema.Set).Len() > 0 {
+			restrictionList := make([]og.Restriction, 0, config["restrictions"].(*schema.Set).Len())
+			for _, v := range config["restrictions"].(*schema.Set).List() {
+				config := v.(map[string]interface{})
+				startHour := uint32(config["start_hour"].(int))
+				startMin := uint32(config["start_min"].(int))
+				endHour := uint32(config["end_hour"].(int))
+				endMin := uint32(config["end_min"].(int))
+				restriction := og.Restriction{
+					StartDay:  og.Day(config["start_day"].(string)),
+					StartHour: &startHour,
+					StartMin:  &startMin,
+					EndHour:   &endHour,
+					EndDay:    og.Day(config["end_day"].(string)),
+					EndMin:    &endMin,
+				}
+				restrictionList = append(restrictionList, restriction)
+			}
+			timeRestriction.RestrictionList = restrictionList
+		} else {
+			restriction := og.Restriction{}
+			for _, v := range config["restriction"].(*schema.Set).List() {
+				config := v.(map[string]interface{})
+				startHour := uint32(config["start_hour"].(int))
+				startMin := uint32(config["start_min"].(int))
+				endHour := uint32(config["end_hour"].(int))
+				endMin := uint32(config["end_min"].(int))
+				restriction = og.Restriction{
+					StartHour: &startHour,
+					StartMin:  &startMin,
+					EndHour:   &endHour,
+					EndMin:    &endMin,
+				}
+			}
+
+			timeRestriction.Restriction = restriction
+		}
+	}
+	return &timeRestriction
+}
+
+func flattenOpsgenieTimeRestriction(input *og.TimeRestriction) []map[string]interface{} {
+	output := make([]map[string]interface{}, 0, 1)
+	if input == nil || input.Type == "" {
+		// If type is not set, time restriction should be empty.
+		return output
+	}
+
+	element := make(map[string]interface{})
+
+	if len(input.RestrictionList) > 0 {
+		restrictions := make([]map[string]interface{}, 0, len(input.RestrictionList))
+		for _, r := range input.RestrictionList {
+			restrictionMap := make(map[string]interface{})
+			restrictionMap["start_min"] = r.StartMin
+			restrictionMap["start_hour"] = r.StartHour
+			restrictionMap["start_day"] = r.StartDay
+			restrictionMap["end_min"] = r.EndMin
+			restrictionMap["end_hour"] = r.EndHour
+			restrictionMap["end_day"] = r.EndDay
+			restrictions = append(restrictions, restrictionMap)
+		}
+		element["restrictions"] = restrictions
+	} else {
+		restriction := make([]map[string]interface{}, 0, 1)
+		restrictionMap := make(map[string]interface{})
+		restrictionMap["start_min"] = input.Restriction.StartMin
+		restrictionMap["start_hour"] = input.Restriction.StartHour
+		restrictionMap["end_min"] = input.Restriction.EndMin
+		restrictionMap["end_hour"] = input.Restriction.EndHour
+		restriction = append(restriction, restrictionMap)
+		element["restriction"] = restriction
+	}
+
+	element["type"] = input.Type
+	output = append(output, element)
+	return output
 }

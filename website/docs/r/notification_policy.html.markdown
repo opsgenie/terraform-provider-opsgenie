@@ -29,6 +29,7 @@ resource "opsgenie_notification_policy" "test" {
     until_hour   = 9
   }
   filter {}
+}
 ```
 
 ## Argument Reference
