@@ -168,7 +168,7 @@ func testCheckOpsGenieUserExists(name string) resource.TestCheckFunc {
 		if err != nil {
 			return fmt.Errorf("Bad: User %q (username: %q) does not exist", id, username)
 		} else {
-			log.Printf("User found :%s ", result.Username)
+			log.Printf("User found: %s", result.Username)
 		}
 
 		return nil
