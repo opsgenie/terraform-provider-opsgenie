@@ -2,8 +2,9 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -21,6 +22,21 @@ func Provider() *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("OPSGENIE_API_URL", "api.opsgenie.com"),
+			},
+			"api_retry_count": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  10,
+			},
+			"api_retry_wait_min": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  -1,
+			},
+			"api_retry_wait_max": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  -1,
 			},
 		},
 
@@ -65,8 +81,11 @@ func providerConfigure(ctx context.Context, data *schema.ResourceData) (interfac
 	log.Println("[INFO] Initializing OpsGenie client")
 
 	config := Config{
-		ApiKey: data.Get("api_key").(string),
-		ApiUrl: data.Get("api_url").(string),
+		ApiKey:          data.Get("api_key").(string),
+		ApiUrl:          data.Get("api_url").(string),
+		ApiRetryCount:   data.Get("api_retry_count").(int),
+		ApiRetryWaitMin: data.Get("api_retry_wait_min").(int),
+		ApiRetryWaitMax: data.Get("api_retry_wait_max").(int),
 	}
 	cli, err := config.Client()
 	if err != nil {
