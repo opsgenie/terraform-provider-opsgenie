@@ -291,13 +291,11 @@ func resourceOpsGenieAlertPolicyRead(ctx context.Context, d *schema.ResourceData
 	if err != nil {
 		x := err.(*ogClient.ApiError)
 		if x.StatusCode == 404 {
-			errText := fmt.Sprintf("[WARN] Removing Alert Policy because it's gone %s", name)
-			tflog.Warn(ctx, errText)
+			tflog.Warn(ctx, fmt.Sprintf("[WARN] Removing Alert Policy because it's gone %s", name))
 			d.SetId("")
 			return nil
 		} else if x.StatusCode >= 400 {
-			errText := fmt.Sprintf("%d: %s", x.StatusCode, x.Message)
-			tflog.Error(ctx, errText)
+			tflog.Error(ctx, fmt.Sprintf("%d: %s", x.StatusCode, x.Message))
 			d.SetId("")
 			return nil
 		}
