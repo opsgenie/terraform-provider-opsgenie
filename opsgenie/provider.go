@@ -58,6 +58,7 @@ func Provider() *schema.Provider {
 			"opsgenie_maintenance":           resourceOpsgenieMaintenance(),
 			"opsgenie_heartbeat":             resourceOpsgenieHeartbeat(),
 			"opsgenie_alert_policy":          resourceOpsGenieAlertPolicy(),
+			"opsgenie_alert_policy_order":    resourceOpsGeniePoliciesOrder(),
 			"opsgenie_service_incident_rule": resourceOpsGenieServiceIncidentRule(),
 			"opsgenie_incident_template":     resourceOpsgenieIncidentTemplate(),
 		},
