@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
@@ -290,7 +291,13 @@ func resourceOpsGenieAlertPolicyRead(ctx context.Context, d *schema.ResourceData
 	if err != nil {
 		x := err.(*ogClient.ApiError)
 		if x.StatusCode == 404 {
-			log.Printf("[WARN] Removing Alert Policy because it's gone %s", name)
+			errText := fmt.Sprintf("[WARN] Removing Alert Policy because it's gone %s", name)
+			tflog.Warn(ctx, errText)
+			d.SetId("")
+			return nil
+		} else if x.StatusCode >= 400 {
+			errText := fmt.Sprintf("%d: %s", x.StatusCode, x.Message)
+			tflog.Error(ctx, errText)
 			d.SetId("")
 			return nil
 		}
