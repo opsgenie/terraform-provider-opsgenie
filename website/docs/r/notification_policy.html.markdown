@@ -48,7 +48,7 @@ The following arguments are supported:
 
 * `time_restriction` - (Optional) Time restrictions specified in this field must be met for this policy to work. This is a block, structure is documented below.
 
-* `auto_close_action` - (Optional) Auto Restart Action of the policy. This is a block, structure is documented below.
+* `auto_close_action` - (Optional) Auto Close Action of the policy. This is a block, structure is documented below.
 
 * `auto_restart_action` - (Optional) Auto Restart Action of the policy. This is a block, structure is documented below.
 
