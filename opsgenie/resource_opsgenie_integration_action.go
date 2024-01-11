@@ -2,10 +2,13 @@ package opsgenie
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	ogClient "github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/og"
-	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/integration"
@@ -564,11 +567,41 @@ func expandOpsgenieFilter(input []interface{}) integration.Filter {
 	filter := integration.Filter{}
 	for _, r := range input {
 		inputMap := r.(map[string]interface{})
-		conditions := expandOpsgenieConditions(inputMap["conditions"].([]interface{}))
+		conditions := expandOpsgenieIntegrationConditions(inputMap["conditions"].([]interface{}))
 		filter.Conditions = conditions
 		filter.ConditionMatchType = og.ConditionMatchType(inputMap["type"].(string))
 	}
 	return filter
+}
+
+func expandOpsgenieIntegrationConditions(input []interface{}) []og.Condition {
+	conditions := make([]og.Condition, 0, len(input))
+
+	if input == nil {
+		return conditions
+	}
+	for _, v := range input {
+		inputMap := v.(map[string]interface{})
+		condition := og.Condition{}
+		key := inputMap["key"].(string)
+		if key != "" {
+			condition.Key = inputMap["key"].(string)
+		}
+		condition.Field = og.ConditionFieldType(inputMap["field"].(string))
+		if condition.Field == og.ExtraProperties {
+			condition.Field = og.ConditionFieldType(fmt.Sprintf("extra_properties_key_prefix-%s", condition.Key))
+			condition.Key = ""
+		}
+		isNot := inputMap["not"].(bool)
+		condition.IsNot = &isNot
+		condition.Operation = og.ConditionOperation(inputMap["operation"].(string))
+		condition.ExpectedValue = inputMap["expected_value"].(string)
+		order := inputMap["order"].(int)
+		condition.Order = &order
+		conditions = append(conditions, condition)
+	}
+
+	return conditions
 }
 
 func expandOpsgenieIntegrationActions(input interface{}) []integration.IntegrationAction {
@@ -648,12 +681,18 @@ func flattenOpsgenieFilter(input *integration.Filter) []map[string]interface{} {
 	for _, r := range input.Conditions {
 		conditionMap := make(map[string]interface{})
 		conditionMap["order"] = r.Order
-		if r.Key != "" {
-			conditionMap["key"] = r.Key
+		key, found := strings.CutPrefix(string(r.Field), "extra_properties_key_prefix-")
+		if found {
+			conditionMap["key"] = key
+			conditionMap["field"] = og.ExtraProperties
+		} else {
+			conditionMap["field"] = r.Field
+			if r.Key != "" {
+				conditionMap["key"] = r.Key
+			}
 		}
 		conditionMap["expected_value"] = r.ExpectedValue
 		conditionMap["operation"] = r.Operation
-		conditionMap["field"] = r.Field
 		conditionMap["not"] = r.IsNot
 		conditions = append(conditions, conditionMap)
 	}
