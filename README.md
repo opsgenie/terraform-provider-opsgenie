@@ -1,6 +1,5 @@
 
-Terraform Provider
-==================
+# Terraform Provider
 
 - Website: https://www.terraform.io
 - [![Gitter chat](https://badges.gitter.im/hashicorp-terraform/Lobby.png)](https://gitter.im/hashicorp-terraform/Lobby)
@@ -8,93 +7,128 @@ Terraform Provider
 
 <img src="https://www.datocms-assets.com/2885/1629941242-logo-terraform-main.svg" width="600px">
 
-Requirements
-------------
 
--	[Terraform](https://www.terraform.io/downloads.html) 0.12.x
--	[Go](https://golang.org/doc/install) 1.14.2 (to build the provider plugin)
+## Development
 
-Building The Provider
----------------------
+Everything needed to start local development and testing of the Provider plugin
 
-Clone repository to: `$GOPATH/src/github.com/opsgenie/terraform-provider-opsgenie`
+### 1. Requirements
+
+-	[Go](https://golang.org/doc/install) 1.18 (or higher, to build the provider plugin)
+-	[Terraform](https://www.terraform.io/downloads.html) 0.12.x (To test the plugin)
+
+
+### 2. Development Setup
+
+#### Cloning the project
+
+```bash
+export GOPATH="${GOPATH:=$HOME/go}"
+
+mkdir -p "$GOPATH/src/github.com/opsgenie"
+
+cd "$GOPATH/src/github.com/opsgenie"
+
+git clone git@github.com:opsgenie/terraform-provider-opsgenie
+```
+
+
+### 3. Compiling The Provider
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/opsgenie; cd $GOPATH/src/github.com/opsgenie
-$ git clone git@github.com:opsgenie/terraform-provider-opsgenie
+export GOPATH="${GOPATH:=$HOME/go}"
+cd "$GOPATH/src/github.com/opsgenie"
+
+# Compile all versions of the provider and install it in GOPATH.
+make build
+
+# Only compile the local executable version (Faster)
+make dev
 ```
 
-Enter the provider directory and build the provider
+
+#### Running tests on the Provider
+
+Run all local unit tests.
 
 ```sh
-$ cd $GOPATH/src/github.com/opsgenie/terraform-provider-opsgenie
-$ make build
+make test
 ```
 
-Using the provider
-----------------------
-## Fill in for each provider
 
-Developing the Provider
----------------------------
+### 4. Using the Compiled Provider
 
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.8+ is *required*). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
+#### Configure Terraform to use the compiled provider.
 
-To compile the provider, run `make build`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
+This configuration makes use of the [`dev_overrides`](https://developer.hashicorp.com/terraform/cli/config/config-file#development-overrides-for-provider-developers).
 
-```sh
-$ make build
-...
-$ $GOPATH/bin/terraform-provider-opsgenie
-...
+See the [Manual Setup][Manual Setup] for more details.
+
+```bash
+# Creates $HOME/.terraformrc
+make setup
 ```
 
-In order to test the provider, you can simply run `make test`.
+#### Manual setup
 
-```sh
-$ make test
-```
+<details>
+  <summary>Click to expand</summary>
 
-In order to run the full suite of Acceptance tests, run `make testacc`.
-
-*Note:* Acceptance tests create real resources, and often cost money to run.
-
-```sh
-$ make testacc
-```
-
-Testing the Provider from Local Registry Version
-------------------------------------------------
-* Create a `.terraformrc` file on your in your home folder using `vi ~/.terraformrc`
-* Add the local provider registry conf in `.terraformrc`
-```
-provider_installation {
-  filesystem_mirror {
-    path    = "~/terraform/providers"
-    include = ["test.local/*/*"]
-  }
-  direct {
-    exclude = ["test.local/*/*"]
-  }
-}
-```
-* Run `make build` on local (it will internally trigger a hook to write to `test.local` registry located in your `~/terraform/providers` folder)
-* You can create a terraform basic project of your own locally with `main.tf` file
-```
-terraform {
-  required_providers {
-    opsgenie = {
-      source  = "test.local/opsgenie/opsgenie"
-      version = "<local_version>"
+1. Create the `.terraformrc` file on your in your home folder using `touch ~/.terraformrc`
+2. Configure [`dev_overrides`](https://developer.hashicorp.com/terraform/cli/config/config-file#development-overrides-for-provider-developers) in your `~/.terraformrc` as show below:
+    ```hcl
+    provider_installation {
+      dev_overrides {
+        # Remember to replace <home dir> with your username
+        "opsgenie/opsgenie" = "/home/<home dir>/go/bin"
+      }
+      direct {}
     }
-  }
-}
+    ```
+3. Run `make build`
 
-# Configure the Opsgenie Provider
-provider "opsgenie" {
-  api_key = <api_key>
-  api_url = "api.opsgenie.com" # can be a stage instance url for devs
-}
+</details>
+
+
+#### New OpsGenie Terraform project
+
+1. Create a basic terraform project locally with a `main.tf` file:
+    ```hcl
+    terraform {
+      required_providers {
+        opsgenie = {
+          source  = "opsgenie/opsgenie"
+          version = ">=0.6.0" # version can be omitted
+        }
+      }
+    }
+
+    # Configure the Opsgenie Provider
+    provider "opsgenie" {
+      api_key = "<insert api_key>" # https://support.atlassian.com/opsgenie/docs/api-key-management/
+      api_url = "api.opsgenie.com" # can be a stage instance url for devs
+    }
+
+    resource "opsgenie_team" {
+      name        = "Dev-Provider test team"
+      description = "New team made using in-development OpsGenie provider"
+    }
+    ```
+
+2. And, Add respective terraform change files which you want to apply on your OG instance
+
+3. Run respective terraform commands to test the provider as per your convenience
+   Install the currently available provider with `tf init`
+   `terraform plan` and `terraform init` will use providers from the configured paths in `$HOME/.terraformrc`
+   `terraform` will output an error if no provider is found in the `dev_overrides` path. (`make build`)
+
+
+#### Removing the 'dev_override' again
+
+This allows you to use the normal release versions of the `opsgenie/opsgenie` provider.
+
+*Note* Removes `$HOME/.terraformrc`
+
+```bash
+make clean
 ```
-* And, Add respective terraform change files which you want to apply on your OG instance
-* Run respective terraform commands to test the provider as per your convenience
