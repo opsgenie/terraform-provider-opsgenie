@@ -101,27 +101,31 @@ func resourceOpsGenieServiceRead(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceOpsGenieServiceUpdate(d *schema.ResourceData, meta interface{}) error {
-	client, err := service.NewClient(meta.(*OpsgenieClient).client.Config)
-	if err != nil {
-		return err
-	}
-	name := d.Get("name").(string)
-	description := d.Get("description").(string)
-	tags := flattenTags(d, "tags")
+	 
+	resourceOpsGenieServiceDelete(d, meta)
+	resourceOpsGenieServiceCreate(d, meta)
+	
+	// client, err := service.NewClient(meta.(*OpsgenieClient).client.Config)
+	// if err != nil {
+	// 	return err
+	// }
+	// name := d.Get("name").(string)
+	// description := d.Get("description").(string)
+	// tags := flattenTags(d, "tags")
 
-	log.Printf("[INFO] Updating OpsGenie service '%s'", name)
+	// log.Printf("[INFO] Updating OpsGenie service '%s'", name)
 
-	updateRequest := &service.UpdateRequest{
-		Id:          d.Id(),
-		Name:        name,
-		Description: description,
-		Tags:        tags,
-	}
+	// updateRequest := &service.UpdateRequest{
+	// 	Id:          d.Id(),
+	// 	Name:        name,
+	// 	Description: description,
+	// 	Tags:        tags,
+	// }
 
-	_, err = client.Update(context.Background(), updateRequest)
-	if err != nil {
-		return err
-	}
+	// _, err = client.Update(context.Background(), updateRequest)
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
