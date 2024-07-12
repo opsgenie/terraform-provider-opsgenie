@@ -28,4 +28,4 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: build --skip-validate --rm-dist
+          args: build --skip=validate --clean
