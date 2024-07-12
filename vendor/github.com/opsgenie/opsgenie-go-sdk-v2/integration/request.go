@@ -49,6 +49,7 @@ type APIBasedIntegrationRequest struct {
 	Name                        string        `json:"name"`
 	Type                        string        `json:"type"`
 	AllowWriteAccess            *bool         `json:"allowWriteAccess"`
+	AllowConfigurationAccess    *bool         `json:"allowConfigurationAccess"`
 	IgnoreRespondersFromPayload *bool         `json:"ignoreRespondersFromPayload"`
 	SuppressNotifications       *bool         `json:"suppressNotifications"`
 	OwnerTeam                   *og.OwnerTeam `json:"ownerTeam,omitempty"`
@@ -79,6 +80,7 @@ type WebhookIntegrationRequest struct {
 	Name                  string            `json:"name"`
 	Type                  string            `json:"type"`
 	AllowWriteAccess      *bool             `json:"allowWriteAccess"`
+	AllowConfigurationAccess    *bool         `json:"allowConfigurationAccess"`
 	SuppressNotifications *bool             `json:"suppressNotifications"`
 	OwnerTeam             *og.OwnerTeam     `json:"ownerTeam,omitempty"`
 	Responders            []Responder       `json:"responders,omitempty"`
