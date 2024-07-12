@@ -213,11 +213,6 @@ func resourceOpsGenieAlertPolicy() *schema.Resource {
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"P1", "P2", "P3", "P4", "P5"}, false),
 			},
-			"order": {
-				Type:     schema.TypeInt,
-				Optional: true,
-				Default:  0,
-			},
 		},
 	}
 }
@@ -228,8 +223,6 @@ func resourceOpsGenieAlertPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		return diag.FromErr(err)
 	}
 
-	name := d.Get("name").(string)
-	team_id := d.Get("team_id").(string)
 	message := d.Get("message").(string)
 	continue_policy := d.Get("continue_policy").(bool)
 	alias := d.Get("alias").(string)
@@ -241,7 +234,6 @@ func resourceOpsGenieAlertPolicyCreate(ctx context.Context, d *schema.ResourceDa
 	ignore_original_responders := d.Get("ignore_original_responders").(bool)
 	ignore_original_tags := d.Get("ignore_original_tags").(bool)
 	priority := d.Get("priority").(string)
-	order := d.Get("order").(int)
 
 	createRequest := &policy.CreateAlertPolicyRequest{
 		MainFields:               *expandOpsGenieAlertPolicyRequestMainFields(d),
@@ -264,26 +256,13 @@ func resourceOpsGenieAlertPolicyCreate(ctx context.Context, d *schema.ResourceDa
 		createRequest.Responders = expandOpsGenieAlertPolicyResponders(d)
 	}
 
-	log.Printf("[INFO] Creating Alert Policy '%s'", name)
+	log.Printf("[INFO] Creating Alert Policy '%s'", d.Get("name").(string))
 	result, err := client.CreateAlertPolicy(context.Background(), createRequest)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	d.SetId(result.Id)
-
-	orderRequest := &policy.ChangeOrderRequest{
-		Id:          result.Id,
-		TeamId:      team_id,
-		Type:        "alert",
-		TargetIndex: order,
-	}
-
-	log.Printf("[INFO] Setting Alert Policy '%s' order to '%d'", name, order)
-	_, err = client.ChangeOrder(context.Background(), orderRequest)
-	if err != nil {
-		return diag.FromErr(err)
-	}
 
 	return resourceOpsGenieAlertPolicyRead(ctx, d, meta)
 }
