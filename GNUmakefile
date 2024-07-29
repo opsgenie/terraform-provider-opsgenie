@@ -6,7 +6,7 @@ PKG_NAME=opsgenie
 default: build
 
 build: fmtcheck
-	goreleaser build --skip-validate --clean
+	goreleaser build --skip=validate --clean
 
 dev: fmt
 	go install .
