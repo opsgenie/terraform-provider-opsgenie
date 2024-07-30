@@ -62,7 +62,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 									},
 									"conditions": {
-										Type:     schema.TypeList,
+										Type:     schema.TypeSet,
 										Optional: true,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
@@ -237,7 +237,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 									},
 									"conditions": {
-										Type:     schema.TypeList,
+										Type:     schema.TypeSet,
 										Optional: true,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
@@ -320,7 +320,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 									},
 									"conditions": {
-										Type:     schema.TypeList,
+										Type:     schema.TypeSet,
 										Optional: true,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
@@ -403,7 +403,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 									},
 									"conditions": {
-										Type:     schema.TypeList,
+										Type:     schema.TypeSet,
 										Optional: true,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
@@ -486,7 +486,7 @@ func resourceOpsgenieIntegrationAction() *schema.Resource {
 										ValidateFunc: validation.StringInSlice([]string{"match-all", "match-any-condition", "match-all-conditions"}, false),
 									},
 									"conditions": {
-										Type:     schema.TypeList,
+										Type:     schema.TypeSet,
 										Optional: true,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
@@ -567,20 +567,20 @@ func expandOpsgenieFilter(input []interface{}) integration.Filter {
 	filter := integration.Filter{}
 	for _, r := range input {
 		inputMap := r.(map[string]interface{})
-		conditions := expandOpsgenieIntegrationConditions(inputMap["conditions"].([]interface{}))
+		conditions := expandOpsgenieIntegrationConditions(inputMap["conditions"].(*schema.Set))
 		filter.Conditions = conditions
 		filter.ConditionMatchType = og.ConditionMatchType(inputMap["type"].(string))
 	}
 	return filter
 }
 
-func expandOpsgenieIntegrationConditions(input []interface{}) []og.Condition {
-	conditions := make([]og.Condition, 0, len(input))
+func expandOpsgenieIntegrationConditions(input *schema.Set) []og.Condition {
+	conditions := make([]og.Condition, 0, input.Len())
 
 	if input == nil {
 		return conditions
 	}
-	for _, v := range input {
+	for _, v := range input.List() {
 		inputMap := v.(map[string]interface{})
 		condition := og.Condition{}
 		key := inputMap["key"].(string)
