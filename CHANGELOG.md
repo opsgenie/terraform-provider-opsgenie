@@ -1,3 +1,24 @@
+## 0.6.37 (July 30, 2024)
+* BUGFIX: [#446](https://github.com/opsgenie/terraform-provider-opsgenie/pull/446)
+  * **Integration Policy**
+    * Fixed perpetual time drift in the conditions field in Integration policy
+## 0.6.36 (July 7, 2024)
+* BUGFIX:  [#411](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/411), [#440](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/440)
+  * **API backoff mechanism**
+    * Add options to customize the API backoff mechanism
+  * **Integration Action Policy**
+    * Fixed integration_action filter conditions field by giving support for extra-properties
+* IMPROVEMENTS   [#296](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/296)
+  * **Integration Policy**
+    * Updated Integration request to allow configuration access flag
+## 0.6.35 (December 18, 2023)
+* BUGFIX: [#413](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/413), [#416](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/416) 
+  * **time_restriction:**
+    * Fixed drift for empty time_restriction
+    * Fixed time_restriction argument in team_routing_rule resource documentation
+* IMPROVEMENTS: [#405](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/405)
+  * **README**
+    * Update the README setup instructions and Make commands
 ## 0.6.34 (November 06, 2023)
 * BUGFIX: [#404](https://github.com/opsgenie/terraform-provider-opsgenie/pulls/404)
   * **Notification Policy:**
