@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"strings"
 	"testing"
 
@@ -112,6 +113,26 @@ func TestAccOpsGenieAlertPolicy_complete(t *testing.T) {
 	})
 }
 
+func TestAccOpsGenieAlertPolicy_order(t *testing.T) {
+	randomTeam := acctest.RandString(6)
+	randomAlertPolicyName := acctest.RandString(6)
+	policiesOrder := []int{2, 3, 1}
+
+	config := testAccOpsGenieAlertPolicy_order(randomTeam, randomAlertPolicyName, policiesOrder)
+
+	resource.Test(t, resource.TestCase{
+		ProviderFactories: providerFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: config,
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOpsGenieAlertPolicyOrder("opsgenie_alert_policy_order.test", randomAlertPolicyName, policiesOrder),
+				),
+			},
+		},
+	})
+}
+
 func testCheckOpsGenieAlertPolicyDestroy(s *terraform.State) error {
 	client, err := policy.NewClient(testAccProvider.Meta().(*OpsgenieClient).client.Config)
 	if err != nil {
@@ -161,6 +182,54 @@ func testCheckOpsGenieAlertPolicyExists(name string) resource.TestCheckFunc {
 		if err != nil {
 			return fmt.Errorf("Bad: Alert policy %q does not exist", id)
 		}
+		return nil
+	}
+}
+
+func testCheckOpsGenieAlertPolicyOrder(resName, policyName string, policiesOrder []int) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+
+		fmt.Printf("Running testCheckOpsGenieAlertPolicyOrder")
+		rs, ok := s.RootModule().Resources[resName]
+		if !ok {
+			return fmt.Errorf("Not found: %s", resName)
+		}
+
+		client, err := policy.NewClient(testAccProvider.Meta().(*OpsgenieClient).client.Config)
+		if err != nil {
+			return err
+		}
+
+		listRequest := policy.ListAlertPoliciesRequest{
+			TeamId: rs.Primary.Attributes["team_id"],
+		}
+
+		res, err := client.ListAlertPolicies(context.Background(), &listRequest)
+		if err != nil {
+			return err
+		}
+
+		currentPolicies := res.Policies
+		sort.SliceStable(currentPolicies, func(i, j int) bool {
+			return currentPolicies[i].Order < currentPolicies[j].Order
+		})
+
+		currentIdx := 0
+		for _, expectedIdx := range policiesOrder {
+			expectedPolicyName := fmt.Sprintf("genie-alert-policy-%s-%d", policyName, expectedIdx)
+			for _, currentPolicy := range currentPolicies {
+				if currentPolicy.Name == expectedPolicyName {
+					if currentIdx != expectedIdx {
+						return fmt.Errorf(
+							"Bad: Policy %s should have index %d, got %d",
+							currentPolicy.Name, expectedIdx, currentIdx)
+					}
+					currentIdx++
+					break
+				}
+			}
+		}
+
 		return nil
 	}
 }
@@ -245,4 +314,40 @@ func testAccOpsGenieAlertPolicy_complete(randomTeam, randomAlertPolicyName strin
 	}
 	`, randomTeam, randomAlertPolicyName)
 
+}
+
+func testAccOpsGenieAlertPolicy_order(randomTeam, randomAlertPolicyName string, policiesOrder []int) string {
+	resources := fmt.Sprintf(`
+		resource "opsgenie_team" "test" {
+			name        = "genieteam-%s"
+			description = "This team deals with all the things"
+		}
+	`, randomTeam)
+
+	for i := 1; i <= len(policiesOrder); i++ {
+		resources += fmt.Sprintf(`
+			resource "opsgenie_alert_policy" "test%[2]d" {
+				name               = "genie-alert-policy-%[1]s-%[2]d"
+				policy_description = "Alert policy #%[2]d for the team."
+				message = "This is a test message"
+				team_id = opsgenie_team.test.id
+				filter {}
+			}
+		`, randomAlertPolicyName, i)
+	}
+
+	policyIds := ""
+	for _, i := range policiesOrder {
+		policyIds += fmt.Sprintf(`
+			opsgenie_alert_policy.test%d.id,
+		`, i)
+	}
+
+	resources += fmt.Sprintf(`
+		resource "opsgenie_alert_policy_order" "test" {
+			team_id = opsgenie_team.test.id
+			policy_ids = [%s]
+		`, policyIds)
+
+	return resources
 }
