@@ -191,6 +191,11 @@ func TestAccOpsGenieTeam_complete(t *testing.T) {
 					testCheckOpsGenieTeamExists("opsgenie_team.test"),
 				),
 			},
+			{
+				Config:             config,
+				PlanOnly:           true,
+				ExpectNonEmptyPlan: false,
+			},
 		},
 	})
 }
