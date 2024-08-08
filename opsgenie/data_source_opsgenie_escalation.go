@@ -118,7 +118,9 @@ func dataSourceOpsgenieEscalationRead(d *schema.ResourceData, meta interface{}) 
 	d.Set("name", getResponse.Name)
 	d.Set("description", getResponse.Description)
 	d.Set("rules", flattenOpsgenieEscalationRules(getResponse.Rules))
-	d.Set("repeat", flattenOpsgenieEscalationRepeat(getResponse.Repeat))
+	if getResponse.Repeat != nil {
+		d.Set("repeat", flattenOpsgenieEscalationRepeat(getResponse.Repeat))
+	}
 	if getResponse.OwnerTeam != nil {
 		d.Set("owner_team_id", getResponse.OwnerTeam.Id)
 	}
