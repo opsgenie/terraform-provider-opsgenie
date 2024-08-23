@@ -63,12 +63,13 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"opsgenie_team":       dataSourceOpsGenieTeam(),
-			"opsgenie_user":       dataSourceOpsGenieUser(),
-			"opsgenie_escalation": dataSourceOpsgenieEscalation(),
-			"opsgenie_schedule":   dataSourceOpsgenieSchedule(),
-			"opsgenie_heartbeat":  dataSourceOpsgenieHeartbeat(),
-			"opsgenie_service":    dataSourceOpsGenieService(),
+			"opsgenie_team":         dataSourceOpsGenieTeam(),
+			"opsgenie_user":         dataSourceOpsGenieUser(),
+			"opsgenie_escalation":   dataSourceOpsgenieEscalation(),
+			"opsgenie_schedule":     dataSourceOpsgenieSchedule(),
+			"opsgenie_heartbeat":    dataSourceOpsgenieHeartbeat(),
+			"opsgenie_service":      dataSourceOpsGenieService(),
+			"opsgenie_contact_list": dataSourceOpsGenieContact(),
 		},
 	}
 	p.ConfigureContextFunc = providerConfigure
