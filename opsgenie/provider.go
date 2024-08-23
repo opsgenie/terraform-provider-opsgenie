@@ -60,6 +60,7 @@ func Provider() *schema.Provider {
 			"opsgenie_alert_policy":          resourceOpsGenieAlertPolicy(),
 			"opsgenie_service_incident_rule": resourceOpsGenieServiceIncidentRule(),
 			"opsgenie_incident_template":     resourceOpsgenieIncidentTemplate(),
+			"opsgenie_saved_search":          resourceOpsgenieSavedSearch(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
