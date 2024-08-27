@@ -67,6 +67,7 @@ The following arguments are supported:
 
 * `id` - (Required) The UUID for the member to add to this Team.
 * `role` - (Optional) The role for the user within the Team - can be either `admin` or `user`. Default: `user`.
+* `username` - (Optional) The username of the member to add to this Team. **Failure to add this will result in the membership being destroyed and recreated in every plan, making the plan very noisy.**
 
 ## Attributes Reference
 
