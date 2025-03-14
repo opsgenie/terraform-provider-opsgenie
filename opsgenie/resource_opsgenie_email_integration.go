@@ -30,6 +30,11 @@ func resourceOpsgenieEmailIntegration() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"type" : {
+				Type : schema.TypeString,
+				Optional: true,
+				Default: "Email",
+			},
 			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -79,10 +84,11 @@ func resourceOpsgenieEmailIntegrationCreate(d *schema.ResourceData, meta interfa
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	enabled := d.Get("enabled").(bool)
 	ownerTeam := d.Get("owner_team_id").(string)
+	integrationType := d.Get("type").(string)
 
 	createRequest := &integration.EmailBasedIntegrationRequest{
 		Name:                        name,
-		Type:                        EmailIntegrationType,
+		Type:                        integrationType,
 		EmailUsername:               emailUsername,
 		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
 		SuppressNotifications:       &suppressNotifications,
@@ -141,6 +147,7 @@ func resourceOpsgenieEmailIntegrationRead(d *schema.ResourceData, meta interface
 	d.Set("suppress_notifications", result.Data["suppressNotifications"])
 	d.Set("email_username", result.Data["emailUsername"])
 	d.Set("enabled", result.Data["enabled"])
+	d.Set("type", result.Data["type"])
 	return nil
 }
 
@@ -154,16 +161,24 @@ func resourceOpsgenieEmailIntegrationUpdate(d *schema.ResourceData, meta interfa
 	ignoreRespondersFromPayload := d.Get("ignore_responders_from_payload").(bool)
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	enabled := d.Get("enabled").(bool)
+	ownerTeam := d.Get("owner_team_id").(string)
+	integrationType := d.Get("type").(string)
 
 	updateRequest := &integration.UpdateIntegrationRequest{
 		Id:                          d.Id(),
 		Name:                        name,
-		Type:                        EmailIntegrationType,
+		Type:                        integrationType,
 		EmailUsername:               emailUsername,
 		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
 		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
 		Enabled:                     &enabled,
+	}
+
+	if ownerTeam != "" {
+		updateRequest.OwnerTeam = &og.OwnerTeam{
+			Id: ownerTeam,
+		}
 	}
 
 	log.Printf("[INFO] Updating OpsGenie email based integration '%s'", name)
