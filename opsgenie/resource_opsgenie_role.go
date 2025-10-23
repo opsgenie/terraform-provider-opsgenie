@@ -2,8 +2,9 @@ package opsgenie
 
 import (
 	"context"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/opsgenie/opsgenie-go-sdk-v2/custom_user_role"
 
@@ -54,6 +55,58 @@ var validCustomRolesRights = []string{
 	"incident-reopen",
 	"mass-notification-create",
 	"service-access",
+	"forwardings-edit",
+	"manage-roles",
+	"it-user-functionality",
+	"parent-login-as-user",
+	"update-login-as-user-state",
+	"see-alerts",
+	"alert-delete-note",
+	"alert-update-note",
+	"alert-update-description",
+	"alert-update-message",
+	"alert-add-responder",
+	"alert-grant-visibility",
+	"alert-create-issue",
+	"alert-link-issue",
+	"incidents-access-all",
+	"assign-response-role",
+	"incident-action",
+	"incident-associate-alerts",
+	"incident-dissociate-alerts",
+	"incident-remove-responder",
+	"incident-update-priority",
+	"incident-edit-tags",
+	"incident-edit-details",
+	"incident-edit-impact-times",
+	"incident-edit-postmortem-fields",
+	"incident-edit-message",
+	"incident-add-note",
+	"incident-close",
+	"incident-delete",
+	"incident-custom-action",
+	"update-potential-causes",
+	"incident-create-issue",
+	"incident-link-issue",
+	"edit-impacted-services",
+	"postmortem-access-published",
+	"postmortem-access-unpublished",
+	"postmortem-create",
+	"postmortem-edit",
+	"postmortem-delete",
+	"slack-channel-create",
+	"slack-channel-unlink",
+	"join-icc-session",
+	"create-icc-session",
+	"access-icc-past-sessions",
+	"incident-commander",
+	"edit-incident-command-center-room",
+	"delete-incident-command-center-room",
+	"incident-timeline-create",
+	"incident-timeline-edit",
+	"incident-timeline-delete",
+	"service-access-status",
+	"service-send-status-update",
 }
 
 func resourceOpsGenieCustomUserRole() *schema.Resource {
@@ -144,13 +197,25 @@ func resourceOpsGenieCustomUserRoleRead(d *schema.ResourceData, meta interface{}
 	if err != nil {
 		return err
 	}
+	var identifierType custom_user_role.Identifier
+	var identifier string
+
+	roleId := d.Id()
 	UserRoleName := d.Get("role_name").(string)
+
+	if roleId != "" {
+		identifierType = custom_user_role.Id
+		identifier = roleId
+	} else {
+		identifierType = custom_user_role.Name
+		identifier = UserRoleName
+	}
 
 	log.Printf("[INFO] Reading OpsGenie custom role '%s'", UserRoleName)
 
 	usrRole, err := client.Get(context.Background(), &custom_user_role.GetRequest{
-		Identifier:     UserRoleName,
-		IdentifierType: custom_user_role.Name,
+		Identifier:     identifier,
+		IdentifierType: identifierType,
 	})
 	if err != nil {
 		return err
