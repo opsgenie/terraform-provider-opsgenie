@@ -106,10 +106,11 @@ func resourceOpsgenieMaintenanceCreate(d *schema.ResourceData, meta interface{})
 
 func resourceOpsgenieMaintenanceRead(d *schema.ResourceData, meta interface{}) error {
 	client, err := maintenance.NewClient(meta.(*OpsgenieClient).client.Config)
+	ctx := context.Background()
 	if err != nil {
 		return err
 	}
-	listResponse, err := client.List(context.Background(), &maintenance.ListRequest{})
+	listResponse, err := client.List(ctx, &maintenance.ListRequest{})
 	if err != nil {
 		return err
 	}
@@ -117,10 +118,11 @@ func resourceOpsgenieMaintenanceRead(d *schema.ResourceData, meta interface{}) e
 	found := maintenance.GetResult{}
 	for _, maintenanceResp := range listResponse.Maintenances {
 		if maintenanceResp.Id == d.Id() {
-			found.Time = maintenanceResp.Time
-			found.Id = maintenanceResp.Id
-			found.Description = maintenanceResp.Description
-			found.Status = maintenanceResp.Status
+			details, err := client.Get(ctx, &maintenance.GetRequest{Id: d.Id()})
+			if err != nil {
+				return err
+			}
+			found = *details
 
 			break
 		}
@@ -134,6 +136,7 @@ func resourceOpsgenieMaintenanceRead(d *schema.ResourceData, meta interface{}) e
 
 	d.Set("time", flattenMaintenanceTime(found.Time))
 	d.Set("description", found.Description)
+	d.Set("rules", flattenMaintenanceRules(found.Results))
 
 	return nil
 }
@@ -285,9 +288,31 @@ func expandOpsgenieMaintenanceTime(d *schema.ResourceData) maintenance.Time {
 
 func flattenMaintenanceTime(time maintenance.Time) []map[string]interface{} {
 	timeLayout := "2006-01-02T15:04:05Z"
+	var startDate string
+	var endDate string
+	if time.StartDate != nil {
+		startDate = time.StartDate.Format(timeLayout)
+	}
+	if time.EndDate != nil {
+		endDate = time.EndDate.Format(timeLayout)
+	}
 	return []map[string]interface{}{{
 		"type":       time.Type,
-		"start_date": time.StartDate.Format(timeLayout),
-		"end_date":   time.EndDate.Format(timeLayout),
+		"start_date": startDate,
+		"end_date":   endDate,
 	}}
+}
+
+func flattenMaintenanceRules(rules []maintenance.Rule) []map[string]interface{} {
+	ruleList := make([]map[string]interface{}, 0, len(rules))
+	for _, rule := range rules {
+		ruleList = append(ruleList, map[string]interface{}{
+			"state": rule.State,
+			"entity": []map[string]interface{}{{
+				"id":   rule.Entity.Id,
+				"type": rule.Entity.Type,
+			}},
+		})
+	}
+	return ruleList
 }
