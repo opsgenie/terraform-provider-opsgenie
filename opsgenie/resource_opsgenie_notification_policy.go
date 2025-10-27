@@ -46,7 +46,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 			State: func(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				idParts := strings.Split(d.Id(), "/")
 				if len(idParts) != 2 || idParts[0] == "" || idParts[1] == "" {
-					return nil, fmt.Errorf("Unexpected format of ID (%q), expected team_id/notification_policy_id", d.Id())
+					return nil, fmt.Errorf("unexpected format of ID (%q), expected team_id/notification_policy_id", d.Id())
 				}
 				d.Set("team_id", idParts[0])
 				d.SetId(idParts[1])
@@ -183,7 +183,7 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 				Type:          schema.TypeList,
 				Optional:      true,
 				MaxItems:      1,
-				ConflictsWith: []string{"de_duplication_action", "suppress"},
+				ConflictsWith: []string{"de_duplication_action"},
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"delay_option": {
@@ -209,9 +209,8 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 				},
 			},
 			"suppress": {
-				Type:          schema.TypeBool,
-				Optional:      true,
-				ConflictsWith: []string{"delay_action", "de_duplication_action"},
+				Type:     schema.TypeBool,
+				Optional: true,
 			},
 		},
 	}
@@ -219,6 +218,10 @@ func resourceOpsGenieNotificationPolicy() *schema.Resource {
 
 func resourceOpsGenieNotificationPolicyCreate(d *schema.ResourceData, meta interface{}) error {
 	err := resourceOpsGenieNotificationPolicyMultiValueValidation(d)
+	if err != nil {
+		return err
+	}
+	err = resourceOpsGenieNotificationPolicySuppressDelayActionDeDuplicationActionValidation(d)
 	if err != nil {
 		return err
 	}
@@ -325,6 +328,10 @@ func resourceOpsGenieNotificationPolicyUpdate(d *schema.ResourceData, meta inter
 	if err != nil {
 		return err
 	}
+	err = resourceOpsGenieNotificationPolicySuppressDelayActionDeDuplicationActionValidation(d)
+	if err != nil {
+		return err
+	}
 	client, err := policy.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
@@ -396,6 +403,20 @@ func resourceOpsGenieNotificationPolicyMultiValueValidation(d *schema.ResourceDa
 		if delay_action_type == "for-duration" && len(delay_action["duration"].([]interface{})) != 1 {
 			return fmt.Errorf("%s: delay_action.%s is required when delay_option = 'for-duration'", d.Id(), "duration")
 		}
+	}
+
+	return nil
+}
+
+// resourceOpsGenieNotificationPolicySuppressDelayActionValidation validates suppress and delay_action conflict
+func resourceOpsGenieNotificationPolicySuppressDelayActionDeDuplicationActionValidation(d *schema.ResourceData) error {
+	suppress := d.Get("suppress").(bool)
+	delayActions := d.Get("delay_action").([]interface{})
+	deDuplicationActions := d.Get("de_duplication_action").([]interface{})
+
+	// Only fail if both are set AND suppress is true
+	if suppress && (len(delayActions) > 0 || len(deDuplicationActions) > 0) {
+		return fmt.Errorf("suppress and delay_action or de_duplication_action cannot be set together when suppress is true")
 	}
 
 	return nil
