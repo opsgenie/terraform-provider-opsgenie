@@ -60,6 +60,14 @@ func validateDate(v interface{}, k string) (ws []string, errors []error) {
 	return
 }
 
+func validateDateIfNotEmpty(v interface{}, k string) (ws []string, errors []error) {
+	value := v.(string)
+	if value == "" {
+		return
+	}
+	return validateDate(v, k)
+}
+
 func convertStringMapToInterfaceMap(old map[string]string) map[string]interface{} {
 	new := map[string]interface{}{}
 	for k, v := range old {
