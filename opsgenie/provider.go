@@ -44,6 +44,7 @@ func Provider() *schema.Provider {
 			"opsgenie_custom_role":           resourceOpsGenieCustomUserRole(),
 			"opsgenie_team":                  resourceOpsGenieTeam(),
 			"opsgenie_team_routing_rule":     resourceOpsGenieTeamRoutingRule(),
+			"opsgenie_team_membership":       resourceOpsGenieTeamMembership(),
 			"opsgenie_user":                  resourceOpsGenieUser(),
 			"opsgenie_user_contact":          resourceOpsGenieUserContact(),
 			"opsgenie_notification_policy":   resourceOpsGenieNotificationPolicy(),
