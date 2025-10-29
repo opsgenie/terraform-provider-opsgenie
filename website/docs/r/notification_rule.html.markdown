@@ -49,6 +49,8 @@ The following arguments are supported:
 
 * `enabled` - (Optional) If policy should be enabled. Default: `true`
 
+* `time_restriction` - (Optional)
+
 The `steps` block supports:
 
 * `enabled` - (Optional) Defined if this step is enabled. Default: `true`
@@ -83,7 +85,37 @@ The `conditions` block supports:
 
 * `order` - (Optional) Order of the condition in conditions list
 
+The `time_restriction` block supports:
 
+* `type` - (Required) Defines if restriction should apply daily on given hours or on certain days and hours. Possible values are: `time-of-day`, `weekday-and-time-of-day`
+
+* `restrictions` - (Optional) List of days and hours definitions for field type = `weekday-and-time-of-day`. This is a block, structure is documented below.
+
+* `restriction` - (Optional) A definition of hourly definition applied daily, this has to be used with combination: type = `time-of-day`. This is a block, structure is documented below.
+
+The `restrictions` block supports:
+
+* `start_day` - (Required) Starting day of restriction (eg. `monday`)
+
+* `end_day` - (Required) Ending day of restriction (eg. `wednesday`)
+
+* `start_hour` - (Required) Starting hour of restriction on defined `start_day`
+
+* `end_hour` - (Required) Ending hour of restriction on defined `end_day`
+
+* `start_min` - (Required) Staring minute of restriction on defined `start_hour`
+
+* `end_min` - (Required) Ending minute of restriction on defined `end_hour`
+
+The `restriction` block supports:
+
+* `start_hour` - (Required) Starting hour of restriction.
+
+* `end_hour` - (Required) Ending hour of restriction.
+
+* `start_min` - (Required) Staring minute of restriction on defined `start_hour`
+
+* `end_min` - (Required) Ending minute of restriction on defined `end_hour`
 
 ## Attributes Reference
 
