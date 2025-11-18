@@ -164,19 +164,23 @@ func resourceOpsGenieServiceIncidentRuleCreate(d *schema.ResourceData, meta inte
 	}
 
 	service_id := d.Get("service_id").(string)
-	createRequest := &service.CreateIncidentRuleRequest{
-		ServiceId: service_id,
-	}
+
+	incidentRule := service.IncidentRule{}
 
 	incident_rule := d.Get("incident_rule").([]interface{})
 	for _, v := range incident_rule {
 		config := v.(map[string]interface{})
-		createRequest.ConditionMatchType = og.ConditionMatchType(config["condition_match_type"].(string))
-		createRequest.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].(*schema.Set))
-		createRequest.IncidentProperties = expandOpsGenieServiceIncidentRuleIncidentProperties(config["incident_properties"].([]interface{}))
+		incidentRule.ConditionMatchType = og.ConditionMatchType(config["condition_match_type"].(string))
+		incidentRule.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].(*schema.Set))
+		incidentRule.IncidentProperties = expandOpsGenieServiceIncidentRuleIncidentProperties(config["incident_properties"].([]interface{}))
 	}
 
-	log.Printf("[INFO] Creating OpsGenie Service Incident Rule for service '%s'", d.Get("service_id").(string))
+	createRequest := &service.CreateIncidentRuleRequest{
+		ServiceId:    service_id,
+		IncidentRule: incidentRule,
+	}
+
+	log.Printf("[INFO] Creating OpsGenie Service Incident Rule for service '%s'", service_id)
 	result, err := client.CreateIncidentRule(context.Background(), createRequest)
 	if err != nil {
 		return err
@@ -207,6 +211,7 @@ func resourceOpsGenieServiceIncidentRuleRead(d *schema.ResourceData, meta interf
 			d.SetId("")
 			return nil
 		}
+		return err
 	}
 
 	incidentRuleFound := false
@@ -238,14 +243,15 @@ func resourceOpsGenieServiceIncidentRuleUpdate(d *schema.ResourceData, meta inte
 	updateRequest := &service.UpdateIncidentRuleRequest{
 		ServiceId:      service_id,
 		IncidentRuleId: incident_rule_id,
+		IncidentRule:   service.IncidentRule{},
 	}
 
 	incident_rule := d.Get("incident_rule").([]interface{})
 	for _, v := range incident_rule {
 		config := v.(map[string]interface{})
-		updateRequest.ConditionMatchType = og.ConditionMatchType(config["condition_match_type"].(string))
-		updateRequest.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].(*schema.Set))
-		updateRequest.IncidentProperties = expandOpsGenieServiceIncidentRuleIncidentProperties(config["incident_properties"].([]interface{}))
+		updateRequest.IncidentRule.ConditionMatchType = og.ConditionMatchType(config["condition_match_type"].(string))
+		updateRequest.IncidentRule.Conditions = expandOpsGenieServiceIncidentRuleConditions(config["conditions"].(*schema.Set))
+		updateRequest.IncidentRule.IncidentProperties = expandOpsGenieServiceIncidentRuleIncidentProperties(config["incident_properties"].([]interface{}))
 	}
 
 	log.Printf("[INFO] Updating Service Incident Rule for service: '%s' for rule ID: '%s'", service_id, incident_rule_id)
@@ -254,14 +260,14 @@ func resourceOpsGenieServiceIncidentRuleUpdate(d *schema.ResourceData, meta inte
 		return err
 	}
 
-	return nil
+	return resourceOpsGenieServiceIncidentRuleRead(d, meta)
 }
 
 func resourceOpsGenieServiceIncidentRuleDelete(d *schema.ResourceData, meta interface{}) error {
 	service_id := d.Get("service_id").(string)
 	incident_rule_id := d.Id()
 
-	log.Printf("[INFO] Deleting OpsGenie ervice Incident Rule for service: '%s' for rule ID: '%s'", service_id, incident_rule_id)
+	log.Printf("[INFO] Deleting OpsGenie Service Incident Rule for service: '%s' for rule ID: '%s'", service_id, incident_rule_id)
 	client, err := service.NewClient(meta.(*OpsgenieClient).client.Config)
 	if err != nil {
 		return err
@@ -275,6 +281,7 @@ func resourceOpsGenieServiceIncidentRuleDelete(d *schema.ResourceData, meta inte
 	if err != nil {
 		return err
 	}
+	d.SetId("")
 	return nil
 }
 

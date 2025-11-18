@@ -9,12 +9,17 @@ import (
 	"github.com/pkg/errors"
 )
 
+type IncidentRule struct {
+    ConditionMatchType string             `json:"conditionMatchType"`
+    Conditions         []og.Condition     `json:"conditions"`
+    IncidentProperties IncidentProperties `json:"incidentProperties"`
+}
+
 type CreateIncidentRuleRequest struct {
 	client.BaseRequest
-	ServiceId          string
-	Conditions         []og.Condition        `json:"conditions,omitempty"`
-	ConditionMatchType og.ConditionMatchType `json:"conditionMatchType,omitempty"`
-	IncidentProperties IncidentProperties    `json:"incidentProperties"`
+	client.BaseRequest
+	ServiceId    string      `json:"-"`
+	IncidentRule IncidentRule `json:"incidentRule"`
 }
 
 func (r *CreateIncidentRuleRequest) Validate() error {
