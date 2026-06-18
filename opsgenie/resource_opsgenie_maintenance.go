@@ -37,12 +37,12 @@ func resourceOpsgenieMaintenance() *schema.Resource {
 						"start_date": {
 							Type:         schema.TypeString,
 							Optional:     true,
-							ValidateFunc: validateDate,
+							ValidateFunc: validateDateIfNotEmpty,
 						},
 						"end_date": {
 							Type:         schema.TypeString,
 							Optional:     true,
-							ValidateFunc: validateDate,
+							ValidateFunc: validateDateIfNotEmpty,
 						},
 					},
 				},
@@ -86,9 +86,14 @@ func resourceOpsgenieMaintenanceCreate(d *schema.ResourceData, meta interface{})
 	}
 	description := d.Get("description").(string)
 
+	maintenanceTime, err := expandOpsgenieMaintenanceTime(d)
+	if err != nil {
+		return err
+	}
+
 	createRequest := &maintenance.CreateRequest{
 		Description: description,
-		Time:        expandOpsgenieMaintenanceTime(d),
+		Time:        maintenanceTime,
 		Rules:       expandOpsgenieMaintenanceRules(d),
 	}
 
@@ -106,10 +111,11 @@ func resourceOpsgenieMaintenanceCreate(d *schema.ResourceData, meta interface{})
 
 func resourceOpsgenieMaintenanceRead(d *schema.ResourceData, meta interface{}) error {
 	client, err := maintenance.NewClient(meta.(*OpsgenieClient).client.Config)
+	ctx := context.Background()
 	if err != nil {
 		return err
 	}
-	listResponse, err := client.List(context.Background(), &maintenance.ListRequest{})
+	listResponse, err := client.List(ctx, &maintenance.ListRequest{})
 	if err != nil {
 		return err
 	}
@@ -117,10 +123,11 @@ func resourceOpsgenieMaintenanceRead(d *schema.ResourceData, meta interface{}) e
 	found := maintenance.GetResult{}
 	for _, maintenanceResp := range listResponse.Maintenances {
 		if maintenanceResp.Id == d.Id() {
-			found.Time = maintenanceResp.Time
-			found.Id = maintenanceResp.Id
-			found.Description = maintenanceResp.Description
-			found.Status = maintenanceResp.Status
+			details, err := client.Get(ctx, &maintenance.GetRequest{Id: d.Id()})
+			if err != nil {
+				return err
+			}
+			found = *details
 
 			break
 		}
@@ -134,6 +141,7 @@ func resourceOpsgenieMaintenanceRead(d *schema.ResourceData, meta interface{}) e
 
 	d.Set("time", flattenMaintenanceTime(found.Time))
 	d.Set("description", found.Description)
+	d.Set("rules", flattenMaintenanceRules(found.Results))
 
 	return nil
 }
@@ -152,7 +160,10 @@ func resourceOpsgenieMaintenanceUpdate(d *schema.ResourceData, meta interface{})
 		return err
 
 	}
-	maintenanceTime := expandOpsgenieMaintenanceTime(d)
+	maintenanceTime, err := expandOpsgenieMaintenanceTime(d)
+	if err != nil {
+		return err
+	}
 	if mnt.Status == "active" {
 
 		_, err := client.ChangeEndDate(context.Background(), &maintenance.ChangeEndDateRequest{
@@ -246,12 +257,12 @@ func expandOpsgenieMaintenanceEntity(d []interface{}) maintenance.Entity {
 	return entity
 }
 
-func expandOpsgenieMaintenanceTime(d *schema.ResourceData) maintenance.Time {
+func expandOpsgenieMaintenanceTime(d *schema.ResourceData) (maintenance.Time, error) {
 	input := d.Get("time").([]interface{})
 
 	maintenanceTime := maintenance.Time{}
 	if input == nil {
-		return maintenanceTime
+		return maintenanceTime, nil
 	}
 	for _, v := range input {
 		config := v.(map[string]interface{})
@@ -262,32 +273,68 @@ func expandOpsgenieMaintenanceTime(d *schema.ResourceData) maintenance.Time {
 
 		maintenanceTime.Type = maintenance.TimeType(maintenanceType)
 		if maintenanceTime.Type == maintenance.Schedule {
-			if start_Date == nil || end_Date == nil {
-				log.Fatal("Schedule type maintenance's must have start and end dates")
+			if start_Date == nil || end_Date == nil || start_Date.(string) == "" || end_Date.(string) == "" {
+				error := errors.New("schedule type maintenances must have start and end dates")
+				log.Print("[ERROR] ", error.Error())
+				return maintenance.Time{}, error
 			}
 		}
 
 		layoutStr := "2006-01-02T15:04:05Z"
-		startDate, err := time.Parse(layoutStr, start_Date.(string))
-		if err != nil {
-			log.Fatal(err)
+
+		if start_Date.(string) != "" {
+			startDate, err := time.Parse(layoutStr, start_Date.(string))
+			if err != nil {
+				log.Print("[ERROR] ", err.Error())
+				return maintenance.Time{}, err
+			}
+			maintenanceTime.StartDate = &startDate
+		} else {
+			maintenanceTime.StartDate = nil
 		}
-		endDate, err := time.Parse(layoutStr, end_Date.(string))
-		if err != nil {
-			log.Fatal(err)
+
+		if end_Date.(string) != "" {
+			endDate, err := time.Parse(layoutStr, end_Date.(string))
+			if err != nil {
+				log.Print("[ERROR] ", err.Error())
+				return maintenance.Time{}, err
+			}
+			maintenanceTime.EndDate = &endDate
+		} else {
+			maintenanceTime.EndDate = nil
 		}
-		maintenanceTime.StartDate = &startDate
-		maintenanceTime.EndDate = &endDate
 	}
 
-	return maintenanceTime
+	return maintenanceTime, nil
 }
 
 func flattenMaintenanceTime(time maintenance.Time) []map[string]interface{} {
 	timeLayout := "2006-01-02T15:04:05Z"
+	var startDate string
+	var endDate string
+	if time.StartDate != nil {
+		startDate = time.StartDate.Format(timeLayout)
+	}
+	if time.EndDate != nil {
+		endDate = time.EndDate.Format(timeLayout)
+	}
 	return []map[string]interface{}{{
 		"type":       time.Type,
-		"start_date": time.StartDate.Format(timeLayout),
-		"end_date":   time.EndDate.Format(timeLayout),
+		"start_date": startDate,
+		"end_date":   endDate,
 	}}
+}
+
+func flattenMaintenanceRules(rules []maintenance.Rule) []map[string]interface{} {
+	ruleList := make([]map[string]interface{}, 0, len(rules))
+	for _, rule := range rules {
+		ruleList = append(ruleList, map[string]interface{}{
+			"state": rule.State,
+			"entity": []map[string]interface{}{{
+				"id":   rule.Entity.Id,
+				"type": rule.Entity.Type,
+			}},
+		})
+	}
+	return ruleList
 }

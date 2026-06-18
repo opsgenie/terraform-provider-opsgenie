@@ -35,6 +35,11 @@ func resourceOpsgenieApiIntegration() *schema.Resource {
 				Optional: true,
 				Default:  true,
 			},
+			"allow_configuration_access": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"type": {
 				Type:     schema.TypeString,
 				ForceNew: true,
@@ -120,6 +125,7 @@ func createApiIntegration(d *schema.ResourceData, meta interface{}) error {
 	}
 	name := d.Get("name").(string)
 	allowWriteAccess := d.Get("allow_write_access").(bool)
+	allowConfigurationAccess := d.Get("allow_configuration_access").(bool)
 	ignoreRespondersFromPayload := d.Get("ignore_responders_from_payload").(bool)
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	ownerTeam := d.Get("owner_team_id").(string)
@@ -134,6 +140,7 @@ func createApiIntegration(d *schema.ResourceData, meta interface{}) error {
 		Name:                        name,
 		Type:                        integrationType,
 		AllowWriteAccess:            &allowWriteAccess,
+		AllowConfigurationAccess:    &allowConfigurationAccess,
 		IgnoreRespondersFromPayload: &ignoreRespondersFromPayload,
 		SuppressNotifications:       &suppressNotifications,
 		Responders:                  expandOpsgenieIntegrationResponders(d),
@@ -180,6 +187,7 @@ func createWebhookIntegration(d *schema.ResourceData, meta interface{}) error {
 	}
 	name := d.Get("name").(string)
 	allowWriteAccess := d.Get("allow_write_access").(bool)
+	allowConfigurationAccess := d.Get("allow_configuration_access").(bool)
 	suppressNotifications := d.Get("suppress_notifications").(bool)
 	ownerTeam := d.Get("owner_team_id").(string)
 	integrationType := d.Get("type").(string)
@@ -188,13 +196,14 @@ func createWebhookIntegration(d *schema.ResourceData, meta interface{}) error {
 	headers := expandOpsGenieWebhookHeaders(d)
 
 	createRequest := &integration.WebhookIntegrationRequest{
-		Name:                  name,
-		Type:                  integrationType,
-		AllowWriteAccess:      &allowWriteAccess,
-		SuppressNotifications: &suppressNotifications,
-		Responders:            expandOpsgenieIntegrationResponders(d),
-		WebhookUrl:            webhookUrl,
-		Headers:               headers,
+		Name:                     name,
+		Type:                     integrationType,
+		AllowWriteAccess:         &allowWriteAccess,
+		AllowConfigurationAccess: &allowConfigurationAccess,
+		SuppressNotifications:    &suppressNotifications,
+		Responders:               expandOpsgenieIntegrationResponders(d),
+		WebhookUrl:               webhookUrl,
+		Headers:                  headers,
 	}
 
 	if ownerTeam != "" {

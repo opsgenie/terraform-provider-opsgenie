@@ -346,7 +346,7 @@ const (
 )
 
 type SendAfter struct {
-	TimeAmount uint32 `json:"timeAmount,omitempty"`
+	TimeAmount uint32 `json:"timeAmount"`
 	TimeUnit   string `json:"timeUnit,omitempty"`
 }
 
